@@ -1,10 +1,10 @@
 {
-    "name": "Ingenieria2",
+    "name": "ingenieria2",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "nodemon start src"
+        "start": "nodemon start src"
     },
     "keywords": [],
     "author": "",

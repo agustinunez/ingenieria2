@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-    res.send('Que onda mundo');
+    res.render('home');
 });
 
 
