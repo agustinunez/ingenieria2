@@ -38,6 +38,7 @@ app.use((req, res, next) => {
 
 app.use(require('./routes/home'));
 app.use('/links', require('./routes/links'));
+app.use(require('./routes/auth'));
 
 //Public
 
