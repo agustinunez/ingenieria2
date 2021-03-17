@@ -1,0 +1,30 @@
+<div class="outer-container">
+    <div class="container_login">
+        <h3 class="px-4 py-2">Busca tu viaje</h3>
+        <div class="dropdown-divider"></div>
+        <form href="/login" method="POST" class="px-4 py-3">
+            <div class="mb-3">
+                <label for="origin" class="form-label">Origen</label>
+                <input type="text" class="form-control" id="origin" name="origin">
+            </div>
+            <div class="mb-3">
+                <label for="destination" class="form-label">Destino</label>
+                <input type="text" class="form-control" id="destination" name="destination">
+            </div>
+            <div class="departureDate-container">
+                <div class="mb-3">
+                    <label for="departureDate" class="form-label">Fecha de salida</label>
+                    <input type="date" class="form-control" id="departureDate" name="departureDate">
+                </div>
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Cantidad</label>
+                    <input type="text" class="form-control" id="amount" name="amount">
+                </div>
+            </div>
+            <div class="alert alert-info" role="alert">
+                <center><b><i>Recuerda que este es solo un pasaje de ida.</i></b></center>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Buscar</button>
+        </form>
+    </div>
+</div>

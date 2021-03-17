@@ -27,12 +27,16 @@ body {
 }
 
 .container_login{
-    max-width: 540px;
+    /* max-width: 540px;
     margin: 1rem auto;
     background-color: #212529;
     padding: .5rem 0;
-    border-radius: .9rem;
+    border-radius: .9rem; */
+    box-shadow: 0 0 1px 1px #efe6e6;
 
+    background-color: #212529;
+    padding: .5rem 0;
+    border-radius: .9rem;
 }
 
 .container_login, 
@@ -40,4 +44,25 @@ body {
     color:white;
 }
 
+.dropdown-divider {
+    border-top: 1px solid #5a5a5a;
+}
 
+.navbar-main .container-fluid .navbar-brand {
+    padding: 0;
+}
+
+.alert {
+    user-select: none;
+}
+
+.outer-container {
+    padding: 0 1rem;
+    max-width: 540px;
+    margin: 1rem auto;
+}
+
+.departureDate-container {
+    display: flex;
+    justify-content: space-between;
+}

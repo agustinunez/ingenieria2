@@ -20,7 +20,7 @@ router.post('/login', (req,res)=>{
 })
 
 router.post('/signup', (req,res)=>{
-    res.send('recibidoo');
+    res.redirect('/login');
 })
 
 

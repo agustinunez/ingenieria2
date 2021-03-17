@@ -1,24 +1,28 @@
-<div class="container_login">
-  <form href="/login" method="POST" class="px-4 py-3">
-    <div class="mb-3">
-      <label for="exampleDropdownFormUsername1" class="form-label">Nombre de usuario</label>
-      <input type="text" class="form-control" id="exampleDropdownFormUsername1"  name="username">
-    </div>
-    <div class="mb-3">
-      <label for="exampleDropdownFormPassword1" class="form-label">Contraseña</label>
-      <input type="password" class="form-control" id="exampleDropdownFormPassword1" name="password">
-    </div>
-    <div class="mb-3">
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="dropdownCheck">
-        <label class="form-check-label" for="dropdownCheck">
-          Recordar
-        </label>
+<div class="outer-container">
+  <div class="container_login">
+    <h3 class="px-4 py-2">Inicio de sesion</h3>
+    <div class="dropdown-divider"></div>
+    <form href="/login" method="POST" class="px-4 py-3">
+      <div class="mb-3">
+        <label for="exampleDropdownFormUsername1" class="form-label">Nombre de usuario</label>
+        <input type="text" class="form-control" id="exampleDropdownFormUsername1" name="username" autofocus>
       </div>
-    </div>
-    <button type="submit" class="btn btn-primary">Iniciar Sesion</button>
-  </form>
-  <div class="dropdown-divider"></div>
-  <a class="dropdown-item" href="/signup">Nuevo por aqui? Registrate</a>
-  <a class="dropdown-item" href="#">Olvidaste la contraseña?</a>
+      <div class="mb-3">
+        <label for="exampleDropdownFormPassword1" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="exampleDropdownFormPassword1" name="password">
+      </div>
+      <div class="mb-3">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="dropdownCheck">
+          <label class="form-check-label" for="dropdownCheck" name="remember">
+            Recordar
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success w-100">Iniciar Sesion</button>
+    </form>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="/signup">Nuevo por aqui? Registrate</a>
+    <a class="dropdown-item" href="#">Olvidaste la contraseña?</a>
+  </div>
 </div>
