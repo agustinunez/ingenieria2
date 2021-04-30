@@ -3,37 +3,49 @@
     <h3 class="px-4 py-2">Registro</h3>
     <div class="dropdown-divider"></div>
     <form href="/singup" method="POST" class="px-4 py-3">
+      {{#if errors}} 
+        <div class="mb-3">
+          <div class="alert alert-danger" role="alert">
+            <ul>
+              {{#each errors}}
+                <li>{{msg}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+      {{/if}}
+      
       <div class="mb-3">
-        <label for="name" class="form-label">Nombre completo</label>
-        <input type="text" class="form-control" id="name" name="name" autofocus>
+        <label for="name" class="form-label">Nombre</label>
+        <input type="text" value="{{user.name}}" class="form-control" id="name" name="name" autofocus required>
       </div>
       <div class="mb-3">
         <label for="lastname" class="form-label">Apellido</label>
-        <input type="text" class="form-control" id="lastname" name="lastname">
+        <input type="text" value="{{user.lastname}}" class="form-control" id="lastname" name="lastname" required>
       </div>
       <div class="mb-3">
         <label for="birthdate" class="form-label">Fecha de nacimiento</label>
-        <input type="date" class="form-control" id="birthdate" name="birthdate">
+        <input type="date" value="{{user.birthday}}" class="form-control" id="birthdate" name="birthdate" required>
       </div>
       <div class="mb-3">
         <label for="mail" class="form-label">Email</label>
-        <input type="email" class="form-control" id="mail" name="mail">
+        <input type="email" value="{{user.email}}" class="form-control" id="email" name="email" required>
       </div>
       <div class="mb-3">
         <label for="username" class="form-label">Nombre de usuario</label>
-        <input type="text" class="form-control" id="username" name="username">
+        <input type="text" value="{{user.username}}" class="form-control" id="username" name="username" required>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" name="password">
+        <input type="password" class="form-control" id="password" name="password" required>
       </div>
       <div class="mb-3">
         <label for="confirmPassword" class="form-label">Confirnar contraseña</label>
-        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
       </div>
       <div class="mb-3">
         <label for="plan" class="form-label">Plan</label>
-        <select class="form-select" id="plan" name="plan">
+        <select class="form-select" value="{{user.plan}}" id="plan" name="plan">
             <option value="basico">Basico</option>
             <option value="gold">Gold</option>
         </select>
