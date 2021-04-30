@@ -1,13 +1,16 @@
 // Constantes 
 
 const express = require('express');
-const morgan = require('morgan');
+const session = require('express-session');
 const exphbs = require('express-handlebars');
+const flash = require('connect-flash');
 const path = require('path');
+const passport = require('passport');
 
 //Inicializar
 
 const app = express();
+require('./lib/passport');
 
 //Settings
 
@@ -22,10 +25,18 @@ app.engine('.hbs', exphbs({
 app.set('view engine', '.hbs');
 
 //Midlewares
-
-app.use(morgan('dev'));
+app.use(
+    session({
+      secret: "ingenieria2",
+      resave: false,
+      saveUninitialized: false
+    })
+);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 //Variables globales
 

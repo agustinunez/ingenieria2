@@ -4,6 +4,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database');
 const { body, validationResult } = require('express-validator');
+const passport = require('passport');
+const helpers = require('../lib/helpers');
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
 router.get('/login', (req,res)=>{
@@ -14,9 +16,11 @@ router.get('/signup', (req,res)=>{
     res.render('auth/signup');
 })
 
-router.post('/login', (req,res)=>{
-    res.send('recibido');
-})
+router.post('/login', passport.authenticate('local.signin', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: true
+}))
 
 router.post('/signup', 
     //Validaciones de registro de usuario.
@@ -79,6 +83,7 @@ router.post('/signup',
     if (!result.isEmpty()) {
         return res.render('auth/signup', {user, errors});
     }
+    user.password = await helpers.encryptPassword(user.password);
     await pool.query('INSERT INTO usuario SET ?', [user]);
     res.redirect('/login');
 })
