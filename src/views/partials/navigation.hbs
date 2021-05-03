@@ -20,28 +20,19 @@
           </ul>
         </li>
       </ul>
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Busca tu contenido" aria-label="Search">
-        <button class="btn btn-outline-personalized" type="submit">Buscar</button>
-      </form>
       <ul class="navbar-nav mb-2 mb-lg-0">
-        {{!-- <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something</a></li>
-          </ul>
-        </li> --}}
-        <li class="nav-item">
-          <a class="nav-link" href="/login">Iniciar Sesion</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/signup">Registrase</a>
-        </li>
+          {{#if user}}
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Cerrar Sesion</a>
+            </li>
+          {{else}}
+              <li class="nav-item">
+                <a class="nav-link" href="/login">Iniciar Sesion</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/signup">Registrase</a>
+              </li>
+          {{/if}}
       </ul>
     </div>
   </div>

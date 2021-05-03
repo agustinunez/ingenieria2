@@ -8,11 +8,11 @@ const passport = require('passport');
 const helpers = require('../lib/helpers');
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
-router.get('/login', (req,res)=>{
+router.get('/login', (req, res) => {
     res.render('auth/login');
 })
 
-router.get('/signup', (req,res)=>{
+router.get('/signup', (req, res) => {
     res.render('auth/signup');
 })
 
@@ -22,7 +22,7 @@ router.post('/login', passport.authenticate('local.signin', {
     failureFlash: true
 }))
 
-router.post('/signup', 
+router.post('/signup',
     //Validaciones de registro de usuario.
     body('name').notEmpty().withMessage('El campo "Nombre" no puede estar vacio!'),
     body('lastname').notEmpty().withMessage('El campo "Apellido" no puede estar vacio!'),
@@ -43,14 +43,14 @@ router.post('/signup',
         return true;
     }),
     body('email').isEmail().withMessage('Formato de email invalido!'),
-    body('email').custom(async (value, { req }) => {
+    body('email').custom(async(value, { req }) => {
         const result = await pool.query('SELECT email FROM usuario WHERE email=?', [value]);
         if (result.length > 0) {
             throw new Error('El email ' + value + ' ya se encuentra en uso!');
         }
     }),
     body('username').notEmpty().withMessage('El campo "Nombre de usuario" no puede estar vacio!'),
-    body('username').custom(async (value) => {
+    body('username').custom(async(value) => {
         const result = await pool.query('SELECT username FROM usuario WHERE username=?', [value]);
         if (result.length > 0) {
             throw new Error('El nombre de usuario ' + value + ' ya se encuentra en uso!');
@@ -59,34 +59,45 @@ router.post('/signup',
     body('password').isLength({ min: 7 }).withMessage('La contraseña debe ser mayor a 6 caracteres!'),
     body('confirmPassword').custom((value, { req }) => {
         if (value !== req.body.password) {
-          throw new Error('La confirmacion de la contraseña no coincide con la contraseña!');
+            throw new Error('La confirmacion de la contraseña no coincide con la contraseña!');
         }
-    
+
         // Indicates the success of this synchronous custom validator
         return true;
     }),
 
-    async (req,res)=>{
-    
-    const { name, lastname, birthdate, email, username, password, plan } = req.body;
-    const user = {
-        name,
-        lastname,
-        birthdate,
-        email,
-        username,
-        password,
-        plan
-    }
-    const result = validationResult(req);
-    const errors = result.errors;
-    if (!result.isEmpty()) {
-        return res.render('auth/signup', {user, errors});
-    }
-    user.password = await helpers.encryptPassword(user.password);
-    await pool.query('INSERT INTO usuario SET ?', [user]);
-    res.redirect('/login');
-})
+    async(req, res) => {
+
+        const { name, lastname, birthdate, email, username, password, plan } = req.body;
+        let user = {
+            name,
+            lastname,
+            birthdate,
+            email,
+            username,
+            password,
+            plan
+        }
+        const result = validationResult(req);
+        const errors = result.errors;
+        if (!result.isEmpty()) {
+            return res.render('auth/signup', { user, errors });
+        }
+        user.password = await helpers.encryptPassword(user.password);
+        user.username = user.username.toUpperCase();
+        await pool.query('INSERT INTO usuario SET ?', [user]);
+        user = null;
+        req.flash('success','Se ha realizado el registro exitosamente!')
+        res.redirect('/login');
+    })
+
+    router.get('/logout', (req, res) => {
+        req.logOut();
+        req.flash('success','Se ha cerrado sesion con exito!');     
+        res.redirect('/login');
+    })
+
+
 
 
 // Aca exporto el enrutador

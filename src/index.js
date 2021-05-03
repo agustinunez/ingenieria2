@@ -27,9 +27,9 @@ app.set('view engine', '.hbs');
 //Midlewares
 app.use(
     session({
-      secret: "ingenieria2",
-      resave: false,
-      saveUninitialized: false
+        secret: "ingenieria2",
+        resave: false,
+        saveUninitialized: false
     })
 );
 app.use(express.urlencoded({ extended: false }));
@@ -41,9 +41,13 @@ app.use(flash());
 //Variables globales
 
 app.use((req, res, next) => {
-
+    app.locals.warning = req.flash("warning");
+    app.locals.success = req.flash("success");
+    app.locals.user = req.user;
     next();
 });
+
+
 
 //Routes
 
