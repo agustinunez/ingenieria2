@@ -14,7 +14,6 @@
           </div>
         </div>
       {{/if}}
-      
       <div class="mb-3">
         <label for="name" class="form-label">Nombre</label>
         <input type="text" value="{{user.name}}" class="form-control" id="name" name="name" autofocus required>
@@ -49,12 +48,31 @@
             <option value="basico">Basico</option>
             <option value="gold">Gold</option>
         </select>
-
+      </div>
+      <div class="mb-3" id="card-inputs"  hidden> 
+        <label for="owner" class="form-label" >Nombre y apellido del titular</label>
+        <input type="text" class="form-control mb-3" id="owner" name="owner" required >
+        <label for="cardnumber"  class="form-label" >Numero de tarjeta</label>
+        <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3" id="cardnumber" name="cardnumber"  required>
+        <label for="cvv" class="form-label">Codigo de seguridad</label>
+        <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv"  required> 
+        <label for="expireddate" class="form-label">Fecha de vencimiento</label>
+        <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate" name="expireddate" required >
       </div>
       <button type="submit" class="btn btn-success w-100">Registrarse</button>
     </form>
   </div>
 </div>
+<!-- aca se realiza el despliegue para completar los campos de tarjeta en caso de que el usuario quiera el plan GOLD :D -->
 <script> 
-  console.log('asd');
+ const select = document.getElementById('plan');
+  const divinputs = document.getElementById('card-inputs');
+        select.addEventListener('change', () => {
+            let valor = select.value;
+            if(valor == 'gold') {
+                divinputs.hidden = false;
+            } else {
+                divinputs.hidden = true;
+            }
+    })
 </script>
