@@ -44,6 +44,10 @@ body {
     color:white;
 }
 
+.dropdown-item:focus, .dropdown-item:hover {
+    color: #1e2125 !important;
+}
+
 .dropdown-divider {
     border-top: 1px solid #5a5a5a;
 }

@@ -3,16 +3,16 @@
     <h3 class="px-4 py-2">Registro</h3>
     <div class="dropdown-divider"></div>
     <form href="/singup" method="POST" class="px-4 py-3">
-      {{#if errors}} 
-        <div class="mb-3">
-          <div class="alert alert-danger" role="alert">
-            <ul>
-              {{#each errors}}
-                <li>{{msg}}</li>
-              {{/each}}
-            </ul>
-          </div>
+      {{#if errors}}
+      <div class="mb-3">
+        <div class="alert alert-danger" role="alert">
+          <ul>
+            {{#each errors}}
+            <li>{{msg}}</li>
+            {{/each}}
+          </ul>
         </div>
+      </div>
       {{/if}}
       <div class="mb-3">
         <label for="name" class="form-label">Nombre</label>
@@ -45,34 +45,61 @@
       <div class="mb-3">
         <label for="plan" class="form-label">Plan</label>
         <select class="form-select" value="{{user.plan}}" id="plan" name="plan">
-            <option value="basico">Basico</option>
-            <option value="gold">Gold</option>
+          <option value="basico">Basico</option>
+          <option value="gold">Gold</option>
         </select>
       </div>
-      <div class="mb-3" id="card-inputs"  hidden> 
-        <label for="owner" class="form-label" >Nombre y apellido del titular</label>
-        <input type="text" class="form-control mb-3" id="owner" name="owner" required >
-        <label for="cardnumber"  class="form-label" >Numero de tarjeta</label>
-        <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3" id="cardnumber" name="cardnumber"  required>
-        <label for="cvv" class="form-label">Codigo de seguridad</label>
-        <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv"  required> 
-        <label for="expireddate" class="form-label">Fecha de vencimiento</label>
-        <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate" name="expireddate" required >
+
+      <div class="container mb-3">
+        <div class="card" id="card-inputs" hidden>
+          <h5 class="card-header bg-dark">Datos de la tarjeta</h5>
+          <div class="card-body bg-secondary">
+            <label for="owner" class="form-label">Nombre y apellido del titular</label>
+            <input type="text" class="form-control mb-3" id="owner" name="owner">
+
+            <label for="cardnumber" class="form-label">Numero de tarjeta</label>
+            <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3" id="cardnumber"
+              name="cardnumber">
+
+            <label for="cvv" class="form-label">Codigo de seguridad</label>
+            <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv">
+
+            <label for="expireddate" class="form-label">Fecha de vencimiento</label>
+            <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate" name="expireddate">
+          </div>
+        </div>
       </div>
       <button type="submit" class="btn btn-success w-100">Registrarse</button>
     </form>
   </div>
 </div>
 <!-- aca se realiza el despliegue para completar los campos de tarjeta en caso de que el usuario quiera el plan GOLD :D -->
-<script> 
- const select = document.getElementById('plan');
+<script>
+  const select = document.getElementById('plan');
   const divinputs = document.getElementById('card-inputs');
-        select.addEventListener('change', () => {
-            let valor = select.value;
-            if(valor == 'gold') {
-                divinputs.hidden = false;
-            } else {
-                divinputs.hidden = true;
-            }
-    })
+  const owner = document.getElementById('owner');
+  const cardnumber = document.getElementById('cardnumber');
+  const cvv = document.getElementById('cvv');
+  const expireddate = document.getElementById('expireddate');
+  select.addEventListener('change', () => {
+    let valor = select.value;
+    if (valor == 'gold') {
+      divinputs.hidden = false;
+      owner.required = true;
+      cardnumber.required = true;
+      cvv.required = true;
+      expireddate.required = true;
+    } else {
+      owner.value = '';
+      cardnumber.value = '';
+      cvv.value = '';
+      expireddate.value = '';
+
+      owner.required = false;
+      cardnumber.required = false;
+      cvv.required = false;
+      expireddate.required = false;
+      divinputs.hidden = true;
+    }
+  })
 </script>
