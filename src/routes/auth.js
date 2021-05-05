@@ -79,7 +79,7 @@ router.post('/signup',
             plan
         }
         if (plan == 'gold'){
-            const { owner, cardnumber, cvv, expireddate, } = req.body;
+            const { owner, cardnumber, cvv, expireddate } = req.body;
             userInfo.owner=owner;
             userInfo.cardnumber=cardnumber;
             userInfo.cvv=cvv;

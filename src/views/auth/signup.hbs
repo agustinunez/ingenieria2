@@ -44,12 +44,11 @@
       </div>
       <div class="mb-3">
         <label for="plan" class="form-label">Plan</label>
-        <select class="form-select" value="{{userInfo.plan}}" id="plan" name="plan">
-          <option value="basico">Basico</option>
-          <option value="gold">Gold</option>
+      <select class="form-select" id="plan" name="plan">
+          <option value="basico" {{selectedIfEqual userInfo.plan 'basico'}}>Basico</option>
+          <option value="gold" {{selectedIfEqual userInfo.plan 'gold'}}>Gold</option>
         </select>
       </div>
-
       <div class="container mb-3">
         <div class="card" id="card-inputs" hidden>
           <h5 class="card-header bg-dark">Datos de la tarjeta</h5>
@@ -81,7 +80,9 @@
   const cardnumber = document.getElementById('cardnumber');
   const cvv = document.getElementById('cvv');
   const expireddate = document.getElementById('expireddate');
-  select.addEventListener('change', () => {
+
+  const onChangeInputsAccount = () => {
+            
     let valor = select.value;
     if (valor == 'gold') {
       divinputs.hidden = false;
@@ -101,5 +102,12 @@
       expireddate.required = false;
       divinputs.hidden = true;
     }
+            
+    }
+
+  select.addEventListener('change', () => {
+    onChangeInputsAccount();
   })
+
+  onChangeInputsAccount();
 </script>
