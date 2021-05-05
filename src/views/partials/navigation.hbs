@@ -9,9 +9,9 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {{!-- <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Sobre Nosotros
-          </a>
+          </a> --}}
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" href="#">Acerca de</a></li>
             <li><a class="dropdown-item" href="#">.</a></li>
@@ -37,3 +37,13 @@
     </div>
   </div>
 </nav>
+{{#if success}}
+<div class="alert alert-success m-2 text-center" role="success">
+  {{success}}
+</div>
+{{/if}} 
+{{#if warning}}
+  <div class="alert alert-danger m-2 text-center" role="alert">
+    {{warning}}
+  </div>
+{{/if}}  

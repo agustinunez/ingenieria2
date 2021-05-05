@@ -6,13 +6,15 @@ const pool = require('../database');
 const { body, validationResult } = require('express-validator');
 const passport = require('passport');
 const helpers = require('../lib/helpers');
+const payform = require('payform');
+const { isLoggedIn } = require('../lib/auth');
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
-router.get('/login', (req, res) => {
+router.get('/login', isLoggedIn, (req, res) => {
     res.render('auth/login');
 })
 
-router.get('/signup', (req, res) => {
+router.get('/signup', isLoggedIn, (req, res) => {
     res.render('auth/signup');
 })
 
@@ -66,6 +68,46 @@ router.post('/signup',
         return true;
     }),
 
+    // Esto deberia estar despues de que me lleguen los datos
+    body('plan').custom((value,{req})=>{
+        if(value==='gold'){
+            if(req.body.owner==''){
+                throw new Error ('El campo "Nombre del titular" no puede estar vacio!')
+            }
+            return true
+        }
+        return true
+    }),
+    body('plan').custom((value,{req})=>{
+        if(value==='gold'){
+            if(!payform.validateCardNumber(req.body.cardnumber)){
+                throw new Error ('Numero de tarjeta invalido!')
+            }
+            return true
+        }
+        return true
+    }),
+    body('plan').custom((value,{req})=>{
+        if(value==='gold'){
+            if(!payform.validateCardCVC(req.body.cvv)){
+                throw new Error ('CVV invalido!')
+            }
+
+            return true
+        }
+        return true
+    }),
+    body('plan').custom((value,{req})=>{
+        if(value==='gold'){
+            const cardDate = payform.parseCardExpiry(req.body.expireddate);
+            if(!payform.validateCardExpiry(cardDate.month, cardDate.year)){
+                throw new Error ('Fecha de expiracion invalida!')
+            }
+            return true
+        }
+        return true
+    }),
+   
     async(req, res) => {
 
         const { name, lastname, birthdate, email, username, password, plan } = req.body;
@@ -78,6 +120,7 @@ router.post('/signup',
             password,
             plan
         }
+
         if (plan == 'gold'){
             const { owner, cardnumber, cvv, expireddate } = req.body;
             userInfo.owner=owner;
@@ -85,13 +128,15 @@ router.post('/signup',
             userInfo.cvv=cvv;
             userInfo.expireddate=expireddate;
         }
+
+
         const result = validationResult(req);
         const errors = result.errors;
         if (!result.isEmpty()) {
             return res.render('auth/signup', { userInfo, errors });
         }
         userInfo.password = await helpers.encryptPassword(userInfo.password);
-        userInfo.username = userInfo.username.toUpperCase();
+        userInfo.username = userInfo.username;
         console.log("ES ESTO DE ACA" , userInfo);
         await pool.query('INSERT INTO usuario SET ?', [userInfo]);
         userInfo = null;
