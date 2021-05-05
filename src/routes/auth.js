@@ -20,7 +20,7 @@ router.get('/signup', isLoggedIn, (req, res) => {
     res.render('auth/signup');
 })
 
-router.get('/admin', isLoggedIn, isAdmin, (req, res) => {
+router.get('/admin', isAdmin, (req, res) => {
     res.send('vista admin');
 })
 
