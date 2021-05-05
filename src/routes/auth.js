@@ -1,5 +1,4 @@
 // Constantes
-
 const express = require('express');
 const router = express.Router();
 const pool = require('../database');
@@ -7,7 +6,10 @@ const { body, validationResult } = require('express-validator');
 const passport = require('passport');
 const helpers = require('../lib/helpers');
 const payform = require('payform');
-const { isLoggedIn } = require('../lib/auth');
+const { isLoggedIn} = require('../lib/auth');
+const { ROLE } = require('../lib/roles');
+const { isAdmin } = require('../lib/auth');
+
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
 router.get('/login', isLoggedIn, (req, res) => {
@@ -16,6 +18,10 @@ router.get('/login', isLoggedIn, (req, res) => {
 
 router.get('/signup', isLoggedIn, (req, res) => {
     res.render('auth/signup');
+})
+
+router.get('/admin', isLoggedIn, isAdmin, (req, res) => {
+    res.send('vista admin');
 })
 
 router.post('/login', passport.authenticate('local.signin', {
@@ -45,14 +51,14 @@ router.post('/signup',
         return true;
     }),
     body('email').isEmail().withMessage('Formato de email invalido!'),
-    body('email').custom(async(value, { req }) => {
+    body('email').custom(async (value, { req }) => {
         const result = await pool.query('SELECT email FROM usuario WHERE email=?', [value]);
         if (result.length > 0) {
             throw new Error('El email ' + value + ' ya se encuentra en uso!');
         }
     }),
     body('username').notEmpty().withMessage('El campo "Nombre de usuario" no puede estar vacio!'),
-    body('username').custom(async(value) => {
+    body('username').custom(async (value) => {
         const result = await pool.query('SELECT username FROM usuario WHERE username=?', [value]);
         if (result.length > 0) {
             throw new Error('El nombre de usuario ' + value + ' ya se encuentra en uso!');
@@ -69,49 +75,49 @@ router.post('/signup',
     }),
 
     // Esto deberia estar despues de que me lleguen los datos
-    body('plan').custom((value,{req})=>{
-        if(value==='gold'){
-            if(req.body.owner==''){
-                throw new Error ('El campo "Nombre del titular" no puede estar vacio!')
+    body('plan').custom((value, { req }) => {
+        if (value === 'gold') {
+            if (req.body.owner == '') {
+                throw new Error('El campo "Nombre del titular" no puede estar vacio!')
             }
             return true
         }
         return true
     }),
-    body('plan').custom((value,{req})=>{
-        if(value==='gold'){
-            if(!payform.validateCardNumber(req.body.cardnumber)){
-                throw new Error ('Numero de tarjeta invalido!')
+    body('plan').custom((value, { req }) => {
+        if (value === 'gold') {
+            if (!payform.validateCardNumber(req.body.cardnumber)) {
+                throw new Error('Numero de tarjeta invalido!')
             }
             return true
         }
         return true
     }),
-    body('plan').custom((value,{req})=>{
-        if(value==='gold'){
-            if(!payform.validateCardCVC(req.body.cvv)){
-                throw new Error ('CVV invalido!')
+    body('plan').custom((value, { req }) => {
+        if (value === 'gold') {
+            if (!payform.validateCardCVC(req.body.cvv)) {
+                throw new Error('CVV invalido!')
             }
 
             return true
         }
         return true
     }),
-    body('plan').custom((value,{req})=>{
-        if(value==='gold'){
+    body('plan').custom((value, { req }) => {
+        if (value === 'gold') {
             const cardDate = payform.parseCardExpiry(req.body.expireddate);
-            if(!payform.validateCardExpiry(cardDate.month, cardDate.year)){
-                throw new Error ('Fecha de expiracion invalida!')
+            if (!payform.validateCardExpiry(cardDate.month, cardDate.year)) {
+                throw new Error('Fecha de expiracion invalida!')
             }
             return true
         }
         return true
     }),
-   
-    async(req, res) => {
+
+    async (req, res) => {
 
         const { name, lastname, birthdate, email, username, password, plan } = req.body;
-        let userInfo = {
+        userInfo = {
             name,
             lastname,
             birthdate,
@@ -121,12 +127,12 @@ router.post('/signup',
             plan
         }
 
-        if (plan == 'gold'){
+        if (plan == 'gold') {
             const { owner, cardnumber, cvv, expireddate } = req.body;
-            userInfo.owner=owner;
-            userInfo.cardnumber=cardnumber;
-            userInfo.cvv=cvv;
-            userInfo.expireddate=expireddate;
+            userInfo.owner = owner;
+            userInfo.cardnumber = cardnumber;
+            userInfo.cvv = cvv;
+            userInfo.expireddate = expireddate;
         }
 
 
@@ -137,23 +143,23 @@ router.post('/signup',
         }
         userInfo.password = await helpers.encryptPassword(userInfo.password);
         userInfo.username = userInfo.username;
-        console.log("ES ESTO DE ACA" , userInfo);
-        await pool.query('INSERT INTO usuario SET ?', [userInfo]);
-        userInfo = null;
-        req.flash('success','Se ha realizado el registro exitosamente!')
+        const row = await pool.query('INSERT INTO usuario SET ?', [userInfo]);
+        const autoridad = {
+            rol: ROLE.COMUN,
+            id_usuario: row.insertId
+        };
+        await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
+        //row.insertId
+        req.flash('success', 'Se ha realizado el registro exitosamente!')
         res.redirect('/login');
     })
 
-    
-    router.get('/logout', (req, res) => {
-        req.logOut();
-        req.flash('success','Se ha cerrado sesion con exito!');     
-        res.redirect('/login');
-    })
 
-
-
-
+router.get('/logout', (req, res) => {
+    req.logOut();
+    req.flash('success', 'Se ha cerrado sesion con exito!');
+    res.redirect('/login');
+})
 // Aca exporto el enrutador
 
 module.exports = router;
