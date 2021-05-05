@@ -23,13 +23,23 @@ app.engine('.hbs', exphbs({
     partialsDir: path.join(app.get('views'), 'partials'),
     extname: '.hbs',
     helpers: {
-        selectedIfEqual: function(val1, val2) {
+        selectedIfEqual: function (val1, val2) {
             if (val1 === val2) {
                 return "selected"
             } else {
                 return ""
             }
+        },
+        isRole: function (val1, val2) {
+            if (val1 == val2) {
+                console.log("aca entrea")
+                return true
+            } else {
+                console.log("FALSO")
+                return false
+            }
         }
+
     }
 }))
 app.set('view engine', '.hbs');
@@ -50,14 +60,13 @@ app.use(flash());
 
 //Variables globales
 
-app.use (async (req, res, next) => {
+app.use(async (req, res, next) => {
     app.locals.warning = req.flash("warning");
     app.locals.success = req.flash("success");
     app.locals.user = req.user;
-    if (req.isAuthenticated()) {
-        app.locals.userRol = await pool.query('SELECT * FROM autoridad WHERE id_usuario=?', [req.user.id_usuario]);
-        app.locals.result = app.locals.userRol[0].rol
-    }
+    app.locals.role = req.isAuthenticated()
+        ? (await pool.query("SELECT * FROM autoridad WHERE id_usuario = ?", [req.user.id_usuario]))[0].rol
+        : undefined;
     next();
 });
 

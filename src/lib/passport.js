@@ -6,11 +6,11 @@ const helpers = require('./helpers');
 passport.use(
     "local.signin",
     new LocalStrategy({
-            usernameField: "username",
-            passwordField: "password",
-            passReqToCallback: true,
-        },
-        async(req, username, password, done) => {
+        usernameField: "username",
+        passwordField: "password",
+        passReqToCallback: true,
+    },
+        async (req, username, password, done) => {
             const rows = await pool.query("SELECT * FROM usuario WHERE username = ?", [
                 username
             ]);
@@ -40,7 +40,7 @@ passport.serializeUser((user, done) => {
     done(null, user.id_usuario);
 });
 
-passport.deserializeUser(async(id, done) => {
+passport.deserializeUser(async (id, done) => {
     const rows = await pool.query("SELECT * FROM usuario WHERE id_usuario = ?", [id]);
     done(null, rows[0]);
 });
