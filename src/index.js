@@ -6,6 +6,7 @@ const exphbs = require('express-handlebars');
 const flash = require('connect-flash');
 const path = require('path');
 const passport = require('passport');
+const pool = require('./database');
 
 //Inicializar
 
@@ -49,10 +50,14 @@ app.use(flash());
 
 //Variables globales
 
-app.use((req, res, next) => {
+app.use (async (req, res, next) => {
     app.locals.warning = req.flash("warning");
     app.locals.success = req.flash("success");
     app.locals.user = req.user;
+    if (req.isAuthenticated()) {
+        app.locals.userRol = await pool.query('SELECT * FROM autoridad WHERE id_usuario=?', [req.user.id_usuario]);
+        app.locals.result = app.locals.userRol[0].rol
+    }
     next();
 });
 

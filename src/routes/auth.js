@@ -20,10 +20,6 @@ router.get('/signup', isLoggedIn, (req, res) => {
     res.render('auth/signup');
 })
 
-router.get('/admin', isAdmin, (req, res) => {
-    res.send('vista admin');
-})
-
 router.post('/login', passport.authenticate('local.signin', {
     successRedirect: '/',
     failureRedirect: '/login',
