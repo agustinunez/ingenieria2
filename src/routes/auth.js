@@ -69,7 +69,7 @@ router.post('/signup',
     async(req, res) => {
 
         const { name, lastname, birthdate, email, username, password, plan } = req.body;
-        let user = {
+        let userInfo = {
             name,
             lastname,
             birthdate,
@@ -78,19 +78,28 @@ router.post('/signup',
             password,
             plan
         }
+        if (plan == 'gold'){
+            const { owner, cardnumber, cvv, expireddate, } = req.body;
+            userInfo.owner=owner;
+            userInfo.cardnumber=cardnumber;
+            userInfo.cvv=cvv;
+            userInfo.expireddate=expireddate;
+        }
         const result = validationResult(req);
         const errors = result.errors;
         if (!result.isEmpty()) {
-            return res.render('auth/signup', { user, errors });
+            return res.render('auth/signup', { userInfo, errors });
         }
-        user.password = await helpers.encryptPassword(user.password);
-        user.username = user.username.toUpperCase();
-        await pool.query('INSERT INTO usuario SET ?', [user]);
-        user = null;
+        userInfo.password = await helpers.encryptPassword(userInfo.password);
+        userInfo.username = userInfo.username.toUpperCase();
+        console.log("ES ESTO DE ACA" , userInfo);
+        await pool.query('INSERT INTO usuario SET ?', [userInfo]);
+        userInfo = null;
         req.flash('success','Se ha realizado el registro exitosamente!')
         res.redirect('/login');
     })
 
+    
     router.get('/logout', (req, res) => {
         req.logOut();
         req.flash('success','Se ha cerrado sesion con exito!');     
