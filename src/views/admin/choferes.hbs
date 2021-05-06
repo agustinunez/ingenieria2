@@ -25,19 +25,35 @@
         </tbody>
     </table>
 </div> --}}
-<table id="table" data-ajax="ajaxRequest">
+<table id="table" data-search="true" data-toggle="table"> <!--aca esta la tabla :D--> <!--NO ACEPTO PREGUNTAS -->
     <thead>
         <tr>
             <th data-field="id_usuario">ID</th>
-            <th data-field="email">Email</th>
+            <th data-field="email" data-sortable="true">
+                Correo Electronico
+            </th>
+            <th data-field="email" data-sortable="true">
+                acciones
+            </th>
         </tr>
     </thead>
 </table>
 <script>
-
-
-    function prueba() {
+    $(document).ready(function () {
+        console.log('lleganding');
         $table = $('#table');
-        $('#table').bootstrapTable('load', []);
-    }
+        $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:3000/admin/choferJSON',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                console.log(data,"holaaaaaaaaaaa");
+                $('#table').bootstrapTable('load', data);
+            }, error: function () {
+                alert('Error conexion con el servidor');
+            }
+        });
+        });
 </script>
