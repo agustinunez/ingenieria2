@@ -32,10 +32,8 @@ app.engine('.hbs', exphbs({
         },
         isRole: function (val1, val2) {
             if (val1 == val2) {
-                console.log("aca entrea")
                 return true
             } else {
-                console.log("FALSO")
                 return false
             }
         }
@@ -75,7 +73,7 @@ app.use(async (req, res, next) => {
 //Routes
 
 app.use(require('./routes/home'));
-app.use('/links', require('./routes/links'));
+app.use('/admin', require('./routes/links-admin'));
 app.use(require('./routes/auth'));
 
 //Public
