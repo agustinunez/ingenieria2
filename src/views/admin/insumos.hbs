@@ -4,19 +4,18 @@
             data-buttons="buttons" data-buttons-class="success">
             <!--aca esta la tabla :D-->
             <thead>
-                <tr>
-                    <th data-field="id_usuario">ID</th>
+                <tr class='No matchea'>
+                    <th data-field="id_combi">
+                        ID
+                    </th>
                     <th data-field="name" data-sortable="true">
                         Nombre
                     </th>
-                    <th data-field="lastname" data-sortable="true">
-                        Apellido
+                    <th data-field="precio" data-sortable="true">
+                        Precio
                     </th>
-                    <th data-field="username" data-sortable="true">
-                        Nombre de usuario
-                    </th>
-                    <th data-field="email" data-sortable="true">
-                        Correo Electronico
+                    <th data-field="cantidad" data-sortable="true">
+                        Cantidad
                     </th>
                     <th data-field="id" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
                     <th data-field="id" data-formatter="LinkFormatterView"><i class="fas fa-user-times"></i></th>
@@ -27,21 +26,25 @@
 </strong>
 
 <script>
-    $(document).ready(function () {
+      $(document).ready(function () {
         $table = $('#table');
         $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
         $.ajax({
             type: 'GET',
+            // No va el choferJSON, deberia ir insumosJSON
             url: 'http://localhost:3000/admin/choferJSON',
             data: {},
             dataType: 'json',
             success: function (data) {
                 $('#table').bootstrapTable('load', data);
-            }, error: function () {
+           }, error: function () {
                 alert('Error conexion con el servidor');
-            }
+           }
         });
-    });
+    }); 
+
+
+    
     // El value aca no hace nada, nos lo paso Gonza y aca iba lo que hacia cuando tocaban el boton. Ejemplo:
     //function LinkFormatterEdit(value) {
     //return "<a href='/centros/editar/" + value + "' ><button class='btn btn-warning'>Editar</button></a> ";
