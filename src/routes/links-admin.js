@@ -44,8 +44,8 @@ router.get('/combis', async(req, res) => {
 //     res.send(aux);
 // });
 
-router.get('/viaje', async(req, res) => { 
-    res.render('admin/viaje');
+router.get('/viajes', async(req, res) => { 
+    res.render('admin/viajes');
 });
 
 // router.get('/viajeJSON', async(req, res) => {

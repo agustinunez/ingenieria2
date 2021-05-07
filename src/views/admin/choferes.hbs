@@ -1,8 +1,12 @@
 <div class="conteiner mx-3">
     <strong>
+
         <table class="table table-dark table-borderless" id="table" data-search="true" data-toggle="table"
-            data-buttons="buttons" data-buttons-class="success">
-            <!--aca esta la tabla :D-->
+            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true"
+
+            <!-- aca esta la tabla -->
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Agregar
+                chofer</button>
             <thead>
                 <tr>
                     <th data-field="id_usuario">ID</th>
@@ -18,13 +22,50 @@
                     <th data-field="email" data-sortable="true">
                         Correo Electronico
                     </th>
-                    <th data-field="id" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
-                    <th data-field="id" data-formatter="LinkFormatterView"><i class="fas fa-user-times"></i></th>
+                    <th data-field="id_usuario" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
+                    <th data-field="id_usuario" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i>
+                    </th>
                 </tr>
             </thead>
         </table>
 </div>
 </strong>
+
+{{!-- ACA VA EL MODAL CUANDO SE APRIETA EL BOTON DE AGREGAR CHOFER --}}
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Apellido:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Email:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">DNI:</label>
+                        <input class="form-control" id="recipient-number"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     $(document).ready(function () {
@@ -42,23 +83,25 @@
             }
         });
     });
-    // El value aca no hace nada, nos lo paso Gonza y aca iba lo que hacia cuando tocaban el boton. Ejemplo:
-    //function LinkFormatterEdit(value) {
-    //return "<a href='/centros/editar/" + value + "' ><button class='btn btn-warning'>Editar</button></a> ";
-    // }
     function LinkFormatterEdit(value) {
-        return "<a href='#' ><button class='btn btn-primary' >Editar</button></a> ";
+        return "<a href='/admin/chofer/editar/" + value + "' ><button class='btn btn-primary'>Editar</button></a> ";
     }
-    function LinkFormatterView(value) {
-        return "<a href='#'><button class='btn btn-danger'>Borrar</button></a> ";
+    function LinkFormatterDelete(value) {
+        return "<a href='/admin/chofer/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
     function buttons() {
         return {
             btnAdd: {
-                text: 'Add new row',
+                text: 'Agregar chofer',
                 icon: 'fa fa-user-plus',
-                event: function () {
-                    alert('TIENE QUE HACER ALGO PARA AGREGARLO')
+                event: {
+                    click: () => {
+
+
+
+                     
+
+                    }
                 },
                 attributes: {
                     title: 'Agregar un nuevo chofer',
@@ -66,4 +109,22 @@
             }
         }
     }
+    var exampleModal = document.getElementById('exampleModal')
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = event.relatedTarget
+        // Extract info from data-bs-* attributes
+
+        // var recipient = button.getAttribute('data-bs-whatever')
+
+        // If necessary, you could initiate an AJAX request here
+        // and then do the updating in a callback.
+        //
+        // Update the modal's content.
+        var modalTitle = exampleModal.querySelector('.modal-title')
+        var modalBodyInput = exampleModal.querySelector('.modal-body input')
+
+        modalTitle.textContent = 'Chofer a agregar'
+        //modalBodyInput.value = recipient
+    })
 </script>

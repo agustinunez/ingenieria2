@@ -76,3 +76,7 @@ body {
     border-width: 3px;
     text-align: center;
 }
+.modal-content{
+    background-color: #212529;
+    color:#efe6e6
+}
