@@ -35,6 +35,10 @@ router.get('/lugaresJSON', isAdmin, async(req, res) => {
     res.send(aux);
 });
 
+// router.get('/lugar/editar/' + value, async (req,res) => {
+//     const edit = await pool.query("");
+// })
+
 router.get('/combis', isAdmin, async(req, res) => { 
     res.render('admin/combis');
 });
