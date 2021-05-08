@@ -8,8 +8,6 @@ const helpers = require('../lib/helpers');
 const payform = require('payform');
 const { isLoggedIn} = require('../lib/auth');
 const { ROLE } = require('../lib/roles');
-const { isAdmin } = require('../lib/auth');
-
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
 router.get('/login', isLoggedIn, (req, res) => {

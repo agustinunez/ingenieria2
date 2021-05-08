@@ -80,3 +80,12 @@ body {
     background-color: #212529;
     color:#efe6e6
 }
+
+.container_tablas .fixed-table-pagination {
+    color: white;
+}
+
+.container_tablas .fixed-table-pagination button {
+    background-color: #212529;
+    border-color: #212529;
+}
