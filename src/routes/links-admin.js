@@ -58,7 +58,8 @@ router.post("/insumos", isAdmin, async (req, res) => {
       if (blankNombre || blankPrecio || blankCantidad) {
         req.flash("warning", "Ningun campo del insumo puede estar vacio!");
       } else {
-        await pool.query("INSERT INTO insumo (nombre,precio,cantidad) VALUES (?,?,?)", [nombre,precio,cantidad]);
+        const nombreMayuscula = nombre.toUpperCase();
+        await pool.query("INSERT INTO insumo (nombre,precio,cantidad) VALUES (?,?,?)", [nombreMayuscula,precio,cantidad]);
         req.flash("success", "Se ha agregado el insumo exitosamente!");
       }
     } else {
