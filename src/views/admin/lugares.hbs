@@ -28,17 +28,20 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm">
+                <form id="modalForm" href="/lugares" method="POST">
                     <div class="mb-3">
+                        <input type="number" id="recipient-id" name="id" hidden>
+
                         <label for="recipient-name" class="col-form-label">Nombre:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <input type="text" class="form-control" id="recipient-name" name="nombre">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success" id="guardarButton">Agregar</button>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success">Agregar</button>
-            </div>
+
         </div>
     </div>
 </div>
@@ -58,17 +61,41 @@
                 alert('Error conexion con el servidor');
             }
         });
-        //$('#boton_editar').click(function(){
-        //    console.log('asdasd');
-        //    $('#id_lugar').value = value;
-        //    $('#recipient-name').value = recipient-name;
-        //    $('#exampleModal').modal('show');
-        //    $('#modalForm').trigger("reset");
-        //})
     });
-    function LinkFormatterEdit(value) {
-        return "<a href='/admin/lugar/editar/" + value + "' ><button class='btn btn-primary' id='boton_editar'>Editar</button></a> ";
+    function LinkFormatterEdit(value, row) {
+        return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
+            "data-toggle='modal' data-target='#exampleModal'" +
+            "data-id_lugar='" + row.id_lugar + "'" +
+            "data-nombre='" + row.nombre + "'>" +
+            "Editar" +
+            "</button>"
+        //return "<a href='/admin/lugar/editar/" + value + "' ><button class='btn btn-primary' id='boton_editar'>Editar</button></a> ";
     }
+    $(document).on("click", '.edit_button', function () {
+        var nombre = $(this).data('nombre');
+        var id = $(this).data('id_lugar');
+
+        $("#recipient-name").val(nombre);
+        $("#recipient-id").val(id);
+        $('#exampleModal').modal('show')
+
+        const nombre2 = document.getElementById("recipient-name").value;
+        const personalButton = document.getElementById("guardarButton");
+
+        const onChangeInputsPersonal = () => {
+            let nombreBoolean = (document.getElementById("recipient-name").value).toUpperCase() == nombre2;
+
+            (nombreBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+
+        }
+
+        document.getElementById("recipient-name").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        })
+
+        onChangeInputsPersonal();
+
+    });
     function LinkFormatterDelete(value) {
         return "<a href='/admin/lugar/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }

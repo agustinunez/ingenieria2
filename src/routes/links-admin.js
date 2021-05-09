@@ -30,6 +30,19 @@ router.get('/lugares', isAdmin, async(req, res) => {
     res.render('admin/lugares');
 });
 
+router.post('/lugares', async(req, res) => { 
+    let {id, nombre} = req.body;
+    nombre = nombre.toUpperCase();
+    const row = await pool.query("SELECT nombre FROM lugar WHERE nombre=?", [nombre]);
+    if (row.length > 0) {
+        req.flash('warning', 'Lo siento, el lugar '+nombre+' ya existe!');
+    } else {
+        await pool.query("UPDATE lugar SET nombre=? WHERE id_lugar=?", [nombre, id]);
+        req.flash('success', 'Se ha modificado el lugar exitosamente!');
+    }
+    res.redirect('/admin/lugares');
+});
+
 router.get('/lugaresJSON', isAdmin, async(req, res) => {
     const aux = await pool.query("SELECT * FROM lugar ORDER BY id_lugar");
     res.send(aux);
