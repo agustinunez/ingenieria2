@@ -11,17 +11,18 @@
                     <th data-field="nombre" data-sortable="true">
                         Nombre
                     </th>
-                    <th data-field="operaciones" data-formatter="operacionesFormatter" data-events="operacionesEvents">
-                        Operaciones</th>
-                    <th data-field="id_lugar" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
-                    <th data-field="id_lugar" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i>
+                    <th data-field="operaciones" data-formatter="operacionesFormatter" data-events="operacionesEvents"><!-- Tuvimos q poner todo en ua sola fila porq es coimno esta en boostrap table en la docuentacion aparecia asi -->
+                        Operaciones</th>-->
+                    <!--<th data-field="id_lugar" data-formatter="LinkFormatterEdit" data-events="operacionesEvents"><i
+                            class="fas fa-user-edit"></i></th>
+                    <th data-field="id_lugar" data-formatter="LinkFormatterDelete" data-events="operacionesEvents"><i
+                            class="fas fa-user-times"></i>-->
                     </th>
                 </tr>
             </thead>
         </table>
 </div>
 </strong>
-
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -48,25 +49,6 @@
 <script>
     $(document).ready(function () {
         $table = $('#table');
-        function operacionesFormatter(value, row, index) {
-            return [
-                '<a class="like" href="javascript:void(0)" title="Like">',
-                "<button class='btn btn-primary' id='boton_editar'>Editar</button>",
-                '</a>  ',
-                '<a class="remove" href="javascript:void(0)" title="Remove">',
-                "<button class='btn btn-primary' id='boton_editar'>Editar</button>",
-                '</a>'
-            ].join('')
-        }
-        window.operacionesEvents = {
-            'click .like': function (e, value, row, index) {
-                alert('Hiciste Click en Like')
-            },
-            'click .remove': function (e, value, row, index) {
-                alert('Hiciste Click en Remove')
-            }
-        }
-        
         $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
         $.ajax({
             type: 'GET',
@@ -79,25 +61,21 @@
                 alert('Error conexion con el servidor');
             }
         });
-        //$('#boton_editar').click(function(){
-        //    console.log('asdasd');
-        //    $('#id_lugar').value = value;
-        //    $('#recipient-name').value = recipient-name;
-        //    $('#exampleModal').modal('show');
-        //    $('#modalForm').trigger("reset");
-        //})
-        
-
-
-
     });
     function LinkFormatterEdit(value) {
-        console.log('pepito papito putito');
-        return "<button class='btn btn-primary' id='boton_editar'>Editar</button>"
-        //return "<a href='/admin/lugar/editar/" + value + "' >< button class='btn btn-primary' id='boton_editar'>Editar</button></a> ";
+        return [
+            '<a class="editar" href="javascript:void(0)" title="Editar">',
+            '<button type="button" class="btn btn-success">Editar</button>',
+            '</a>'
+        ].join('')
     }
+    //href='/admin/lugar/eliminar/
     function LinkFormatterDelete(value) {
-        return "<a href='/admin/lugar/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
+        return [
+            '<a class="remove" href="javascript:void(0)" title="Remover">',
+            '<button type="button" class="btn btn-danger">Eliminar</button>',
+            '</a>'
+        ].join('')
     }
     function buttons() {
         return {
@@ -114,6 +92,28 @@
                     title: 'Agregar un nuevo lugar',
                 }
             }
+        }
+    }
+    function operacionesFormatter(value, row, index) {
+        return [
+            '<a class="editar" href="javascript:void(0)" title="Like">',
+            '<button type="button" class="btn btn-primary mx-2">Editar</button>',
+            '</a>',
+            '<a class="remove" href="javascript:void(0)" title="Remove">',
+            '<button type="button" class="btn btn-danger">Eliminar</button>',
+            '</a>'
+        ].join('')
+    }
+    window.operacionesEvents = {
+        'click .editar': function (e, value, row, index) {
+            $('#id_lugar').value = value;
+            console.log(row.nombre)
+            $('#recipient-name').val(row.nombre);
+            $('#exampleModal').modal('show');
+            $('#modalForm').trigger("reset");
+        },
+        'click .remove': function (e, value, row, index) {
+            alert('Hiciste Click en Remove')
         }
     }
 </script>
