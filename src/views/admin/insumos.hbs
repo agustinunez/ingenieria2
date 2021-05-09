@@ -1,14 +1,15 @@
 <div class="conteiner mx-3">
     <strong>
         <table class="table table-dark table-borderless" id="table" data-search="true" data-toggle="table"
-            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true">
-            <!--aca esta la tabla :D-->
+            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-locale="es-AR"
+            data-pagination="true">
+
             <thead>
-                <tr class='No matchea'>
-                    <th data-field="id_combi">
+                <tr class="">
+                    <th data-field="id_insumo">
                         ID
                     </th>
-                    <th data-field="name" data-sortable="true">
+                    <th data-field="nombre" data-sortable="true">
                         Nombre
                     </th>
                     <th data-field="precio" data-sortable="true">
@@ -17,54 +18,136 @@
                     <th data-field="cantidad" data-sortable="true">
                         Cantidad
                     </th>
-                    <th data-field="id" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
-                    <th data-field="id" data-formatter="LinkFormatterView"><i class="fas fa-user-times"></i></th>
+                    <th data-field="id_insumo" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
+                    <th data-field="id_insumo" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i>
+                    </th>
                 </tr>
             </thead>
         </table>
 </div>
 </strong>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="modalForm" href="/insumos" method="POST">
+                    <div class="mb-3">
+                        <input type="number" id="recipient-id" name="id" hidden>
 
+                        <label for="recipient-name" class="col-form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="recipient-name" name="nombre">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-precio" class="col-form-label">Precio:</label>
+                        <input type="text" class="form-control" id="recipient-precio" name="precio">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-cantidad" class="col-form-label">Cantidad:</label>
+                        <input type="text" class="form-control" id="recipient-cantidad" name="cantidad">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-      $(document).ready(function () {
+    $(document).ready(function () {
         $table = $('#table');
         $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
         $.ajax({
             type: 'GET',
             // No va el choferJSON, deberia ir insumosJSON
-            url: 'http://localhost:3000/admin/choferJSON',
+            url: 'http://localhost:3000/admin/insumosJSON',
             data: {},
             dataType: 'json',
             success: function (data) {
                 $('#table').bootstrapTable('load', data);
-           }, error: function () {
+            }, error: function () {
                 alert('Error conexion con el servidor');
-           }
+            }
         });
-    }); 
+    });
+
+    // BOTON EDITAR
+    function LinkFormatterEdit(value, row) {
+        return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
+            "data-toggle='modal' data-target='#exampleModal'" +
+            "data-id_insumo='" + row.id_insumo + "'" +
+            "data-nombre='" + row.nombre + "'" +
+            "data-precio='" + row.precio + "'" +
+            "data-cantidad='" + row.cantidad + "'>" +
+            "Editar" +
+            "</button>"
+    }
+    $(document).on("click", '.edit_button', function () {
+        var nombre = $(this).data('nombre');
+        var precio = $(this).data('precio');
+        var cantidad = $(this).data('cantidad');
+        var id = $(this).data('id_insumo');
 
 
-    
-    // El value aca no hace nada, nos lo paso Gonza y aca iba lo que hacia cuando tocaban el boton. Ejemplo:
-    //function LinkFormatterEdit(value) {
-    //return "<a href='/centros/editar/" + value + "' ><button class='btn btn-warning'>Editar</button></a> ";
-    // }
-    function LinkFormatterEdit(value) {
-        return "<a href='#' ><button class='btn btn-primary' >Editar</button></a> ";
+        $('#exampleModalLabel').text('Editar insumo');
+        $("#recipient-name").val(nombre);
+        $("#recipient-precio").val(precio);
+        $("#recipient-cantidad").val(cantidad);
+        $("#recipient-id").val(id);
+        $('#exampleModal').modal('show')
+
+        const nombre2 = document.getElementById("recipient-name").value;
+        const precio2 = document.getElementById("recipient-precio").value;
+        const cantidad2 = document.getElementById("recipient-cantidad").value;
+        const personalButton = document.getElementById("guardarButton");
+
+        const onChangeInputsPersonal = () => {
+            let nombreBoolean = (document.getElementById("recipient-name").value).toUpperCase() == nombre2;
+            let precioBoolean = document.getElementById("recipient-precio").value == precio2;
+            let cantidadBoolean = document.getElementById("recipient-cantidad").value == cantidad2;
+            (nombreBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+            /*if(nombreBoolean && precioBoolean && cantidadBoolean){
+                personalButton.disabled = true;
+            }else{
+                personalButton.disabled = false;
+            }*/
+
+        }
+
+        document.getElementById("recipient-name").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        })
+
+        onChangeInputsPersonal();
+
+    });
+
+
+
+    function LinkFormatterDelete(value) {
+        return "<a href='/admin/insumos/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
-    function LinkFormatterView(value) {
-        return "<a href='#'><button class='btn btn-danger'>Borrar</button></a> ";
-    }
+
     function buttons() {
         return {
             btnAdd: {
                 text: 'Agregar insumo',
                 icon: 'fa fa-user-plus',
-                event: function () {
-                    alert('TIENE QUE HACER ALGO PARA AGREGARLO')
+                event: {
+                    click: () => {
+                        $('#exampleModalLabel').text('Agregar un nuevo insumo');
+                        $('#exampleModal').modal('show');
+                        $('#modalForm').trigger("reset");
+                    }
                 },
                 attributes: {
-                    title: 'Agregar un nuevo chofer',
+                    title: 'Agregar un nuevo insumo',
                 }
             }
         }

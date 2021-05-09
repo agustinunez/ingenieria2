@@ -37,7 +37,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success" id="guardarButton">Agregar</button>
+                        <button type="submit" class="btn btn-success" id="guardarButton"></button>
                     </div>
                 </form>
             </div>
@@ -69,7 +69,6 @@
             "data-nombre='" + row.nombre + "'>" +
             "Editar" +
             "</button>"
-        //return "<a href='/admin/lugar/editar/" + value + "' ><button class='btn btn-primary' id='boton_editar'>Editar</button></a> ";
     }
     $(document).on("click", '.edit_button', function () {
         var nombre = $(this).data('nombre');
@@ -78,6 +77,7 @@
         $("#recipient-name").val(nombre);
         $("#recipient-id").val(id);
         $('#exampleModal').modal('show')
+        $('#guardarButton').text('Guardar');
 
         const nombre2 = document.getElementById("recipient-name").value;
         const personalButton = document.getElementById("guardarButton");
@@ -107,6 +107,7 @@
                 event: {
                     click: () => {
                         $('#exampleModalLabel').text('Agregar un nuevo lugar');
+                        $('#guardarButton').text('Agregar');
                         $('#exampleModal').modal('show');
                         $('#modalForm').trigger("reset");
                     }
