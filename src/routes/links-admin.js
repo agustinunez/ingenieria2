@@ -42,6 +42,22 @@ router.post('/lugares', async(req, res) => {
     }
     res.redirect('/admin/lugares');
 });
+router.get('/lugares/eliminar/:id', async (req,res) => {
+    const { id } = req.params;
+    const result = await pool.query("SELECT nombre FROM lugar WHERE id_lugar=?",[id]);
+    const row_ruta = await pool.query("SELECT * FROM ruta WHERE origen=? OR destino=?", [id,id]);
+    if (row_ruta.length > 0){
+        req.flash('warning', 'El lugar '+ result[0].nombre +' no se puede eliminar ya que el mismo pertenece a una ruta.');
+    }else{
+    const row = await pool.query("DELETE FROM lugar WHERE id_lugar=?", [id]);
+    if (row.affectedRows == 1){
+        req.flash('success', 'Se ha borrado el lugar exitosamente!');
+    }else{
+        req.flash('warning', 'El numero de id '+id+' no existe!');
+    }
+}
+    res.redirect('/admin/lugares');
+});
 
 router.get('/lugaresJSON', isAdmin, async(req, res) => {
     const aux = await pool.query("SELECT * FROM lugar ORDER BY id_lugar");
