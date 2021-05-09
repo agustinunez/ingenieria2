@@ -24,7 +24,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Agregar nuevo lugar</h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
@@ -74,7 +74,7 @@
     $(document).on("click", '.edit_button', function () {
         var nombre = $(this).data('nombre');
         var id = $(this).data('id_lugar');
-
+        $('#exampleModalLabel').text('Editar lugar');
         $("#recipient-name").val(nombre);
         $("#recipient-id").val(id);
         $('#exampleModal').modal('show')
@@ -106,7 +106,8 @@
                 icon: 'fa fa-user-plus',
                 event: {
                     click: () => {
-                        $('#exampleModal').modal('show')
+                        $('#exampleModalLabel').text('Agregar un nuevo lugar');
+                        $('#exampleModal').modal('show');
                         $('#modalForm').trigger("reset");
                     }
                 },

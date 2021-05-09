@@ -1,7 +1,8 @@
 <div class="mx-3 container_tablas">
     <strong>
         <table class="table table-dark table-borderless" id="table" data-search="true" data-toggle="table"
-            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-pagination="true" data-locale="es-AR">
+            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-pagination="true"
+            data-locale="es-AR">
             <thead>
                 <tr>
                     <th data-field="id_ruta">ID</th>
@@ -24,18 +25,33 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Agregar nueva ruta</h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
                 <form id="modalForm">
                     <div class="mb-3">
-                        <label for="recipient-origen" class="col-form-label">Origen:</label>
-                        <input type="text" class="form-control" id="recipient-origen">
+                        <label for="origen">Seleccione un origen</label>
+                        <input list="origenes" name="origen" id="origen" class="form-select">
+                        <datalist id="origenes">
+                            {{#each lugares}}
+                                <option value="{{nombre}}" >{{nombre}}</option>
+                            {{/each}}
+                        </datalist>
+
                     </div>
                     <div class="mb-3">
-                        <label for="recipient-destino" class="col-form-label">Destino:</label>
-                        <input type="text" class="form-control" id="recipient-destino">
+                        <label for="destino">Seleccione un destino</label>
+                        <input list="destinos" name="destino" id="destino" class="form-select">
+                        <datalist id="destinos">
+                            {{#each lugares}}
+                                <option value="{{nombre}}">{{nombre}}</option>
+                            {{/each}}
+                        </datalist>
+                    </div>
+                    <div class="mb-3">
+                    </div>
+                    <div class="mb-3">
                     </div>
                 </form>
             </div>
@@ -63,19 +79,68 @@
             }
         });
     });
-    function LinkFormatterEdit(value) {
-        return "<a href='/admin/ruta/editar/" + value + "' ><button class='btn btn-primary'>Editar</button></a> ";
+    function LinkFormatterEdit(value, row) {
+        return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
+            "data-toggle='modal' data-target='#exampleModal'" +
+            "data-id_ruta='" + row.id_ruta + "'" +
+            "data-origen='" + row.origen + "'" +
+            "data-destino=" + row.destino + "'>" +
+            "Editar" +
+            "</button>"
+        //return "<a href='/admin/ruta/editar/" + value + "' ><button class='btn btn-primary'>Editar</button></a> ";
     }
+    /*$(document).on("click", '.edit_button', function () {
+        var origen = $(this).data('origen');
+        var destino = $(this).data('destino');
+        var id = $(this).data('id_ruta');
+
+        $("#recipient-origen").val(origen);
+        $("#recipient-destino").val(destino);
+        $("#recipient-id").val(id);
+        $('#exampleModal').modal('show');
+
+        const unOrigen = document.getElementById("recipient-origen").value;
+        const unDestino = document.getElementById("recipient-destino").value;
+        
+        const personalButton = document.getElementById("guardarButton");
+
+        const onChangeInputsPersonal = () => {
+            let nombreOrigenBoolean = document.getElementById("recipient-origen").value == unOrigen;
+            let nombreDestinoBoolean = document.getElementById("recipient-destino").value == unDestino;
+
+            (nombreOrigenBoolean && nombreDestinoBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+
+        }
+
+        document.getElementById("recipient-origen").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("recipient-destino").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        })
+
+        onChangeInputsPersonal();
+
+    }); */
+    
     function LinkFormatterDelete(value) {
         return "<a href='/admin/ruta/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
+
+
+    // BOTON DE AGREGAR
     function buttons() {
         return {
             btnAdd: {
+                id: 'add_button',
                 text: 'Agregar ruta',
                 icon: 'fa fa-user-plus',
                 event: {
                     click: () => {
+
+
+
+                        $('#exampleModalLabel').text('Agregar una nueva ruta');
                         $('#exampleModal').modal('show')
                         $('#modalForm').trigger("reset");
                     }

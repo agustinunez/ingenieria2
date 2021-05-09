@@ -37,11 +37,21 @@ router.post('/lugares', async(req, res) => {
     if (row.length > 0) {
         req.flash('warning', 'Lo siento, el lugar '+nombre+' ya existe!');
     } else {
-        await pool.query("UPDATE lugar SET nombre=? WHERE id_lugar=?", [nombre, id]);
-        req.flash('success', 'Se ha modificado el lugar exitosamente!');
+        if ( id=='' ){
+            await pool.query("INSERT INTO lugar (nombre) VALUES (?)", [nombre]);
+            req.flash('success', 'Se ha agregado el lugar exitosamente!');
+        } else {
+           const row_editar_deRuta = await pool.query("SELECT * FROM ruta WHERE origen=? OR destino=?", [id,id]);
+           if (row_editar_deRuta.length > 0){
+            req.flash('warning', 'El lugar '+ nombre +' no se puede editar ya que el mismo pertenece a una ruta.');
+            }else{
+           await pool.query("UPDATE lugar SET nombre=? WHERE id_lugar=?", [nombre, id]);
+            req.flash('success', 'Se ha modificado el lugar exitosamente!');
+        }}
     }
     res.redirect('/admin/lugares');
 });
+
 router.get('/lugares/eliminar/:id', async (req,res) => {
     const { id } = req.params;
     const result = await pool.query("SELECT nombre FROM lugar WHERE id_lugar=?",[id]);
@@ -90,9 +100,14 @@ router.get('/viajesJSON', isAdmin, async(req, res) => {
     res.send(aux);
 });
 
+
+
 router.get('/rutas', isAdmin, async(req, res) => { 
-    res.render('admin/rutas');
+    const lugares = await pool.query("SELECT * FROM lugar");
+    res.render('admin/rutas', {lugares});
 });
+
+
 
 router.get('/rutasJSON', isAdmin, async(req, res) => {
     const aux = await pool.query("SELECT r.id_ruta AS id_ruta, l.nombre AS origen, l2.nombre AS destino FROM ruta r INNER JOIN lugar l ON ( r.origen = l.id_lugar ) INNER JOIN lugar l2 ON ( r.destino = l2.id_lugar ) ORDER BY id_ruta");
