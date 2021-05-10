@@ -41,6 +41,7 @@
             </div>
             <div class="modal-body">
                 <form id="modalForm">
+                    <input type="number" id="recipient-id" name="id" hidden>
                     <div class="mb-3">
                         <label for="name" class="form-label">Nombre</label>
                         <input type="text" class="form-control" id="recipient-name" name="name">
@@ -76,7 +77,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-success" id="guardarButton">Agregar</button>
+                <button type="submit" class="btn btn-success" id="guardarButton"></button>
             </div>
         </div>
     </div>
@@ -139,11 +140,11 @@
         const personalButton = document.getElementById("guardarButton");
 
         const onChangeInputsPersonal = () => {
-            let nombreBoolean = (document.getElementById("recipient-name").value).toUpperCase() == nombre2;
+            let nombreBoolean = document.getElementById("recipient-name").value == nombre2;
             let lastnameBoolean = document.getElementById("recipient-lastname").value == lastname2;
             let dniBoolean = document.getElementById("recipient-dni").value == dni2;
-            let usernameBoolean = document.getElementById("recipient-username").value == username2;
-            let emailBoolean = document.getElementById("recipient-email").value == email2;
+            let usernameBoolean = (document.getElementById("recipient-username").value).toUpperCase() == username2.toUpperCase();
+            let emailBoolean = (document.getElementById("recipient-email").value).toUpperCase() == email2.toUpperCase();
             (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
         }
@@ -181,6 +182,7 @@
                     click: () => {
                         $('#exampleModal').modal('show')
                         $('#modalForm').trigger("reset");
+                        $('#guardarButton').text('Agregar');
                     }
                 },
                 attributes: {
