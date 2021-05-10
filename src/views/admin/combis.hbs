@@ -43,9 +43,9 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="chofer">Seleccione un chofer</label>
-                        <select class="form-select" id="chofer" name="chofer">
+                        <select class="form-select" id="recipient-chofer" name="chofer">
                             {{#each choferes}}
-                                <option value="{{id_usuario}}" {{selectedIfEqual id_usuario '14'}}>{{name}} {{lastname}}</option>
+                                <option value={{id_usuario}}>{{name}} {{lastname}}</option>
                             {{/each}}
                         </select>
                     </div>
@@ -55,7 +55,10 @@
                     </div>
                     <div class="mb-3">
                         <label for="tipocama" class="form-label">Tipo de asientos</label>
-                        <input type="text" class="form-control" id="recipient-tipoAsientos" name="tipoAsientos">
+                        <select name="tipoAsientos" id="recipient-tipoAsientos" class="form-select">
+                            <option value="cama">Cama</option>
+                            <option value="semi-cama">Semi-cama</option>
+                        </select>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
@@ -117,7 +120,6 @@
         $("#recipient-tipoAsientos").val(tipoAsientos);
         $('#exampleModal').modal('show')
         $('#guardarButton').text('Guardar');
-
         const patente2 = document.getElementById("recipient-patente").value;
         const chofer2 = document.getElementById("recipient-chofer").value;
         const cantAsientos2 = document.getElementById("recipient-cantAsientos").value;
