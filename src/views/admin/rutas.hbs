@@ -85,7 +85,7 @@
             "Editar" +
             "</button>"
     }
-    /*$(document).on("click", '.edit_button', function () {
+    $(document).on("click", '.edit_button', function () {
         var origen = $(this).data('origen');
         var destino = $(this).data('destino');
         var id = $(this).data('id_ruta');
@@ -117,7 +117,7 @@
 
         onChangeInputsPersonal();
 
-    }); */
+    }); 
 
     function LinkFormatterDelete(value) {
         return "<a href='/admin/ruta/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
