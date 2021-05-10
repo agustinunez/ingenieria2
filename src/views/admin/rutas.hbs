@@ -52,7 +52,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Agregar</button>
+                        <button type="submit" class="btn btn-success" id="guardarButton"></button>
                     </div>
                 </form>
             </div>
@@ -63,7 +63,7 @@
 <script>
     $(document).ready(function () {
         $table = $('#table');
-        $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
+        $('#table').bootstrapTable('load', []);
         $.ajax({
             type: 'GET',
             url: 'http://localhost:3000/admin/rutasJSON',
@@ -81,7 +81,7 @@
             "data-toggle='modal' data-target='#exampleModal'" +
             "data-id_ruta='" + row.id_ruta + "'" +
             "data-origen='" + row.origen + "'" +
-            "data-destino=" + row.destino + "'>" +
+            "data-destino='" + row.destino + "'>" +
             "Editar" +
             "</button>"
     }
@@ -90,28 +90,29 @@
         var destino = $(this).data('destino');
         var id = $(this).data('id_ruta');
 
-        $("#recipient-origen").val(origen);
-        $("#recipient-destino").val(destino);
+        $("#origen").val(origen);
+        $("#destino").val(destino);
         $("#recipient-id").val(id);
         $('#exampleModal').modal('show');
+        $('#guardarButton').text('Guardar');
 
-        const unOrigen = document.getElementById("recipient-origen").value;
-        const unDestino = document.getElementById("recipient-destino").value;
+        const unOrigen = document.getElementById("origen").value;
+        const unDestino = document.getElementById("destino").value;
         
         const personalButton = document.getElementById("guardarButton");
 
         const onChangeInputsPersonal = () => {
-            let nombreOrigenBoolean = document.getElementById("recipient-origen").value == unOrigen;
-            let nombreDestinoBoolean = document.getElementById("recipient-destino").value == unDestino;
+            let nombreOrigenBoolean = document.getElementById("origen").value == unOrigen;
+            let nombreDestinoBoolean = document.getElementById("destino").value == unDestino;
 
             (nombreOrigenBoolean && nombreDestinoBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
         }
 
-        document.getElementById("recipient-origen").addEventListener('input', () => {
+        document.getElementById("origen").addEventListener('input', () => {
             onChangeInputsPersonal();
         });
-        document.getElementById("recipient-destino").addEventListener('input', () => {
+        document.getElementById("destino").addEventListener('input', () => {
             onChangeInputsPersonal();
         })
 
@@ -120,7 +121,7 @@
     }); 
 
     function LinkFormatterDelete(value) {
-        return "<a href='/admin/ruta/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
+        return "<a href='/admin/rutas/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
 
 
@@ -134,7 +135,8 @@
                 event: {
                     click: () => {
                         $('#exampleModalLabel').text('Agregar una nueva ruta');
-                        $('#exampleModal').modal('show')
+                        $('#guardarButton').text('Agregar');
+                        $('#exampleModal').modal('show');
                         $('#modalForm').trigger("reset");
                     }
                 },

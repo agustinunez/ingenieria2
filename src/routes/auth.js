@@ -18,7 +18,13 @@ router.get('/signup', isLoggedIn, (req, res) => {
     res.render('auth/signup');
 })
 
-router.post('/login', passport.authenticate('local.signin', {
+router.post('/login', function(req,res,next){
+    const {username,password} = req.body;
+    if (username=='' || password==''){
+        req.flash('warning','Nombre de usuario o contraseña invalido!');
+    }
+    return next();
+} ,passport.authenticate('local.signin', {
     successRedirect: '/',
     failureRedirect: '/login',
     failureFlash: true

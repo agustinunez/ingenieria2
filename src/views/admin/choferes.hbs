@@ -1,15 +1,21 @@
-<div class="conteiner mx-3">
+<div class="mx-3 container_tablas">
     <strong>
         <table class="table table-dark table-borderless" id="table" data-search="true" data-toggle="table"
-            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true">
+            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-locale="es-AR" 
+            data-pagination="true">
             <thead>
                 <tr>
-                    <th data-field="id_usuario">ID</th>
+                    <th data-field="id_usuario">
+                        ID
+                    </th>
                     <th data-field="name" data-sortable="true">
                         Nombre
                     </th>
                     <th data-field="lastname" data-sortable="true">
                         Apellido
+                    </th>
+                    <th data-field="dni" data-sortable="true">
+                        DNI
                     </th>
                     <th data-field="username" data-sortable="true">
                         Nombre de usuario
@@ -30,32 +36,47 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Agrega un Chof3</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
                 <form id="modalForm">
                     <div class="mb-3">
-                        <label for="recipient-name" class="col-form-label">Nombre:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <label for="name" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="recipient-name" name="name">
                     </div>
                     <div class="mb-3">
-                        <label for="recipient-name" class="col-form-label">Apellido:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <label for="lastname" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="recipient-lastname"
+                            name="lastname">
                     </div>
                     <div class="mb-3">
-                        <label for="recipient-name" class="col-form-label">Email:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <label for="dni" class="form-label">DNI</label>
+                        <input type="number"  class="form-control" id="recipient-dni"
+                            name="dni">
                     </div>
                     <div class="mb-3">
-                        <label for="message-text" class="col-form-label">DNI:</label>
-                        <input class="form-control" id="recipient-number"></input>
+                        <label for="mail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="recipient-email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nombre de usuario</label>
+                        <input type="text"  class="form-control" id="recipient-username"
+                            name="username">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="recipient-password" name="password" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirnar contraseña</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success">Agregar</button>
+                <button type="submit" class="btn btn-success" id="guardarButton">Agregar</button>
             </div>
         </div>
     </div>
@@ -77,9 +98,77 @@
             }
         });
     });
-    function LinkFormatterEdit(value) {
-        return "<a href='/admin/chofer/editar/" + value + "' ><button class='btn btn-primary'>Editar</button></a> ";
+
+    // BOTON EDITAR
+    function LinkFormatterEdit(value, row) {
+        return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
+            "data-toggle='modal' data-target='#exampleModal'" +
+            "data-id_chofer='" + row.id_usuario + "'" +
+            "data-nombre='" + row.name + "'" +
+            "data-apellido='" + row.lastname + "'" +
+            "data-dni='" + row.dni + "'" +
+            "data-username='" + row.username + "'" +
+            "data-email='" + row.email + "'>" +
+            "Editar" +
+            "</button>"
     }
+    $(document).on("click", '.edit_button', function () {
+        var name = $(this).data('nombre');
+        var lastname = $(this).data('apellido');
+        var dni = $(this).data('dni');
+        var username = $(this).data('username');
+        var email = $(this).data('email');
+        var id = $(this).data('id_chofer');
+
+
+        $('#exampleModalLabel').text('Editar insumo');
+        $("#recipient-name").val(name);
+        $("#recipient-lastname").val(lastname);
+        $("#recipient-dni").val(dni);
+        $("#recipient-username").val(username);
+        $("#recipient-email").val(email);
+        $("#recipient-id").val(id);
+        $('#exampleModal').modal('show')
+        $('#guardarButton').text('Guardar');
+
+        const nombre2 = document.getElementById("recipient-name").value;
+        const lastname2 = document.getElementById("recipient-lastname").value;
+        const dni2 = document.getElementById("recipient-dni").value;
+        const username2 = document.getElementById("recipient-username").value;
+        const email2 = document.getElementById("recipient-email").value;
+        const personalButton = document.getElementById("guardarButton");
+
+        const onChangeInputsPersonal = () => {
+            let nombreBoolean = (document.getElementById("recipient-name").value).toUpperCase() == nombre2;
+            let lastnameBoolean = document.getElementById("recipient-lastname").value == lastname2;
+            let dniBoolean = document.getElementById("recipient-dni").value == dni2;
+            let usernameBoolean = document.getElementById("recipient-username").value == username2;
+            let emailBoolean = document.getElementById("recipient-email").value == email2;
+            (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+
+        }
+
+        document.getElementById("recipient-name").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("recipient-lastname").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("recipient-dni").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("recipient-username").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("recipient-email").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        onChangeInputsPersonal();
+
+    });
     function LinkFormatterDelete(value) {
         return "<a href='/admin/chofer/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
