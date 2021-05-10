@@ -5,10 +5,12 @@ const router = express.Router();
 const pool = require("../database");
 const { isAdmin } = require("../lib/auth");
 var dateFormat = require("dateformat");
+const { ROLE } = require('../lib/roles');
+const helpers = require('../lib/helpers');
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
 
-router.get("/chofer", isAdmin, async (req, res) => {
+router.get("/choferes", isAdmin, async (req, res) => {
   res.render("admin/choferes");
 });
 
@@ -16,6 +18,20 @@ router.get("/choferJSON", isAdmin, async (req, res) => {
   const aux = await pool.query("SELECT u.id_usuario,u.name,u.lastname,u.dni,u.username,u.email FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' ORDER BY u.id_usuario");
   res.send(aux);
 });
+
+router.post("/choferes", async (req, res) => {
+  let { id, name, lastname, dni, email, username, password, confirmPassword } = req.body;
+  password = await helpers.encryptPassword(password);
+  const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
+  const autoridad = {
+    rol: ROLE.CHOFER,
+    id_usuario: row.insertId
+  };
+  await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
+  req.flash("success", "Se ha agregado el chofer exitosamente!");
+  res.redirect("/admin/choferes");
+});
+
 
 router.get("/insumos", isAdmin, async (req, res) => {
   const row = await pool.query("SELECT * FROM insumo");
@@ -97,7 +113,7 @@ router.post("/lugares", async (req, res) => {
       if (blank) {
         req.flash("warning", "El lugar no puede ser vacio!");
       } else {
-        await pool.query("INSERT INTO lugar (nombre) VALUES (?)", [nombre]);
+        await pool.query("INSERT INTO lugar (nombre) VALUES (?)", [nombre.toUpperCase()]);
         req.flash("success", "Se ha agregado el lugar exitosamente!");
       }
     } else {
@@ -155,18 +171,25 @@ router.get("/lugaresJSON", isAdmin, async (req, res) => {
   res.send(aux);
 });
 
-// router.get('/lugar/editar/' + value, async (req,res) => {
-//     const edit = await pool.query("");
-// })
 
 router.get("/combis", isAdmin, async (req, res) => {
-  res.render("admin/combis");
+  const choferes = await pool.query("SELECT u.name,u.lastname,u.id_usuario FROM usuario u INNER JOIN autoridad a ON(a.id_usuario=u.id_usuario) WHERE (a.rol='ROL_CHOFER')");
+  res.render("admin/combis",{ choferes });
 });
 
-// router.get('/combisJSON', isAdmin, async(req, res) => {
-//     const aux = await pool.query("SELECT ID, patente, chofer, cantidadAsientos FROM combis");
-//     res.send(aux);
-// });
+router.get('/combisJSON', isAdmin, async (req, res) => {
+  const aux = await pool.query("SELECT * FROM combi");
+  res.send(aux);
+});
+
+router.post("/combis", async (req, res) => {
+  let { id, patente, chofer, cantAsientos, tipoAsientos } = req.body;
+  await pool.query("INSERT INTO combi (patente,chofer,cant_asientos,tipo_asiento) VALUES (?,?,?,?)", [patente, chofer, cantAsientos, tipoAsientos]);
+  req.flash("success", "Se ha agregado la combi exitosamente!");
+  res.redirect("/admin/combis");
+});
+
+
 
 router.get("/viajes", isAdmin, async (req, res) => {
   res.render("admin/viajes");
@@ -197,26 +220,26 @@ router.post("/rutas", async (req, res) => {
   } else {
     const origenResult = await pool.query('SELECT * FROM lugar WHERE nombre=?', [origen]);
     const destinoResult = await pool.query('SELECT * FROM lugar WHERE nombre=?', [destino]);
-    if (origenResult.length==0 || destinoResult.length==0){
-        req.flash('warning','No existe el lugar seleccionado');
-    }else{
-    const result = await pool.query("SELECT * FROM ruta WHERE origen=? AND destino=?", [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
-    if (result.length > 0) {
-      req.flash('warning', 'Lo siento, dicha ruta ya existe!');
+    if (origenResult.length == 0 || destinoResult.length == 0) {
+      req.flash('warning', 'No existe el lugar seleccionado');
     } else {
-      if (origen == destino) {
-        req.flash('warning', 'Lo siento, no se puede ingresar el mismo origen y destino!');
-      }
-      else {
-        if (id == "") {
-          await pool.query('INSERT INTO ruta (origen, destino) VALUES (?,?)', [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
-          req.flash('success', 'Ruta agregada exitosamente!');
-        } else {          
-          await pool.query("UPDATE ruta SET origen=? , destino=? WHERE id_ruta=?", [origenResult[0].id_lugar, destinoResult[0].id_lugar, id]);
-          req.flash('success', 'Ruta modificada exitosamente!');
+      const result = await pool.query("SELECT * FROM ruta WHERE origen=? AND destino=?", [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
+      if (result.length > 0) {
+        req.flash('warning', 'Lo siento, dicha ruta ya existe!');
+      } else {
+        if (origen == destino) {
+          req.flash('warning', 'Lo siento, no se puede ingresar el mismo origen y destino!');
+        }
+        else {
+          if (id == "") {
+            await pool.query('INSERT INTO ruta (origen, destino) VALUES (?,?)', [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
+            req.flash('success', 'Ruta agregada exitosamente!');
+          } else {
+            await pool.query("UPDATE ruta SET origen=? , destino=? WHERE id_ruta=?", [origenResult[0].id_lugar, destinoResult[0].id_lugar, id]);
+            req.flash('success', 'Ruta modificada exitosamente!');
+          }
         }
       }
-    }
     }
   }
   res.redirect("/admin/rutas");
@@ -224,28 +247,28 @@ router.post("/rutas", async (req, res) => {
 
 // ELIMINAR DE RUTAS
 router.get("/rutas/eliminar/:id", async (req, res) => {
-    const { id } = req.params;
-    const aux = await pool.query("SELECT * FROM ruta WHERE id_ruta=?",[id]);
-    if (aux.length > 0){
-        await pool.query("DELETE FROM ruta WHERE id_ruta=?",[id]);
-        req.flash('success','Ruta eliminada exitosamente!');
-    }else{
-        req.flash('warning','Esta ruta no existe!');
-    }
-    //const result = await pool.query("SELECT origen,destino FROM ruta WHERE id_ruta=?", [id]);
-    // const row_ruta = await pool.query("SELECT * FROM ruta WHERE origen=? OR destino=?",[id, id]);
-    // if (row_ruta.length > 0) {
-    //   req.flash("warning","El lugar " +result[0].nombre +" no se puede eliminar ya que el mismo pertenece a una ruta.");
-    // } else {
-    //   const row = await pool.query("DELETE FROM lugar WHERE id_lugar=?", [id]);
-    //   if (row.affectedRows == 1) {
-    //     req.flash("success", "Se ha borrado el lugar exitosamente!");
-    //   } else {
-    //     req.flash("warning", "El numero de id " + id + " no existe!");
-    //   }
-    // }
-    res.redirect("/admin/rutas");
-  });
+  const { id } = req.params;
+  const aux = await pool.query("SELECT * FROM ruta WHERE id_ruta=?", [id]);
+  if (aux.length > 0) {
+    await pool.query("DELETE FROM ruta WHERE id_ruta=?", [id]);
+    req.flash('success', 'Ruta eliminada exitosamente!');
+  } else {
+    req.flash('warning', 'Esta ruta no existe!');
+  }
+  //const result = await pool.query("SELECT origen,destino FROM ruta WHERE id_ruta=?", [id]);
+  // const row_ruta = await pool.query("SELECT * FROM ruta WHERE origen=? OR destino=?",[id, id]);
+  // if (row_ruta.length > 0) {
+  //   req.flash("warning","El lugar " +result[0].nombre +" no se puede eliminar ya que el mismo pertenece a una ruta.");
+  // } else {
+  //   const row = await pool.query("DELETE FROM lugar WHERE id_lugar=?", [id]);
+  //   if (row.affectedRows == 1) {
+  //     req.flash("success", "Se ha borrado el lugar exitosamente!");
+  //   } else {
+  //     req.flash("warning", "El numero de id " + id + " no existe!");
+  //   }
+  // }
+  res.redirect("/admin/rutas");
+});
 
 router.get("/rutasJSON", isAdmin, async (req, res) => {
   const aux = await pool.query(

@@ -31,13 +31,12 @@
             <div class="modal-body">
                 <form id="modalForm" href="/rutas" method="POST">
                     <input type="number" id="recipient-id" name="id" hidden>
-
                     <div class="mb-3">
                         <label for="origen">Seleccione un origen</label>
                         <input list="origenes" name="origen" id="origen" class="form-select">
                         <datalist id="origenes">
                             {{#each lugares}}
-                                <option value="{{nombre}}">{{nombre}}</option>
+                            <option value="{{nombre}}">{{nombre}}</option>
                             {{/each}}
                         </datalist>
                     </div>
@@ -46,7 +45,7 @@
                         <input list="destinos" name="destino" id="destino" class="form-select">
                         <datalist id="destinos">
                             {{#each lugares}}
-                                <option value="{{nombre}}">{{nombre}}</option>
+                            <option value="{{nombre}}">{{nombre}}</option>
                             {{/each}}
                         </datalist>
                     </div>
@@ -85,6 +84,11 @@
             "Editar" +
             "</button>"
     }
+    $(function () {
+        $('#exampleModal').on('shown.bs.modal', function (e) {
+            $('#origen').focus();
+        })
+    });
     $(document).on("click", '.edit_button', function () {
         var origen = $(this).data('origen');
         var destino = $(this).data('destino');
@@ -98,7 +102,7 @@
 
         const unOrigen = document.getElementById("origen").value;
         const unDestino = document.getElementById("destino").value;
-        
+
         const personalButton = document.getElementById("guardarButton");
 
         const onChangeInputsPersonal = () => {
@@ -118,7 +122,7 @@
 
         onChangeInputsPersonal();
 
-    }); 
+    });
 
     function LinkFormatterDelete(value) {
         return "<a href='/admin/rutas/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";

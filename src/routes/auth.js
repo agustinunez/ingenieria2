@@ -142,7 +142,6 @@ router.post('/signup',
             return res.render('auth/signup', { userInfo, errors });
         }
         userInfo.password = await helpers.encryptPassword(userInfo.password);
-        userInfo.username = userInfo.username;
         const row = await pool.query('INSERT INTO usuario SET ?', [userInfo]);
         const autoridad = {
             rol: ROLE.COMUN,

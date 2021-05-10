@@ -75,7 +75,11 @@
             }
         });
     });
-
+    $(function () {
+        $('#exampleModal').on('shown.bs.modal', function (e) {
+            $('#recipient-name').focus();
+        })
+    });
     // BOTON EDITAR
     function LinkFormatterEdit(value, row) {
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
