@@ -79,7 +79,54 @@
         </div>
     </div>
 </div>
-
+<script>
+    var correo = $('#recipient-email');
+    correo.on("keyup", validarCorreo)
+    function validarCorreo() {
+        if (correo.val().length < 5) {
+            correo.addClass('is-invalid');
+        } else {
+            correo.removeClass('is-invalid');
+            correo.addClass('is-valid');
+        }
+    };
+    var name2 = $('#recipient-name');
+    name2.on("keyup", validarName)
+    function validarName() {
+        if (name2.val() == null || name2.val() == "") {
+            name2.attr("placeholder", "Complete este campo.");
+            name2.addClass('is-invalid');
+        } else {
+            name2.removeAttr('placeholder')
+            name2.removeClass('is-invalid');
+            name2.addClass('is-valid');
+        };
+    }
+    var lastname2 = $('#recipient-lastname');
+    lastname2.on("keyup", validarLastname)
+    function validarLastname() {
+        if (lastname2.val() == null || lastname2.val() == "") {
+            lastname2.attr("placeholder", "Complete este campo.");
+            lastname2.addClass('is-invalid');
+        } else {
+            lastname2.removeAttr('placeholder')
+            lastname2.removeClass('is-invalid');
+            lastname2.addClass('is-valid');
+        };
+    };
+    var dni2 = $('#recipient-dni');
+    dni2.on("keyup", validarDni)
+    function validarDni() {
+        if (dni2.val() == null || dni2.val() == "" ) {
+            dni2.attr("placeholder", "Complete este campo.");
+            dni2.addClass('is-invalid');
+        } else {
+            dni2.removeAttr('placeholder')
+            dni2.removeClass('is-invalid');
+            dni2.addClass('is-valid');
+        };
+    };
+</script>
 <script>
     $(document).ready(function () {
         $table = $('#table');
@@ -191,5 +238,6 @@
                 }
             }
         }
+
     }
 </script>

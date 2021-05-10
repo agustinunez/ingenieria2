@@ -21,15 +21,34 @@ router.get("/choferJSON", isAdmin, async (req, res) => {
 
 router.post("/choferes", async (req, res) => {
   let { id, name, lastname, dni, email, username, password, confirmPassword } = req.body;
-  password = await helpers.encryptPassword(password);
-  const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
-  const autoridad = {
-    rol: ROLE.CHOFER,
-    id_usuario: row.insertId
-  };
-  await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
-  req.flash("success", "Se ha agregado el chofer exitosamente!");
-  res.redirect("/admin/choferes");
+  if (name == "" || lastname == "" || dni == "" || email == "" || username == "" || password == "" || confirmPassword == "") {
+    req.flash('warning', 'Lo siento, no se puede dejar ningun campo en blanco!');
+  } else {
+    const result = await pool.query("SELECT * FROM usuario WHERE username=?", [username]);
+    if (result.length > 0) {
+      req.flash('warning', 'lo siento ese nombre de usuario ya existe');
+    } else {
+      if (password != confirmPassword) {
+        req.flash('warning', 'Lo siento,las contrasenias no coinciden!');
+      }
+      else {
+        const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [dni]);
+        if (result2.length > 0) {
+          req.flash('warning', 'lo siento ese documento ya existe ');
+        }
+      }
+    }
+  }
+   /* password = await helpers.encryptPassword(password);
+    const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
+    const autoridad = {
+      rol: ROLE.CHOFER,
+      id_usuario: row.insertId
+    };
+    await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
+    req.flash("success", "Se ha agregado el chofer exitosamente!");*/
+    res.redirect("/admin/choferes");
+  
 });
 
 
@@ -174,7 +193,7 @@ router.get("/lugaresJSON", isAdmin, async (req, res) => {
 
 router.get("/combis", isAdmin, async (req, res) => {
   const choferes = await pool.query("SELECT u.name,u.lastname,u.id_usuario FROM usuario u INNER JOIN autoridad a ON(a.id_usuario=u.id_usuario) WHERE (a.rol='ROL_CHOFER')");
-  res.render("admin/combis",{ choferes });
+  res.render("admin/combis", { choferes });
 });
 
 router.get('/combisJSON', isAdmin, async (req, res) => {
