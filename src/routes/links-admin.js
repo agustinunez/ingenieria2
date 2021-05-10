@@ -42,14 +42,17 @@ router.get("/insumos/eliminar/:id", async (req, res) => {
   res.redirect("/admin/insumos");
 });
 
-
-// ATENCION AL COMENTARIO:
-// Problema con el insumo: Si solo se quiere modificar el precio o cantidad, no deja dado que primero pregunta por si existe el nombre!
 router.post("/insumos", isAdmin, async (req, res) => {
   let { id, nombre, precio, cantidad } = req.body;
   const aux = await pool.query("SELECT * FROM insumo WHERE nombre=?", [nombre]);
   if (aux.length > 0) {
-    req.flash("warning", "Lo siento, el insumo " + nombre + " ya existe!");
+    if (id == aux[0].id_insumo && (aux[0].precio != precio || aux[0].cantidad != cantidad)) {
+      await pool.query("UPDATE insumo SET precio=?,cantidad=? WHERE id_insumo=?", [precio,cantidad,id]);
+      req.flash("success", "Se ha modificado el insumo exitosamente!");
+    } else {
+      req.flash("warning", "Lo siento, el insumo " + nombre + " ya existe!");
+    }
+    
   } else {
     const blankNombre = nombre.trim() === "";
     const blankPrecio = precio.trim() === "";
@@ -189,6 +192,20 @@ router.get("/viajesJSON", isAdmin, async (req, res) => {
 router.get("/rutas", isAdmin, async (req, res) => {
   const lugares = await pool.query("SELECT * FROM lugar");
   res.render("admin/rutas", { lugares });
+});
+
+router.post("/rutas", async (req, res) => {
+  const { id, origen, destino } = req.body;
+  const origenResult = await pool.query('SELECT * FROM lugar WHERE nombre=?', [origen]);
+  const destinoResult = await pool.query('SELECT * FROM lugar WHERE nombre=?', [destino]);
+  const result = await pool.query("SELECT * FROM ruta WHERE origen=? AND destino=?", [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
+  if (result.length > 0) {
+    req.flash('warning', 'Lo siento, dicha ruta ya existe!');
+  } else {
+    await pool.query('INSERT INTO ruta (origen, destino) VALUES (?,?)', [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
+    req.flash('success', 'Ruta agregada exitosamente!');
+  }
+  res.redirect("/admin/rutas");
 });
 
 router.get("/rutasJSON", isAdmin, async (req, res) => {

@@ -1,4 +1,4 @@
-<div class="conteiner mx-3">
+<div class="mx-3 container_tablas">
     <strong>
         <table class="table table-dark table-borderless" id="table" data-search="true" data-toggle="table"
             data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-locale="es-AR"
@@ -44,15 +44,15 @@
                     </div>
                     <div class="mb-3">
                         <label for="recipient-precio" class="col-form-label">Precio:</label>
-                        <input type="text" class="form-control" id="recipient-precio" name="precio">
+                        <input type="number" class="form-control" id="recipient-precio" name="precio">
                     </div>
                     <div class="mb-3">
                         <label for="recipient-cantidad" class="col-form-label">Cantidad:</label>
-                        <input type="text" class="form-control" id="recipient-cantidad" name="cantidad">
+                        <input type="number" class="form-control" id="recipient-cantidad" name="cantidad">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Agregar</button>
+                        <button type="submit" class="btn btn-success" id="guardarButton"></button>
                     </div>
                 </form>
             </div>
@@ -101,6 +101,7 @@
         $("#recipient-cantidad").val(cantidad);
         $("#recipient-id").val(id);
         $('#exampleModal').modal('show')
+        $('#guardarButton').text('Guardar');
 
         const nombre2 = document.getElementById("recipient-name").value;
         const precio2 = document.getElementById("recipient-precio").value;
@@ -111,7 +112,7 @@
             let nombreBoolean = (document.getElementById("recipient-name").value).toUpperCase() == nombre2;
             let precioBoolean = document.getElementById("recipient-precio").value == precio2;
             let cantidadBoolean = document.getElementById("recipient-cantidad").value == cantidad2;
-            (nombreBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+            (nombreBoolean && precioBoolean && cantidadBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
             /*if(nombreBoolean && precioBoolean && cantidadBoolean){
                 personalButton.disabled = true;
             }else{
@@ -122,7 +123,15 @@
 
         document.getElementById("recipient-name").addEventListener('input', () => {
             onChangeInputsPersonal();
-        })
+        });
+
+        document.getElementById("recipient-precio").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("recipient-cantidad").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
 
         onChangeInputsPersonal();
 
@@ -144,6 +153,7 @@
                         $('#exampleModalLabel').text('Agregar un nuevo insumo');
                         $('#exampleModal').modal('show');
                         $('#modalForm').trigger("reset");
+                        $('#guardarButton').text('Agregar');
                     }
                 },
                 attributes: {
