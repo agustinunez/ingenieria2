@@ -370,7 +370,7 @@
     });
     // BOTON ELIMINAR
     function LinkFormatterDelete(value) {
-        return "<a href='/admin/chofer/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
+        return "<a onclick='confirmar(" + value + ")' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
     // BOTON AGREGAR
     function buttons() {
@@ -390,6 +390,50 @@
                 }
             }
         }
-
     }
+    function confirmar(id) {
+
+
+
+        Swal.fire({
+            title: 'Seguro que quieres eliminarlo?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax('/admin/choferes/eliminar/', {
+                    type: 'DELETE',
+                    data: { id },
+                    success: function (data) {
+                        $.ajax({
+                            type: 'GET',
+                            url: 'http://localhost:3000/admin/choferJSON',
+                            data: {},
+                            dataType: 'json',
+                            success: function (data) {
+                                $('#table').bootstrapTable('load', data);
+                            }, error: function () {
+                                alert('Error conexion con el servidor');
+                            }
+                        });
+                        Swal.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        )
+                    },
+                    error: function (data) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!'
+                        })
+                    }
+                });
+            }
+        })
+    };
 </script>

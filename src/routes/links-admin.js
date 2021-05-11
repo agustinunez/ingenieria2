@@ -46,40 +46,48 @@ router.post("/chofer/username", async (req, res) => {
 
 router.post("/choferes", async (req, res) => {
   let { id, name, lastname, dni, email, username, password, confirmPassword } = req.body;
-  // if (name == "" || lastname == "" || dni == "" || email == "" || username == "" || password == "" || confirmPassword == "") {
-  //   req.flash('warning', 'Lo siento, no se puede dejar ningun campo en blanco!');
-  // } else {
-  //   const result = await pool.query("SELECT * FROM usuario WHERE username=?", [username]);
-  //   if (result.length > 0) {
-  //     req.flash('warning', 'lo siento ese nombre de usuario ya existe');
-  //   } else {
-  //     if(password.length < 7 ){
-  //       req.flash('warning', 'Lo siento, la contraseña debe tener un minimo de 7!');
-  //     }else
-  //     {
-  //     if (password != confirmPassword) {
-  //       req.flash('warning', 'Lo siento, las contrasenias no coinciden!');
-  //     }
-  //     else {
-  //       const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [dni]);
-  //       if (result2.length > 0) {
-  //         req.flash('warning', 'lo siento ese documento ya existe ');
-  //       }
-  //     }
-  //   }
-    // }
-  //}
-    password = await helpers.encryptPassword(password);
-    const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
-    const autoridad = {
-      rol: ROLE.CHOFER,
-      id_usuario: row.insertId
-    };
-    await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
-    req.flash("success", "Se ha agregado el chofer exitosamente!");
-    res.redirect("/admin/choferes");
-  
+  if (name == "" || lastname == "" || dni == "" || email == "" || username == "" || password == "" || confirmPassword == "") {
+    req.flash('warning', 'Lo siento, no se puede dejar ningun campo en blanco!');
+  } else {
+    const result = await pool.query("SELECT * FROM usuario WHERE username=?", [username]);
+    if (result.length > 0) {
+      req.flash('warning', 'lo siento ese nombre de usuario ya existe');
+    } else {
+      if (password != confirmPassword) {
+        req.flash('warning', 'Lo siento,las contrasenias no coinciden!');
+      }
+      else {
+        const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [dni]);
+        if (result2.length > 0) {
+          req.flash('warning', 'lo siento ese documento ya existe ');
+        }
+      }
+    }
+  }
+  password = await helpers.encryptPassword(password);
+  const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
+  const autoridad = {
+    rol: ROLE.CHOFER,
+    id_usuario: row.insertId
+  };
+  await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
+  req.flash("success", "Se ha agregado el chofer exitosamente!");
+  res.redirect("/admin/choferes");
 });
+
+router.delete("/choferes/eliminar", isAdmin, async (req, res) => {
+  const { id } = req.body;
+  await pool.query("DELETE FROM autoridad WHERE id_usuario=?", [id], async (error) => {
+    if (error) {
+      res.send("El numero de id " + id + " no existe!");
+      return false;
+    } else {
+      await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id]);
+      res.send("Se ha borrado el insumo exitosamente!");
+      return true;
+    }
+  });
+})
 
 
 router.get("/insumos", isAdmin, async (req, res) => {
@@ -87,7 +95,7 @@ router.get("/insumos", isAdmin, async (req, res) => {
   res.render("admin/insumos", { row });
 });
 
-router.get("/insumos/eliminar/:id", async (req, res) => {
+router.get("/insumos/eliminar/:id", isAdmin, async (req, res) => {
   // Falta verificar que el insumo no pertenezca a un viaje
   const { id } = req.params;
   const result = await pool.query("SELECT nombre FROM insumo WHERE id_insumo=?", [id]);
