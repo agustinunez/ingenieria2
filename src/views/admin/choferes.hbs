@@ -40,16 +40,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                {{!-- ACA IRIA LA INFORMACION DE LOS CAMPOS REQUERIDOS Y QUE REQUIEREN --}}
                 <div class="alert alert-warning" role="alert">
                     <ul>
-                        <li>asd</li>
-                        <li>asd</li>
-                        <li>asd</li>
-                        <li>asd</li>
+                        <li>Ningun campo puede estar vacio</li>
+                        <li>El DNI no debe estar previamente registrado</li>
+                        <li>El Email no debe estar previamente registrado</li>
+                        <li>El Nombre de usuario no debe estar previamente registrado</li>
+                        <li>La Contraseña debe ser mayor a 6 digitos</li>
+                        <li>Las Constraseñas deben coincidir</li>
                     </ul>
                 </div>
-                {{!-- ACA AGREGAMOS VALIDACION DE BOOSTRAP CON EL 'CLASS="NEEDS-VALIDATION" NOVALIDATE' (LINEA 53) --}}
                 <form id="modalForm" href="/choferes" method="POST" class="needs-validation" novalidate>
                     <input type="number" id="recipient-id" name="id" hidden>
                     <div class="mb-3">
@@ -76,19 +76,37 @@
                     </div>
                     <div class="mb-3">
                         <label for="mail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="recipient-email" name="email">
+                        <input type="email" class="form-control" id="recipient-email" name="email" required>
+                        <div class="invalid-feedback">
+                            <p id="invalid-email">Este campo no puede estar vacio!</p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="username" class="form-label">Nombre de usuario</label>
-                        <input type="text" class="form-control" id="recipient-username" name="username">
+                        <input type="text" class="form-control" id="recipient-username" name="username" required>
+                        <div class="invalid-feedback">
+                            <p id="invalid-username">Este campo no puede estar vacio!</p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="recipient-password" name="password">
+                        <input type="password" class="form-control" id="recipient-password" name="password" required>
+                        <div class="invalid-feedback">
+                            <p id="invalid-password">Este campo no puede estar vacio!</p>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">Confirnar contraseña</label>
-                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                        <label for="confirmpassword" class="form-label">Confirmar contraseña</label>
+                        <input type="password" class="form-control" id="recipient-confirmpassword" name="confirmpassword" required>
+                        <div class="invalid-feedback">
+                            <p id="invalid-confirmpassword">Este campo no puede estar vacio!</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <small>
+                            <input type="checkbox" id="ver" class="ver" onChange="hideOrShowPassword()">
+                            <label class="text">Mostrar contraseñas</label>
+                        </small>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
@@ -99,6 +117,7 @@
         </div>
     </div>
 </div>
+{{!-- No entiendo porque hay dos etiquetas scripts, podriamos dejarlo en 1 solo, o es por algo en particular que lo hicieron asi? --}}
 <script>
     //ESTO DE ABAJO ES EL SCRIPT LITERAL QUE NECESITA LA VALIDACION DE BOOSTRAP, COPIADO Y PEGADO PARA QUE FUNCIONE
     (function () {
@@ -120,16 +139,7 @@
                 }, false)
             })
     })()
-    /*$.ajax('/admin/chofer/test', {
-            type: 'POST',
-            data: { val },
-            success: function (data, status, xhr) {
-                    console.log('ESTO ES EL DATA: ', data);
-                    console.log('ESTO ES EL STATUS: ', status);
-                    console.log('ESTO ES EL XHR: ', xhr);
-                }
-        });*/
-    //LINEA 133 A 174 - VALIDACIONES CUANDO SE SALE DEL FOCO DE LOS INPUTS
+
     $('#recipient-name').focusout(function () {
         const nameElement = $('#recipient-name');
         if (nameElement.val() == null || nameElement.val() == "") {
@@ -150,7 +160,6 @@
         };
     })
 
-    //EN ESTA FOCUSOUT DE DNI SE VA A CONSULTAR CON UN POST A '/ADMIN/CHOFER/DNI' (CUANDO SE INGRESE UN VALOR, SINO PASA POR EL PRIMER IF(156))
     $('#recipient-dni').focusout(function () {
         const dniElement = $('#recipient-dni');
         if (dniElement.val() == null || dniElement.val() == "") {
@@ -173,24 +182,104 @@
             });
         };
     })
-
-    /*$('#recipient-name').focusout(function() {
-        const val = $('#recipient-name').val();
-        $.ajax('/admin/chofer/test', {
-            type: 'POST',
-            data: { val },
-            success: function (data, status, xhr) {
-                    console.log('ESTO ES EL DATA: ', data);
-                    console.log('ESTO ES EL STATUS: ', status);
-                    console.log('ESTO ES EL XHR: ', xhr);
+    $('#recipient-password').focusout(function () {
+        const passwordElement = $('#recipient-password');
+        if (passwordElement.val() == null || passwordElement.val() == "") {
+            $('#invalid-password').text('Este campo no puede estar vacio!');
+            passwordElement.addClass('is-invalid');
+        } else {
+            if (passwordElement.val().length < 7){
+                $('#invalid-password').text('El minimo de caracteres es 7!');
+                passwordElement.addClass('is-invalid');
+            }
+            else{
+                passwordElement.removeClass('is-invalid');
+                passwordElement.addClass('is-valid');
+            }
+        };
+    })
+        $('#recipient-username').focusout(function () {
+        const usernameElement = $('#recipient-username');
+        if (usernameElement.val() == null || usernameElement.val() == "") {
+            $('#invalid-username').text('Este campo no puede estar vacio!');
+            usernameElement.removeClass('is-valid');
+            usernameElement.addClass('is-invalid');
+        } else {
+            const usernameValue = usernameElement.val();
+            $.ajax('/admin/chofer/username', {
+                type: 'POST',
+                data: { usernameValue },
+                success: function (res) {
+                    if (res) {
+                        usernameElement.removeClass('is-invalid');
+                        usernameElement.addClass('is-valid');
+                    } else {
+                        usernameElement.removeClass('is-valid');
+                        $('#invalid-username').text('El nombre de usuario ya existe!');
+                        usernameElement.addClass('is-invalid');
+                    }
                 }
-        });
-    })*/
+            });
+        };
+    })
+    $('#recipient-confirmpassword').focusout(function () {
+        const passwordElement = $('#recipient-password');
+        const confirmpasswordElement = $('#recipient-confirmpassword');
+        if (confirmpasswordElement.val() == null || confirmpasswordElement.val() == "") {
+            $('#invalid-confirmpassword').text('Este campo no puede estar vacio!');
+            confirmpasswordElement.addClass('is-invalid');
+        } else {
+            if (confirmpasswordElement.val() === passwordElement.val()){
+                confirmpasswordElement.removeClass('is-invalid');
+                confirmpasswordElement.addClass('is-valid');  
+            }
+            else{
+                confirmpasswordElement.removeClass('is-valid');
+                $('#invalid-confirmpassword').text('Debe coincidir con la contraseña!');
+                confirmpasswordElement.addClass('is-invalid');
+            }
+        };
+    })
+
+    $('#recipient-email').focusout(function () {
+        const emailElement = $('#recipient-email');
+        if (emailElement.val() == null || emailElement.val() == "") {
+            $('#invalid-email').text('Este campo no puede estar vacio!');
+            emailElement.addClass('is-invalid');
+        } else {
+            if (emailElement.val().length < 7){
+                $('#invalid-email').text('El minimo de caracteres es 7!');
+                emailElement.addClass('is-invalid');
+            }
+            else{
+                emailElement.removeClass('is-invalid');
+                emailElement.addClass('is-valid');
+            }
+        };
+    })
+
+    function hideOrShowPassword() {
+    const password1 = document.getElementById("recipient-password");
+    const password2 = document.getElementById("recipient-confirmpassword")
+    const check = document.getElementById("ver");
+
+    if (check.checked == true) // Si la checkbox de mostrar contraseña está activada
+    {
+        password1.type = "text";
+        password2.type = "text";
+    } else // Si no está activada 
+    {
+        password1.type = "password";
+        password2.type = "password";
+    }
+    }
+
 </script>
+
 <script>
     $(document).ready(function () {
         $table = $('#table');
-        $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
+        $('#table').bootstrapTable('load', []); 
         $.ajax({
             type: 'GET',
             url: 'http://localhost:3000/admin/choferJSON',
@@ -208,6 +297,7 @@
             $('#recipient-name').focus();
         })
     });
+
     // BOTON EDITAR
     function LinkFormatterEdit(value, row) {
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
@@ -278,9 +368,11 @@
         onChangeInputsPersonal();
 
     });
+    // BOTON ELIMINAR
     function LinkFormatterDelete(value) {
         return "<a href='/admin/chofer/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
+    // BOTON AGREGAR
     function buttons() {
         return {
             btnAdd: {

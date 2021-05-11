@@ -19,46 +19,64 @@ router.get("/choferJSON", isAdmin, async (req, res) => {
   res.send(aux);
 });
 
+// CHOFER/DNI
 router.post("/chofer/dni", async (req, res) => {
   const { dniValue } = req.body;
-  // ACOMODAR CONSULTA PARA CONSULTAR SOLO POR LOS CHOFERES Y NO POR TODOS LOS USUARIOS.
-  const result = await pool.query("SELECT * FROM usuario WHERE dni=?", [dniValue]);
+  // YA ESTA ACOMODADO PARA LOS CHOFERES UNICAMENTE, PERO SOLO LOS CHOFERES SE REGISTRAN CON DNI, LOS USUARIOS NO, POR LO QUE SERIA ESTUPIDO XD
+  const result = await pool.query("SELECT * FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER'  AND u.dni=? ", [dniValue]);
   console.log(result);
   if (result.length > 0) {
     res.json(false);
   } else {
     res.json(true);
   }
-})
+});
+
+//CHOFER/USERNAME
+router.post("/chofer/username", async (req, res) => {
+  const { usernameValue } = req.body;
+  const result = await pool.query("SELECT * FROM usuario WHERE username=? ", [usernameValue]);
+  console.log(result);
+  if (result.length > 0) {
+    res.json(false);
+  } else {
+    res.json(true);
+  }
+});
 
 router.post("/choferes", async (req, res) => {
   let { id, name, lastname, dni, email, username, password, confirmPassword } = req.body;
-  if (name == "" || lastname == "" || dni == "" || email == "" || username == "" || password == "" || confirmPassword == "") {
-    req.flash('warning', 'Lo siento, no se puede dejar ningun campo en blanco!');
-  } else {
-    const result = await pool.query("SELECT * FROM usuario WHERE username=?", [username]);
-    if (result.length > 0) {
-      req.flash('warning', 'lo siento ese nombre de usuario ya existe');
-    } else {
-      if (password != confirmPassword) {
-        req.flash('warning', 'Lo siento,las contrasenias no coinciden!');
-      }
-      else {
-        const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [dni]);
-        if (result2.length > 0) {
-          req.flash('warning', 'lo siento ese documento ya existe ');
-        }
-      }
-    }
-  }
-   /* password = await helpers.encryptPassword(password);
+  // if (name == "" || lastname == "" || dni == "" || email == "" || username == "" || password == "" || confirmPassword == "") {
+  //   req.flash('warning', 'Lo siento, no se puede dejar ningun campo en blanco!');
+  // } else {
+  //   const result = await pool.query("SELECT * FROM usuario WHERE username=?", [username]);
+  //   if (result.length > 0) {
+  //     req.flash('warning', 'lo siento ese nombre de usuario ya existe');
+  //   } else {
+  //     if(password.length < 7 ){
+  //       req.flash('warning', 'Lo siento, la contraseña debe tener un minimo de 7!');
+  //     }else
+  //     {
+  //     if (password != confirmPassword) {
+  //       req.flash('warning', 'Lo siento, las contrasenias no coinciden!');
+  //     }
+  //     else {
+  //       const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [dni]);
+  //       if (result2.length > 0) {
+  //         req.flash('warning', 'lo siento ese documento ya existe ');
+  //       }
+  //     }
+  //   }
+    // }
+  //}
+    password = await helpers.encryptPassword(password);
     const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
     const autoridad = {
       rol: ROLE.CHOFER,
       id_usuario: row.insertId
     };
     await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
-    req.flash("success", "Se ha agregado el chofer exitosamente!");*/
+    req.flash("success", "Se ha agregado el chofer exitosamente!");
     res.redirect("/admin/choferes");
   
 });
