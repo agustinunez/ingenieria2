@@ -19,6 +19,18 @@ router.get("/choferJSON", isAdmin, async (req, res) => {
   res.send(aux);
 });
 
+router.post("/chofer/dni", async (req, res) => {
+  const { dniValue } = req.body;
+  // ACOMODAR CONSULTA PARA CONSULTAR SOLO POR LOS CHOFERES Y NO POR TODOS LOS USUARIOS.
+  const result = await pool.query("SELECT * FROM usuario WHERE dni=?", [dniValue]);
+  console.log(result);
+  if (result.length > 0) {
+    res.json(false);
+  } else {
+    res.json(true);
+  }
+})
+
 router.post("/choferes", async (req, res) => {
   let { id, name, lastname, dni, email, username, password, confirmPassword } = req.body;
   if (name == "" || lastname == "" || dni == "" || email == "" || username == "" || password == "" || confirmPassword == "") {
