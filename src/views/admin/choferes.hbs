@@ -54,7 +54,8 @@
                     <input type="number" id="recipient-id" name="id" hidden>
                     <div class="mb-3">
                         <label for="name" class="form-label">Nombre</label>
-                        {{!-- AL USAR 'REQUIRED' O CUALQUIER VALIDACION DEL LADO DE HTML, LO CAPTURA LA VALIDACION DE BOOSTRAP --}}
+                        {{!-- AL USAR 'REQUIRED' O CUALQUIER VALIDACION DEL LADO DE HTML, LO CAPTURA LA VALIDACION DE
+                        BOOSTRAP --}}
                         <input type="text" class="form-control" id="recipient-name" name="name" required>
                         <div class="invalid-feedback">
                             Este campo no puede estar vacio!
@@ -97,7 +98,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="confirmpassword" class="form-label">Confirmar contraseña</label>
-                        <input type="password" class="form-control" id="recipient-confirmpassword" name="confirmpassword" required>
+                        <input type="password" class="form-control" id="recipient-confirmpassword"
+                            name="confirmPassword" required>
                         <div class="invalid-feedback">
                             <p id="invalid-confirmpassword">Este campo no puede estar vacio!</p>
                         </div>
@@ -117,7 +119,8 @@
         </div>
     </div>
 </div>
-{{!-- No entiendo porque hay dos etiquetas scripts, podriamos dejarlo en 1 solo, o es por algo en particular que lo hicieron asi? --}}
+{{!-- No entiendo porque hay dos etiquetas scripts, podriamos dejarlo en 1 solo, o es por algo en particular que lo
+hicieron asi? --}}
 <script>
     //ESTO DE ABAJO ES EL SCRIPT LITERAL QUE NECESITA LA VALIDACION DE BOOSTRAP, COPIADO Y PEGADO PARA QUE FUNCIONE
     (function () {
@@ -188,17 +191,17 @@
             $('#invalid-password').text('Este campo no puede estar vacio!');
             passwordElement.addClass('is-invalid');
         } else {
-            if (passwordElement.val().length < 7){
+            if (passwordElement.val().length < 7) {
                 $('#invalid-password').text('El minimo de caracteres es 7!');
                 passwordElement.addClass('is-invalid');
             }
-            else{
+            else {
                 passwordElement.removeClass('is-invalid');
                 passwordElement.addClass('is-valid');
             }
         };
     })
-        $('#recipient-username').focusout(function () {
+    $('#recipient-username').focusout(function () {
         const usernameElement = $('#recipient-username');
         if (usernameElement.val() == null || usernameElement.val() == "") {
             $('#invalid-username').text('Este campo no puede estar vacio!');
@@ -229,11 +232,11 @@
             $('#invalid-confirmpassword').text('Este campo no puede estar vacio!');
             confirmpasswordElement.addClass('is-invalid');
         } else {
-            if (confirmpasswordElement.val() === passwordElement.val()){
+            if (confirmpasswordElement.val() === passwordElement.val()) {
                 confirmpasswordElement.removeClass('is-invalid');
-                confirmpasswordElement.addClass('is-valid');  
+                confirmpasswordElement.addClass('is-valid');
             }
-            else{
+            else {
                 confirmpasswordElement.removeClass('is-valid');
                 $('#invalid-confirmpassword').text('Debe coincidir con la contraseña!');
                 confirmpasswordElement.addClass('is-invalid');
@@ -247,11 +250,11 @@
             $('#invalid-email').text('Este campo no puede estar vacio!');
             emailElement.addClass('is-invalid');
         } else {
-            if (emailElement.val().length < 7){
+            if (emailElement.val().length < 7) {
                 $('#invalid-email').text('El minimo de caracteres es 7!');
                 emailElement.addClass('is-invalid');
             }
-            else{
+            else {
                 emailElement.removeClass('is-invalid');
                 emailElement.addClass('is-valid');
             }
@@ -259,19 +262,19 @@
     })
 
     function hideOrShowPassword() {
-    const password1 = document.getElementById("recipient-password");
-    const password2 = document.getElementById("recipient-confirmpassword")
-    const check = document.getElementById("ver");
+        const password1 = document.getElementById("recipient-password");
+        const password2 = document.getElementById("recipient-confirmpassword")
+        const check = document.getElementById("ver");
 
-    if (check.checked == true) // Si la checkbox de mostrar contraseña está activada
-    {
-        password1.type = "text";
-        password2.type = "text";
-    } else // Si no está activada 
-    {
-        password1.type = "password";
-        password2.type = "password";
-    }
+        if (check.checked == true) // Si la checkbox de mostrar contraseña está activada
+        {
+            password1.type = "text";
+            password2.type = "text";
+        } else // Si no está activada 
+        {
+            password1.type = "password";
+            password2.type = "password";
+        }
     }
 
 </script>
@@ -279,7 +282,7 @@
 <script>
     $(document).ready(function () {
         $table = $('#table');
-        $('#table').bootstrapTable('load', []); 
+        $('#table').bootstrapTable('load', []);
         $.ajax({
             type: 'GET',
             url: 'http://localhost:3000/admin/choferJSON',
@@ -335,6 +338,8 @@
         const dni2 = document.getElementById("recipient-dni").value;
         const username2 = document.getElementById("recipient-username").value;
         const email2 = document.getElementById("recipient-email").value;
+        const password = document.getElementById("recipient-password").value;
+        const confirmpassword = document.getElementById("recipient-confirmpassword").value;
         const personalButton = document.getElementById("guardarButton");
 
         const onChangeInputsPersonal = () => {
@@ -343,7 +348,12 @@
             let dniBoolean = document.getElementById("recipient-dni").value == dni2;
             let usernameBoolean = (document.getElementById("recipient-username").value).toUpperCase() == username2.toUpperCase();
             let emailBoolean = (document.getElementById("recipient-email").value).toUpperCase() == email2.toUpperCase();
-            (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+            let passwordBoolean = $('#recipient-password').val() !== "";
+            let confirmpasswordBoolean = $('#recipient-confirmpassword').val() !== "";
+            console.log('PASS: ', passwordBoolean);
+            console.log('CONFIRM: ', confirmpasswordBoolean);
+
+            (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean && passwordBoolean && confirmpasswordBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
         }
 
@@ -364,6 +374,13 @@
         document.getElementById("recipient-email").addEventListener('input', () => {
             onChangeInputsPersonal();
         });
+        document.getElementById("recipient-password").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("recipient-confirmpassword").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        
 
         onChangeInputsPersonal();
 
@@ -392,9 +409,6 @@
         }
     }
     function confirmar(id) {
-
-
-
         Swal.fire({
             title: 'Seguro que quieres eliminarlo?',
             icon: 'warning',
@@ -407,23 +421,31 @@
                 $.ajax('/admin/choferes/eliminar/', {
                     type: 'DELETE',
                     data: { id },
-                    success: function (data) {
-                        $.ajax({
-                            type: 'GET',
-                            url: 'http://localhost:3000/admin/choferJSON',
-                            data: {},
-                            dataType: 'json',
-                            success: function (data) {
-                                $('#table').bootstrapTable('load', data);
-                            }, error: function () {
-                                alert('Error conexion con el servidor');
-                            }
-                        });
-                        Swal.fire(
-                            'Deleted!',
-                            'Your file has been deleted.',
-                            'success'
-                        )
+                    success: function (res) {
+                        if (res.result) {
+                            $.ajax({
+                                type: 'GET',
+                                url: 'http://localhost:3000/admin/choferJSON',
+                                data: {},
+                                dataType: 'json',
+                                success: function (data) {
+                                    $('#table').bootstrapTable('load', data);
+                                }, error: function () {
+                                    alert('Error conexion con el servidor');
+                                }
+                            });
+                            Swal.fire(
+                                'Eliminado!',
+                                res.message,
+                                'success'
+                            )
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: res.message
+                            })
+                        }
                     },
                     error: function (data) {
                         Swal.fire({

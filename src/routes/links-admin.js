@@ -7,6 +7,7 @@ const { isAdmin } = require("../lib/auth");
 var dateFormat = require("dateformat");
 const { ROLE } = require('../lib/roles');
 const helpers = require('../lib/helpers');
+const passport = require("passport");
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
 
@@ -54,6 +55,8 @@ router.post("/choferes", async (req, res) => {
       req.flash('warning', 'lo siento ese nombre de usuario ya existe');
     } else {
       if (password != confirmPassword) {
+        console.log('PASS: ', password);
+        console.log('CONFIRM: ', confirmPassword);
         req.flash('warning', 'Lo siento,las contrasenias no coinciden!');
       }
       else {
@@ -77,14 +80,13 @@ router.post("/choferes", async (req, res) => {
 
 router.delete("/choferes/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
-  await pool.query("DELETE FROM autoridad WHERE id_usuario=?", [id], async (error) => {
+  await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id], async (error) => {
     if (error) {
-      res.send("El numero de id " + id + " no existe!");
-      return false;
+      res.json({result: false, message: 'No es posible eliminar el chofer, ya que el mismo tiene combis asignadas!'});
     } else {
+      await pool.query("DELETE FROM autoridad WHERE id_usuario=?", [id]);
       await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id]);
-      res.send("Se ha borrado el insumo exitosamente!");
-      return true;
+      res.json({result: true, message: "El chofer se ha eliminado existosamente!"});
     }
   });
 })
