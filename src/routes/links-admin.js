@@ -24,18 +24,31 @@ router.get("/choferJSON", isAdmin, async (req, res) => {
 
 // CHOFER/DNI
 router.post("/chofer/dni", async (req, res) => {
-  const { dniValue, idValue } = req.body;
-  // YA ESTA ACOMODADO PARA LOS CHOFERES UNICAMENTE, PERO SOLO LOS CHOFERES SE REGISTRAN CON DNI, LOS USUARIOS NO, POR LO QUE SERIA ESTUPIDO XD
+  const { usernameValue, idValue } = req.body;
   const result = await pool.query(
-    "SELECT * FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER'  AND u.dni=? ",
-    [dniValue]
+    "SELECT * FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER'  AND u.username=? ",
+    [usernameValue]
   );
-  //const idRow = await pool.query ("SELECT id_usuario FROM usuario ")
-
   if (result.length > 0) {
     if (result[0].id_usuario == idValue) {
-      console.log("result[0].id_usuario:", result[0].id_usuario);
-      console.log("idValue:", idValue);
+      res.json(true);
+    } else {
+      res.json(false);
+    }
+  } else {
+    res.json(true);
+  }
+});
+
+// CHOFER/EMAIL
+router.post("/chofer/email", async (req, res) => {
+  const { emailValue, idValue } = req.body;
+  const result = await pool.query(
+    "SELECT * FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER'  AND u.email=? ",
+    [emailValue]
+  );
+  if (result.length > 0) {
+    if (result[0].id_usuario == idValue) {
       res.json(true);
     } else {
       res.json(false);
@@ -47,76 +60,83 @@ router.post("/chofer/dni", async (req, res) => {
 
 //CHOFER/USERNAME
 router.post("/chofer/username", async (req, res) => {
-  const { usernameValue } = req.body;
-  const result = await pool.query("SELECT * FROM usuario WHERE username=? ", [
-    usernameValue,
-  ]);
-  console.log(result);
+  const { usernameValue, idValue } = req.body;
+  const result = await pool.query(
+    "SELECT * FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER'  AND u.username=? ",
+    [usernameValue]
+  );
   if (result.length > 0) {
-    res.json(false);
+    if (result[0].id_usuario == idValue) {
+      res.json(true);
+    } else {
+      res.json(false);
+    }
   } else {
     res.json(true);
   }
 });
 
-router.post("/choferes", async (req, res) => {
-  let { id, name, lastname, dni, email, username, password, confirmPassword } =
-    req.body;
-  if (
-    name == "" ||
-    lastname == "" ||
-    dni == "" ||
-    email == "" ||
-    username == "" ||
-    password == "" ||
-    confirmPassword == ""
-  ) {
-    req.flash(
-      "warning",
-      "Lo siento, no se puede dejar ningun campo en blanco!"
-    );
-  } else {
-    const result = await pool.query("SELECT * FROM usuario WHERE username=?", [
-      username,
-    ]);
+router.post(
+  "/choferes",
+  body("name").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("lastname").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("dni").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("dni").custom(async (value) => {
+    const result = await pool.query(
+      "SELECT dni FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' AND dni=?",[value]);
     if (result.length > 0) {
-      req.flash("warning", "lo siento ese nombre de usuario ya existe");
-    } else {
-      if (password != confirmPassword) {
-        req.flash("warning", "Lo siento,las contrasenias no coinciden!");
+      throw new Error("Lo siento, el DNI ya existe en el sistema!");
+    }
+  }),
+  body("username").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("username").custom(async (value) => {
+    const usernameAux = await pool.query("SELECT username FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' AND username=?",[value]);
+    if (usernameAux.length > 0) {
+      throw new Error(
+        "Lo siento, el Nombre de usuario ya existe en el sistema!"
+      );
+    }
+  }),
+  body("email").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("email").custom(async (value) => {
+    const result = await pool.query(
+      "SELECT email FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' AND email=?",
+      [value]
+    );
+    if (result.length > 0) {
+      throw new Error("Lo siento, el Email ya existe en el sistema!");
+    }
+  }),
+  body("password").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("confirmPassword")
+    .notEmpty()
+    .withMessage("Este campo no puede estar vacio!"),
+  async (req, res) => {
+    var { id, dni, username, email, name, lastname, password } = req.body;
+    const result = validationResult(req);
+    const errors = result.errors;
+    if (result.isEmpty()) {
+      if (id == "") {
+        password = await helpers.encryptPassword(password);
+        const row = await pool.query(
+          "INSERT INTO usuario (name,lastname,email,username,password,dni) VALUES (?,?,?,?,?,?)",
+          [name, lastname, email, username, password, dni]
+        );
+        const autoridad = {
+          rol: ROLE.CHOFER,
+          id_usuario: row.insertId,
+        };
+        await pool.query("INSERT INTO autoridad SET ?", [autoridad]);
       } else {
-        const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [
-          dni,
-        ]);
-        if (result2.length > 0) {
-          req.flash("warning", "lo siento ese documento ya existe ");
-        } else {
-          if (id == "") {
-            password = await helpers.encryptPassword(password);
-            const row = await pool.query(
-              "INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)",
-              [name, lastname, dni, email, username, password]
-            );
-            const autoridad = {
-              rol: ROLE.CHOFER,
-              id_usuario: row.insertId,
-            };
-            await pool.query("INSERT INTO autoridad SET ?", [autoridad]);
-            req.flash("success", "Se ha agregado el chofer exitosamente!");
-          } else {
-            await pool.query(
-              "UPDATE usuario SET name=?,lastname=?, dni=?, email=?, username=?, password=? WHERE id_usuario=?",
-              [name, lastname, dni, email, username, password, id]
-            );
-            req.flash("success", "Se ha actualizado correctamente el chofer");
-          }
-        }
+        await pool.query(
+          "UPDATE usuario SET name=?,lastname=?,email=?,username=?,password=?,dni=? WHERE id_usuario=?",
+          [name, lastname, email, username, password, dni, id]
+        );
       }
     }
+    res.send(errors);
   }
-
-  res.redirect("/admin/choferes");
-});
+);
 
 router.delete("/choferes/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
@@ -257,42 +277,6 @@ router.post(
       }
     }
     res.send(errors);
-
-    // const row = await pool.query("SELECT nombre FROM lugar WHERE nombre=?", [
-    //   nombre,
-    // ]);
-    // if (row.length > 0) {
-    //   req.flash("warning", "Lo siento, el lugar " + nombre + " ya existe!");
-    // } else {
-    //   const blank = nombre.trim() === "";
-    //   if (id == "") {
-    //     if (blank) {
-    //       req.flash("warning", "El lugar no puede ser vacio!");
-    //     } else {
-    //       await pool.query("INSERT INTO lugar (nombre) VALUES (?)", [nombre.toUpperCase()]);
-    //       req.flash("success", "Se ha agregado el lugar exitosamente!");
-    //     }
-    //   } else {
-    //     const row_editar_deRuta = await pool.query("SELECT * FROM ruta WHERE origen=? OR destino=?", [id, id]);
-    //     if (row_editar_deRuta.length > 0) {
-    //       req.flash(
-    //         "warning",
-    //         "El lugar " +
-    //         nombre +
-    //         " no se puede editar ya que el mismo pertenece a una ruta."
-    //       );
-    //     } else {
-    //       if (blank) {
-    //         await pool.query("DELETE FROM lugar WHERE id_lugar=?", [id]);
-    //         req.flash("success", "Se ha borrado el lugar exitosamente!");
-    //       } else {
-    //         await pool.query("UPDATE lugar SET nombre=? WHERE id_lugar=?", [nombre, id]);
-    //         req.flash("success", "Se ha modificado el lugar exitosamente!");
-    //       }
-    //     }
-    //   }
-    // }
-    // res.redirect("/admin/lugares");
   }
 );
 
