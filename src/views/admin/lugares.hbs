@@ -28,11 +28,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm" href="/lugares" method="POST">
+                <form id="modalForm" action="/admin/lugares" method="POST">
                     <div class="mb-3">
                         <input type="number" id="recipient-id" name="id" hidden>
                         <label for="recipient-name" class="col-form-label">Nombre:</label>
                         <input type="text" class="form-control" id="recipient-name" name="nombre" autofocus>
+                        <div class="invalid-feedback">
+                            <p id="invalid-confirmpassword"></p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
@@ -61,6 +64,18 @@
             }
         });
     });
+
+    $('#recipient-name').focusout(function () {
+        const nameElement = $('#recipient-name');
+        if (nameElement.val() == null || nameElement.val() == "") {
+            nameElement.addClass('is-invalid');
+            $('#invalid-confirmpassword').text('El campo Nombre no puede estar vacio!');
+        } else {
+            nameElement.removeClass('is-invalid');
+            nameElement.addClass('is-valid');
+        };
+    })
+
     function LinkFormatterEdit(value, row) {
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
             "data-toggle='modal' data-target='#exampleModal'" +
@@ -75,6 +90,7 @@
         $('#exampleModalLabel').text('Editar lugar');
         $("#recipient-name").val(nombre);
         $("#recipient-id").val(id);
+        $("#recipient-name").removeClass("is-invalid is-valid")
         $('#exampleModal').modal('show')
         $('#guardarButton').text('Guardar');
 
@@ -113,6 +129,7 @@
                         $('#exampleModalLabel').text('Agregar un nuevo lugar');
                         $('#guardarButton').text('Agregar');
                         $('#exampleModal').modal('show');
+                        $("#recipient-name").removeClass("is-invalid is-valid")
                         $('#modalForm').trigger("reset");
                     }
                 },
@@ -122,4 +139,65 @@
             }
         }
     }
+
+    $("#modalForm").submit(function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var edit = array[0].value != '';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+            success: function (data) {
+                if (data.length > 0) {
+                    $.each(data, function (index, value) {
+                        if (value.param == 'nombre') {
+                            console.log('ENTRA');
+                            $('#recipient-name').addClass('is-invalid');
+                            $('#invalid-confirmpassword').text(value.msg);
+                        } else {
+                            $('#recipient-name').removeClass('is-invalid');
+                            $('#recipient-name').addClass('is-valid');
+                        }
+                    });
+                } else {
+                    if (edit) {
+                        $('#exampleModal').modal('toggle');
+                        Swal.fire(
+                            'Editado!',
+                            'El lugar se ha editado exitosamente!',
+                            'success'
+                        )
+                    } else {
+                        Swal.fire(
+                            'Agregado!',
+                            'El lugar se ha agregado exitosamente!',
+                            'success'
+                        )
+                    }
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:3000/admin/lugaresJSON',
+                        data: {},
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#table').bootstrapTable('load', data);
+                        }, error: function () {
+                            alert('Error conexion con el servidor');
+                        }
+                    });
+
+                }
+            }
+        });
+
+
+
+
+    });
 </script>

@@ -7,7 +7,7 @@ const { isAdmin } = require("../lib/auth");
 var dateFormat = require("dateformat");
 const { ROLE } = require('../lib/roles');
 const helpers = require('../lib/helpers');
-const passport = require("passport");
+const { body, validationResult } = require('express-validator');
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
 
@@ -60,8 +60,8 @@ router.post("/choferes", async (req, res) => {
         const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [dni]);
         if (result2.length > 0) {
           req.flash('warning', 'lo siento ese documento ya existe ');
-        } else{
-          if (id == ''){
+        } else {
+          if (id == '') {
             password = await helpers.encryptPassword(password);
             const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
             const autoridad = {
@@ -70,7 +70,7 @@ router.post("/choferes", async (req, res) => {
             };
             await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
             req.flash("success", "Se ha agregado el chofer exitosamente!");
-          }else{
+          } else {
             await pool.query("UPDATE usuario SET name=?,lastname=?, dni=?, email=?, username=?, password=? WHERE id_usuario=?", [name, lastname, dni, email, username, password, id]);
             req.flash('success', 'Se ha actualizado correctamente el chofer');
           }
@@ -78,21 +78,30 @@ router.post("/choferes", async (req, res) => {
       }
     }
   }
-  
+
   res.redirect("/admin/choferes");
 });
 
 router.delete("/choferes/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
-  await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id], async (error) => {
-    if (error) {
-      res.json({result: false, message: 'No es posible eliminar el chofer, ya que el mismo tiene combis asignadas!'});
-    } else {
-      await pool.query("DELETE FROM autoridad WHERE id_usuario=?", [id]);
-      await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id]);
-      res.json({result: true, message: "El chofer se ha eliminado existosamente!"});
-    }
-  });
+  const result = await pool.query("SELECT * FROM combi WHERE chofer=?", [id]);
+  if (result.length > 0) {
+    res.json({ result: false, message: 'No es posible eliminar el chofer, ya que el mismo tiene combis asignadas!' });
+  } else {
+    await pool.query("DELETE FROM autoridad WHERE id_usuario=?", [id]);
+    await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id]);
+    res.json({ result: true, message: "El chofer se ha eliminado existosamente!" });
+  }
+
+  // await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id], async (error) => {
+  //   if (error) {
+  //     res.json({ result: false, message: 'No es posible eliminar el chofer, ya que el mismo tiene combis asignadas!' });
+  //   } else {
+  //     await pool.query("DELETE FROM autoridad WHERE id_usuario=?", [id]);
+  //     await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id]);
+  //     res.json({ result: true, message: "El chofer se ha eliminado existosamente!" });
+  //   }
+  // });
 })
 
 
@@ -163,44 +172,65 @@ router.get("/lugares", isAdmin, async (req, res) => {
   res.render("admin/lugares");
 });
 
-router.post("/lugares", async (req, res) => {
-  let { id, nombre } = req.body;
-  const row = await pool.query("SELECT nombre FROM lugar WHERE nombre=?", [
-    nombre,
-  ]);
-  if (row.length > 0) {
-    req.flash("warning", "Lo siento, el lugar " + nombre + " ya existe!");
-  } else {
-    const blank = nombre.trim() === "";
-    if (id == "") {
-      if (blank) {
-        req.flash("warning", "El lugar no puede ser vacio!");
+router.post("/lugares",
+  body('nombre').notEmpty().withMessage('El campo Nombre no puede estar vacio!'),
+  body('nombre').custom(async (value) => {
+    const result = await pool.query('SELECT nombre FROM lugar WHERE nombre=?', [value]);
+    if (result.length > 0) {
+      throw new Error('Lo siento, el lugar ya existe en el sistema!');
+    }
+  }),
+  async (req, res) => {
+    var { id, nombre } = req.body;
+    nombre = nombre.toUpperCase();
+    const result = validationResult(req);
+    const errors = result.errors;
+    if (result.isEmpty()) {
+      if (id == "") {
+        await pool.query("INSERT INTO lugar (nombre) VALUES (?)", [nombre]);
       } else {
-        await pool.query("INSERT INTO lugar (nombre) VALUES (?)", [nombre.toUpperCase()]);
-        req.flash("success", "Se ha agregado el lugar exitosamente!");
-      }
-    } else {
-      const row_editar_deRuta = await pool.query("SELECT * FROM ruta WHERE origen=? OR destino=?", [id, id]);
-      if (row_editar_deRuta.length > 0) {
-        req.flash(
-          "warning",
-          "El lugar " +
-          nombre +
-          " no se puede editar ya que el mismo pertenece a una ruta."
-        );
-      } else {
-        if (blank) {
-          await pool.query("DELETE FROM lugar WHERE id_lugar=?", [id]);
-          req.flash("success", "Se ha borrado el lugar exitosamente!");
-        } else {
-          await pool.query("UPDATE lugar SET nombre=? WHERE id_lugar=?", [nombre, id]);
-          req.flash("success", "Se ha modificado el lugar exitosamente!");
-        }
+        await pool.query("UPDATE lugar SET nombre=? WHERE id_lugar=?", [nombre, id]);
       }
     }
-  }
-  res.redirect("/admin/lugares");
-});
+    res.send(errors);
+
+
+    // const row = await pool.query("SELECT nombre FROM lugar WHERE nombre=?", [
+    //   nombre,
+    // ]);
+    // if (row.length > 0) {
+    //   req.flash("warning", "Lo siento, el lugar " + nombre + " ya existe!");
+    // } else {
+    //   const blank = nombre.trim() === "";
+    //   if (id == "") {
+    //     if (blank) {
+    //       req.flash("warning", "El lugar no puede ser vacio!");
+    //     } else {
+    //       await pool.query("INSERT INTO lugar (nombre) VALUES (?)", [nombre.toUpperCase()]);
+    //       req.flash("success", "Se ha agregado el lugar exitosamente!");
+    //     }
+    //   } else {
+    //     const row_editar_deRuta = await pool.query("SELECT * FROM ruta WHERE origen=? OR destino=?", [id, id]);
+    //     if (row_editar_deRuta.length > 0) {
+    //       req.flash(
+    //         "warning",
+    //         "El lugar " +
+    //         nombre +
+    //         " no se puede editar ya que el mismo pertenece a una ruta."
+    //       );
+    //     } else {
+    //       if (blank) {
+    //         await pool.query("DELETE FROM lugar WHERE id_lugar=?", [id]);
+    //         req.flash("success", "Se ha borrado el lugar exitosamente!");
+    //       } else {
+    //         await pool.query("UPDATE lugar SET nombre=? WHERE id_lugar=?", [nombre, id]);
+    //         req.flash("success", "Se ha modificado el lugar exitosamente!");
+    //       }
+    //     }
+    //   }
+    // }
+    // res.redirect("/admin/lugares");
+  });
 
 router.get("/lugares/eliminar/:id", async (req, res) => {
   const { id } = req.params;
