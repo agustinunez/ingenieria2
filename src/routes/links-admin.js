@@ -172,70 +172,99 @@ router.get("/insumos", isAdmin, async (req, res) => {
   res.render("admin/insumos", { row });
 });
 
-router.get("/insumos/eliminar/:id", isAdmin, async (req, res) => {
-  // Falta verificar que el insumo no pertenezca a un viaje
-  const { id } = req.params;
-  const result = await pool.query(
-    "SELECT nombre FROM insumo WHERE id_insumo=?",
-    [id]
-  );
+router.delete("/insumos/eliminar/", isAdmin, async (req, res) => {
+  const { id } = req.body;
+  /*const result = await pool.query("SELECT * FROM viaje WHERE insumo=?", [id]);
   if (result.length > 0) {
-    const row = await pool.query("DELETE FROM insumo WHERE id_insumo=?", [id]);
-    if (row.affectedRows == 1) {
-      req.flash("success", "Se ha borrado el insumo exitosamente!");
-    } else {
-      req.flash("warning", "El numero de id " + id + " no existe!");
-    }
-  }
-  res.redirect("/admin/insumos");
-});
+    res.json({
+      result: false,                          aca va la comprobacion de q no este en un viaje vendido este inusmo pero no tenemos una vrg de viajes asi qno se puede hacer :D
+      message:
+        "No es posible eliminar el insumo porqn esta en un vieja !",
+    });
+  }*/
+  await pool.query("DELETE FROM insumo WHERE id_insumo=?", [id]);
+  res.json({
+    result: true,
+    message: "El insumo se ha eliminado existosamente!",
+  });
 
-router.post("/insumos", async (req, res) => {
-  let { id, nombre, precio, cantidad } = req.body;
-  const aux = await pool.query("SELECT * FROM insumo WHERE nombre=?", [nombre]);
-  if (aux.length > 0) {
-    if (
-      id == aux[0].id_insumo &&
-      (aux[0].precio != precio || aux[0].cantidad != cantidad)
-    ) {
-      await pool.query(
-        "UPDATE insumo SET precio=?,cantidad=? WHERE id_insumo=?",
-        [precio, cantidad, id]
-      );
-      req.flash("success", "Se ha modificado el insumo exitosamente!");
+
+})
+
+
+
+router.post("/insumos", body("nombre").notEmpty().withMessage("El campo Nombre no puede estar vacio!"), body("nombre").custom(async (value) => {
+  const result = await pool.query("SELECT nombre FROM insumo WHERE nombre=?", [value]);
+  if (result.length > 0) {
+    throw new Error("Lo siento, el insumo ya existe en el sistema!");
+  }
+}),
+  body("precio").notEmpty().withMessage("El campo Precio no puede estar vacio!"),
+  body("cantidad").notEmpty().withMessage("El campo Cantidad no puede estar vacio!"),
+  async (req, res) => {
+    var { id, nombre, precio, cantidad } = req.body;
+    nombre = nombre.toUpperCase();
+    const result = validationResult(req);
+    const errors = result.errors;
+    if (result.isEmpty()) {
+      if (id == "") {
+        await pool.query("INSERT INTO insumo (nombre,precio,cantidad) VALUES (?,?,?)", [nombre, precio, cantidad]);
+      } else {
+        await pool.query("UPDATE insumo SET nombre=? , precio=? , cantidad= ? WHERE id_insumo=?", [nombre, precio, cantidad, id]);
+      }
+    }
+    res.send(errors);
+  }
+);
+
+
+
+
+/*let { id, nombre, precio, cantidad } = req.body;
+const aux = await pool.query("SELECT * FROM insumo WHERE nombre=?", [nombre]);
+if (aux.length > 0) {
+  if (
+    id == aux[0].id_insumo &&
+    (aux[0].precio != precio || aux[0].cantidad != cantidad)
+  ) {
+    await pool.query(
+      "UPDATE insumo SET precio=?,cantidad=? WHERE id_insumo=?",
+      [precio, cantidad, id]
+    );
+    req.flash("success", "Se ha modificado el insumo exitosamente!");
+  } else {
+    req.flash("warning", "Lo siento, el insumo " + nombre + " ya existe!");
+  }
+} else {
+  const blankNombre = nombre.trim() === "";
+  const blankPrecio = precio.trim() === "";
+  const blankCantidad = cantidad.trim() === "";
+  if (id == "") {
+    if (blankNombre || blankPrecio || blankCantidad) {
+      req.flash("warning", "Ningun campo del insumo puede estar vacio!");
     } else {
-      req.flash("warning", "Lo siento, el insumo " + nombre + " ya existe!");
+      const nombreMayuscula = nombre.toUpperCase();
+      await pool.query(
+        "INSERT INTO insumo (nombre,precio,cantidad) VALUES (?,?,?)",
+        [nombreMayuscula, precio, cantidad]
+      );
+      req.flash("success", "Se ha agregado el insumo exitosamente!");
     }
   } else {
-    const blankNombre = nombre.trim() === "";
-    const blankPrecio = precio.trim() === "";
-    const blankCantidad = cantidad.trim() === "";
-    if (id == "") {
-      if (blankNombre || blankPrecio || blankCantidad) {
-        req.flash("warning", "Ningun campo del insumo puede estar vacio!");
-      } else {
-        const nombreMayuscula = nombre.toUpperCase();
-        await pool.query(
-          "INSERT INTO insumo (nombre,precio,cantidad) VALUES (?,?,?)",
-          [nombreMayuscula, precio, cantidad]
-        );
-        req.flash("success", "Se ha agregado el insumo exitosamente!");
-      }
+    if (blankNombre) {
+      await pool.query("DELETE FROM insumo WHERE id_insumo=?", [id]);
+      req.flash("success", "Se ha borrado el insumo exitosamente!");
     } else {
-      if (blankNombre) {
-        await pool.query("DELETE FROM insumo WHERE id_insumo=?", [id]);
-        req.flash("success", "Se ha borrado el insumo exitosamente!");
-      } else {
-        await pool.query(
-          "UPDATE insumo SET nombre=?,precio=?,cantidad=? WHERE id_insumo=?",
-          [nombre, precio, cantidad, id]
-        );
-        req.flash("success", "Se ha modificado el insumo exitosamente!");
-      }
+      await pool.query(
+        "UPDATE insumo SET nombre=?,precio=?,cantidad=? WHERE id_insumo=?",
+        [nombre, precio, cantidad, id]
+      );
+      req.flash("success", "Se ha modificado el insumo exitosamente!");
     }
   }
-  res.redirect("/admin/insumos");
-});
+}
+res.redirect("/admin/insumos");
+});*/
 
 router.get("/insumosJSON", isAdmin, async (req, res) => {
   const aux = await pool.query(

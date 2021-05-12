@@ -4,7 +4,7 @@
             data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-locale="es-AR"
             data-pagination="true">
             <thead>
-                <tr class="">
+                <tr>
                     <th data-field="id_insumo">
                         ID
                     </th>
@@ -36,18 +36,25 @@
                 <form id="modalForm" href="/choferes" method="POST">
                     <div class="mb-3">
                         <input type="number" id="recipient-id" name="id" hidden>
-
                         <label for="recipient-name" class="col-form-label">Nombre:</label>
-                        <input type="text" class="form-control" id="recipient-name" name="nombre">
-
+                        <input type="text" class="form-control" id="recipient-name" name="nombre" autofocus>
+                        <div class="invalid-feedback">
+                            <p id="invalid-name"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="recipient-precio" class="col-form-label">Precio:</label>
                         <input type="number" class="form-control" id="recipient-precio" name="precio">
+                        <div class="invalid-feedback">
+                            <p id="invalid-price"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="recipient-cantidad" class="col-form-label">Cantidad:</label>
                         <input type="number" class="form-control" id="recipient-cantidad" name="cantidad">
+                        <div class="invalid-feedback">
+                            <p id="invalid-amount"></p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
@@ -80,6 +87,40 @@
             $('#recipient-name').focus();
         })
     });
+
+    $('#recipient-name').focusout(function () {
+        const nameElement = $('#recipient-name');
+        if (nameElement.val() == null || nameElement.val() == "") {
+            nameElement.addClass('is-invalid');
+            $('#invalid-name').text('El campo Nombre no puede estar vacio!');
+        } else {
+            nameElement.removeClass('is-invalid');
+            nameElement.addClass('is-valid');
+        };
+    })
+
+    $('#recipient-precio').focusout(function () {
+        const precioElement = $('#recipient-precio');
+        if (precioElement.val() == null || precioElement.val() == "") {
+            precioElement.addClass('is-invalid');
+            $('#invalid-price').text('El campo Precio no puede estar vacio!');
+        } else {
+            precioElement.removeClass('is-invalid');
+            precioElement.addClass('is-valid');
+        };
+    })
+
+    $('#recipient-cantidad').focusout(function () {
+        const cantidadElement = $('#recipient-cantidad');
+        if (cantidadElement.val() == null || cantidadElement.val() == "") {
+            cantidadElement.addClass('is-invalid');
+            $('#invalid-amount').text('El campo Cantidad no puede estar vacio!');
+        } else {
+            cantidadElement.removeClass('is-invalid');
+            cantidadElement.addClass('is-valid');
+        };
+    })
+
     // BOTON EDITAR
     function LinkFormatterEdit(value, row) {
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
@@ -106,7 +147,7 @@
         $('#exampleModal').modal('show')
         $('#guardarButton').text('Guardar');
 
-        const nombre2 = document.getElementById("recipient-name").value;
+        const nombre2 = document.getElementById("recipient-name").value.toUpperCase();
         const precio2 = document.getElementById("recipient-precio").value;
         const cantidad2 = document.getElementById("recipient-cantidad").value;
         const personalButton = document.getElementById("guardarButton");
@@ -116,11 +157,11 @@
             let precioBoolean = document.getElementById("recipient-precio").value == precio2;
             let cantidadBoolean = document.getElementById("recipient-cantidad").value == cantidad2;
             (nombreBoolean && precioBoolean && cantidadBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
-            /*if(nombreBoolean && precioBoolean && cantidadBoolean){
+            if (nombreBoolean && precioBoolean && cantidadBoolean) {
                 personalButton.disabled = true;
-            }else{
+            } else {
                 personalButton.disabled = false;
-            }*/
+            }
 
         }
 
@@ -143,7 +184,7 @@
 
 
     function LinkFormatterDelete(value) {
-        return "<a href='/admin/insumos/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
+        return "<a onclick='confirmar(" + value + ")' ><button class='btn btn-danger'>Eliminar</button></a>";
     }
 
     function buttons() {
@@ -154,9 +195,13 @@
                 event: {
                     click: () => {
                         $('#exampleModalLabel').text('Agregar un nuevo insumo');
-                        $('#exampleModal').modal('show');
-                        $('#modalForm').trigger("reset");
                         $('#guardarButton').text('Agregar');
+                        $('#exampleModal').modal('show');
+                        $('#guardarButton').prop('disabled', false);
+                        $("#recipient-name").removeClass("is-invalid is-valid")
+                        $("#recipient-cantidad").removeClass("is-invalid is-valid")
+                        $("#recipient-precio").removeClass("is-invalid is-valid")
+                        $('#modalForm').trigger("reset");
                     }
                 },
                 attributes: {
@@ -165,4 +210,124 @@
             }
         }
     }
+    $("#modalForm").submit(function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var edit = array[0].value != '';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#recipient-name').removeClass('is-invalid');
+                    $('#recipient-name').addClass('is-valid');
+                    $('#recipient-precio').removeClass('is-invalid');
+                    $('#recipient-precio').addClass('is-valid');
+                    $('#recipient-cantidad').removeClass('is-invalid');
+                    $('#recipient-cantidad').addClass('is-valid');
+                    $.each(data, function (index, value) {
+                        console.log("este es le valor ", value)
+                        if (value.param == 'nombre') {
+                            $('#recipient-name').addClass('is-invalid');
+                            $('#invalid-name').text(value.msg);
+                        }
+                        if (value.param == 'precio') {
+                            $('#recipient-precio').addClass('is-invalid');
+                            $('#invalid-price').text(value.msg);
+                        }
+                        if (value.param == 'cantidad') {
+                            $('#recipient-cantidad').addClass('is-invalid');
+                            $('#invalid-amount').text(value.msg);
+                        }
+                    }
+                    )
+                } else {
+                    if (edit) {
+                        $('#exampleModal').modal('toggle');
+                        Swal.fire(
+                            'Editado!',
+                            'El Insumo se ha editado exitosamente!',
+                            'success'
+                        )
+                    } else {
+                        Swal.fire(
+                            'Agregado!',
+                            'El Insumo se ha agregado exitosamente!',
+                            'success'
+                        )
+                    }
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:3000/admin/insumosJSON',
+                        data: {},
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#table').bootstrapTable('load', data);
+                        }, error: function () {
+                            alert('Error conexion con el servidor');
+                        }
+                    });
+
+                }
+            }
+        })
+
+    });
+    function confirmar(id) {
+        Swal.fire({
+            title: 'Seguro que quieres eliminarlo?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax('/admin/insumos/eliminar/', {
+                    type: 'DELETE',
+                    data: { id },
+                    success: function (res) {
+                        if (res.result) {
+                            $.ajax({
+                                type: 'GET',
+                                url: 'http://localhost:3000/admin/insumosJSON',
+                                data: {},
+                                dataType: 'json',
+                                success: function (data) {
+                                    $('#table').bootstrapTable('load', data);
+                                }, error: function () {
+                                    alert('Error conexion con el servidor');
+                                }
+                            });
+                            Swal.fire(
+                                'Eliminado!',
+                                res.message,
+                                'success'
+                            )
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: res.message
+                            })
+                        }
+                    },
+                    error: function (data) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!'
+                        })
+                    }
+                });
+            }
+        })
+    };
+
 </script>
