@@ -55,26 +55,30 @@ router.post("/choferes", async (req, res) => {
       req.flash('warning', 'lo siento ese nombre de usuario ya existe');
     } else {
       if (password != confirmPassword) {
-        console.log('PASS: ', password);
-        console.log('CONFIRM: ', confirmPassword);
         req.flash('warning', 'Lo siento,las contrasenias no coinciden!');
-      }
-      else {
+      } else {
         const result2 = await pool.query("SELECT * FROM usuario WHERE dni=?", [dni]);
         if (result2.length > 0) {
           req.flash('warning', 'lo siento ese documento ya existe ');
+        } else{
+          if (id == ''){
+            password = await helpers.encryptPassword(password);
+            const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
+            const autoridad = {
+              rol: ROLE.CHOFER,
+              id_usuario: row.insertId
+            };
+            await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
+            req.flash("success", "Se ha agregado el chofer exitosamente!");
+          }else{
+            await pool.query("UPDATE usuario SET name=?,lastname=?, dni=?, email=?, username=?, password=? WHERE id_usuario=?", [name, lastname, dni, email, username, password, id]);
+            req.flash('success', 'Se ha actualizado correctamente el chofer');
+          }
         }
       }
     }
   }
-  password = await helpers.encryptPassword(password);
-  const row = await pool.query("INSERT INTO usuario (name,lastname,dni,email,username,password) VALUES (?,?,?,?,?,?)", [name, lastname, dni, email, username, password]);
-  const autoridad = {
-    rol: ROLE.CHOFER,
-    id_usuario: row.insertId
-  };
-  await pool.query('INSERT INTO autoridad SET ?', [autoridad]);
-  req.flash("success", "Se ha agregado el chofer exitosamente!");
+  
   res.redirect("/admin/choferes");
 });
 

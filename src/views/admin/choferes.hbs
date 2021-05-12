@@ -348,10 +348,8 @@ hicieron asi? --}}
             let dniBoolean = document.getElementById("recipient-dni").value == dni2;
             let usernameBoolean = (document.getElementById("recipient-username").value).toUpperCase() == username2.toUpperCase();
             let emailBoolean = (document.getElementById("recipient-email").value).toUpperCase() == email2.toUpperCase();
-            let passwordBoolean = $('#recipient-password').val() !== "";
-            let confirmpasswordBoolean = $('#recipient-confirmpassword').val() !== "";
-            console.log('PASS: ', passwordBoolean);
-            console.log('CONFIRM: ', confirmpasswordBoolean);
+            let passwordBoolean = $('#recipient-password').val() == '' ;
+            let confirmpasswordBoolean = $('#recipient-confirmpassword').val() == '' ;
 
             (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean && passwordBoolean && confirmpasswordBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
