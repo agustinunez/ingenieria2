@@ -165,14 +165,17 @@ hicieron asi? --}}
 
     $('#recipient-dni').focusout(function () {
         const dniElement = $('#recipient-dni');
+        const idElement = $('#recipient-id');
+        console.log("ID:", idElement);
         if (dniElement.val() == null || dniElement.val() == "") {
             $('#invalid-dni').text('Este campo no puede estar vacio!');
             dniElement.addClass('is-invalid');
         } else {
             const dniValue = dniElement.val();
+            const idValue = idElement.val();
             $.ajax('/admin/chofer/dni', {
                 type: 'POST',
-                data: { dniValue },
+                data: { dniValue, idValue },
                 success: function (res) {
                     if (res) {
                         dniElement.removeClass('is-invalid');
@@ -350,6 +353,9 @@ hicieron asi? --}}
             let emailBoolean = (document.getElementById("recipient-email").value).toUpperCase() == email2.toUpperCase();
             let passwordBoolean = $('#recipient-password').val() == '' ;
             let confirmpasswordBoolean = $('#recipient-confirmpassword').val() == '' ;
+
+            console.log("DNI:", dni2);
+            console.log('ID:', $("#recipient-id").val());
 
             (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean && passwordBoolean && confirmpasswordBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
