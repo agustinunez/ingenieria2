@@ -246,7 +246,9 @@
                             alert('Error conexion con el servidor');
                         }
                     });
-
+                    $("#origen").removeClass("is-invalid is-valid")
+                    $("#destino").removeClass("is-invalid is-valid")
+                    $('#modalForm').trigger("reset");
                 }
             }
         });

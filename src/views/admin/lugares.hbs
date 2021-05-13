@@ -84,7 +84,7 @@
                         nameElement.removeClass('is-invalid');
                         nameElement.addClass('is-valid');
                     } else {
-                        $('#invalid-confirmpassword').text('Lo siento, el lugar ya existe en el sistema!!');
+                        $('#invalid-confirmpassword').text('Lo siento, el lugar ya existe en el sistema!');
                         nameElement.addClass('is-invalid');
                     }
                 }
@@ -142,7 +142,7 @@
                         $('#guardarButton').text('Agregar');
                         $('#guardarButton').prop('disabled', false);
                         $('#exampleModal').modal('show');
-                        $("#recipient-name").removeClass("is-invalid is-valid")
+                        $("#recipient-name").removeClass("is-invalid is-valid");
                         $('#modalForm').trigger("reset");
                     }
                 },
@@ -203,7 +203,8 @@
                             alert('Error conexion con el servidor');
                         }
                     });
-
+                    $("#recipient-name").removeClass("is-invalid is-valid");
+                    $('#modalForm').trigger("reset");
                 }
             }
         });

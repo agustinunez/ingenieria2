@@ -160,7 +160,7 @@
                         dniElement.removeClass('is-invalid');
                         dniElement.addClass('is-valid');
                     } else {
-                        $('#invalid-dni').text('El DNI ya existe!');
+                        $('#invalid-dni').text('Lo siento, el DNI ya existe en el sistema!');
                         dniElement.addClass('is-invalid');
                     }
                 }
@@ -321,6 +321,8 @@
         $("#recipient-dni").removeClass("is-invalid is-valid");
         $("#recipient-username").removeClass("is-invalid is-valid");
         $("#recipient-email").removeClass("is-invalid is-valid");
+        $("#recipient-password").removeClass("is-invalid is-valid");
+        $("#recipient-confirmpassword").removeClass("is-invalid is-valid");
         $('#exampleModal').modal('show');
         $('#guardarButton').text('Guardar');
 
@@ -399,6 +401,8 @@
                         $("#recipient-dni").removeClass("is-invalid is-valid");
                         $("#recipient-username").removeClass("is-invalid is-valid");
                         $("#recipient-email").removeClass("is-invalid is-valid");
+                        $("#recipient-password").removeClass("is-invalid is-valid");
+                        $("#recipient-confirmpassword").removeClass("is-invalid is-valid");
                         $('#modalForm').trigger("reset");
                         $('#guardarButton').prop('disabled', false);
                     }
@@ -488,7 +492,14 @@
                             alert('Error conexion con el servidor');
                         }
                     });
-
+                    $("#recipient-name").removeClass("is-invalid is-valid");
+                    $("#recipient-lastname").removeClass("is-invalid is-valid");
+                    $("#recipient-dni").removeClass("is-invalid is-valid");
+                    $("#recipient-username").removeClass("is-invalid is-valid");
+                    $("#recipient-email").removeClass("is-invalid is-valid");
+                    $("#recipient-password").removeClass("is-invalid is-valid");
+                    $("#recipient-confirmpassword").removeClass("is-invalid is-valid");
+                    $('#modalForm').trigger("reset");
                 }
             }
         })

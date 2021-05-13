@@ -26,11 +26,10 @@ router.get("/choferJSON", isAdmin, async (req, res) => {
 
 // CHOFER/DNI
 router.post("/chofer/dni", async (req, res) => {
-  const { usernameValue, idValue } = req.body;
+  const { dniValue, idValue } = req.body;
   const result = await pool.query(
-    "SELECT * FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER'  AND u.username=? ",
-    [usernameValue]
-  );
+    "SELECT * FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' AND u.dni=?",
+    [dniValue]);
   if (result.length > 0) {
     if (result[0].id_usuario == idValue) {
       res.json(true);
@@ -78,48 +77,61 @@ router.post("/chofer/username", async (req, res) => {
   }
 });
 
-router.post(
-  "/choferes",
+router.post("/choferes",
   body("name").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("lastname").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("dni").notEmpty().withMessage("Este campo no puede estar vacio!"),
-  body("dni").custom(async (value) => {
-    const result = await pool.query(
-      "SELECT dni FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' AND dni=?", [value]);
-    if (result.length > 0) {
-      throw new Error("Lo siento, el DNI ya existe en el sistema!");
-    }
-  }),
-  body("username").notEmpty().withMessage("Este campo no puede estar vacio!"),
-  body("username").custom(async (value) => {
-    const usernameAux = await pool.query("SELECT username FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' AND username=?", [value]);
-    if (usernameAux.length > 0) {
-      throw new Error(
-        "Lo siento, el Nombre de usuario ya existe en el sistema!"
-      );
-    }
-  }),
   body("email").notEmpty().withMessage("Este campo no puede estar vacio!"),
-  body("email").custom(async (value) => {
-    const result = await pool.query(
-      "SELECT email FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) WHERE a.rol='ROL_CHOFER' AND email=?",
-      [value]
-    );
-    if (result.length > 0) {
-      throw new Error("Lo siento, el Email ya existe en el sistema!");
-    }
-  }),
+  body("username").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("password").notEmpty().withMessage("Este campo no puede estar vacio!"),
-  body("confirmPassword")
-    .notEmpty()
-    .withMessage("Este campo no puede estar vacio!"),
+  body("confirmPassword").notEmpty().withMessage("Este campo no puede estar vacio!"),
   async (req, res) => {
     var { id, dni, username, email, name, lastname, password } = req.body;
     const result = validationResult(req);
     const errors = result.errors;
-    if (result.isEmpty()) {
+
+    const rowDni = await pool.query(
+      "SELECT u.id_usuario "+
+      "FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) "+
+      "WHERE a.rol='ROL_CHOFER' AND u.dni=?", [dni]);
+    if (rowDni.length > 0) {
+      if (rowDni[0].id_usuario != id) {
+        errors.push({
+          value: '',
+          msg: 'Lo siento, el DNI ya existe en el sistema!',
+          param: 'dni',
+          location: 'body'
+        });
+      }
+    }
+
+    const rowEmail = await pool.query("SELECT id_usuario FROM usuario WHERE email=?", [email]);
+    if (rowEmail.length > 0) {
+      if (rowEmail[0].id_usuario != id) {
+        errors.push({
+          value: '',
+          msg: 'Lo siento, el Email ya existe en el sistema!',
+          param: 'email',
+          location: 'body'
+        });
+      }
+    }
+
+    const rowUsername = await pool.query("SELECT id_usuario FROM usuario WHERE username=?", [username]);
+    if (rowUsername.length > 0) {
+      if (rowUsername[0].id_usuario != id) {
+        errors.push({
+          value: '',
+          msg: 'Lo siento, el Nombre de usuario ya existe en el sistema!',
+          param: 'username',
+          location: 'body'
+        });
+      }
+    }
+
+    if (errors.length == 0) {
+      password = await helpers.encryptPassword(password);
       if (id == "") {
-        password = await helpers.encryptPassword(password);
         const row = await pool.query(
           "INSERT INTO usuario (name,lastname,email,username,password,dni) VALUES (?,?,?,?,?,?)",
           [name, lastname, email, username, password, dni]

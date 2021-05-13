@@ -273,7 +273,10 @@
                             alert('Error conexion con el servidor');
                         }
                     });
-
+                    $("#recipient-name").removeClass("is-invalid is-valid");
+                    $("#recipient-cantidad").removeClass("is-invalid is-valid");
+                    $("#recipient-precio").removeClass("is-invalid is-valid");
+                    $('#modalForm').trigger("reset");
                 }
             }
         })
