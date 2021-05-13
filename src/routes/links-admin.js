@@ -8,6 +8,7 @@ var dateFormat = require("dateformat");
 const { ROLE } = require('../lib/roles');
 const helpers = require('../lib/helpers');
 const { body, validationResult } = require('express-validator');
+const moment = require('moment');
 
 //ROUTER GET Y POST
 
@@ -379,12 +380,24 @@ router.delete("/combis/eliminar", isAdmin, async (req, res) => {
 
 //---------------------------------------------------------------------------------------------------VIAJES-------------------------------------------------------------------------------------
 router.get("/viajes", isAdmin, async (req, res) => {
-  res.render("admin/viajes");
+  // ENVIO LAS RUTAS Y COMBIS PARA LISTARLOS PARA SELECCIONARLOS
+  const insumos = await pool.query("SELECT nombre,id_insumo FROM insumo");
+  const combis = await pool.query("SELECT patente,id_combi FROM combi");
+  const rutas = await pool.query("SELECT r.origen AS origenid ,r.destino AS destinoid,r.id_ruta AS id_ruta,l.nombre AS nombreorigen,l2.nombre AS nombredestino FROM ruta r INNER JOIN lugar l ON (r.origen=l.id_lugar) INNER JOIN lugar l2 ON (r.destino=l2.id_lugar) ORDER BY r.id_ruta ASC");
+  res.render("admin/viajes", { rutas, combis, insumos });
+
 });
+
 
 router.get("/viajesJSON", isAdmin, async (req, res) => {
   const aux = await pool.query("SELECT * FROM viaje");
   for (let i = 0; i < aux.length; i++) {
+      
+      const patenteCombi = await pool.query(" SELECT patente FROM combi WHERE id_combi=?",[aux[i].combi]);
+      aux[i].combi = patenteCombi[0].patente;
+      const rutasViaje = await pool.query("SELECT r.origen AS origenid ,r.destino AS destinoid,r.id_ruta AS id_ruta,l.nombre AS nombreorigen,l2.nombre AS nombredestino FROM ruta r INNER JOIN lugar l ON (r.origen=l.id_lugar) INNER JOIN lugar l2 ON (r.destino=l2.id_lugar) WHERE id_ruta=?",[aux[i].ruta]);
+      aux[i].ruta = rutasViaje[0].nombreorigen +' - '+ rutasViaje[0].nombredestino;
+    //  console.log(rutasViaje);
     aux[i].fecha_salida = dateFormat(aux[i].fecha_salida, "yyyy-mm-dd");
     aux[i].fecha_publicacion = dateFormat(
       aux[i].fecha_publicacion,
@@ -393,6 +406,85 @@ router.get("/viajesJSON", isAdmin, async (req, res) => {
   }
   res.send(aux);
 });
+
+
+router.post("/viajes",
+  body("ruta").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("fechasalida").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("fechasalida").custom(async (value) => {
+    if (value < moment().format('YYYY-MM-DD')) {
+      throw new Error("Lo siento, la Fecha de salida debe ser mayor o igual al dia actual!");
+    }
+  }),
+  body("horasalida").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("combi").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("fechapublicacion").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("precio").notEmpty().withMessage("Este campo no puede estar vacio!"),
+
+  async (req, res) => {
+    var { id, ruta, fechasalida, horasalida, combi, fechapublicacion, precio } =
+      req.body;
+    const result = validationResult(req);
+    const errors = result.errors;
+
+    if (result.isEmpty()) {
+      if (
+        !(fechasalida > moment().format("YYYY-MM-DD")) &&
+        !(fechasalida < moment().format("YYYY-MM-DD"))
+      ) {
+        if (horasalida < moment().format("HH:mm")) {
+          errors.push({
+            value: "",
+            msg: "Lo siento, la Hora de salida debe ser mayor o igual a la hora actual!",
+            param: "horasalida",
+            location: "body",
+          });
+        }
+      }
+    }
+    const isOk = await pool.query("SELECT * FROM viaje WHERE combi=? AND fecha_salida=? AND hora_salida=?",[combi,fechasalida,horasalida]);
+    if (isOk.length > 0){
+      errors.push({
+        value: "",
+        msg: "Lo siento, ya existe un viaje con dicha Combi, Fecha y Hora!",
+        param: "viaje",
+        location: "body",
+      });
+    }
+
+    if (errors.length == 0) {
+      if (id == "") {
+        await pool.query(
+          "INSERT INTO viaje (ruta, fecha_salida, hora_salida, combi, fecha_publicacion, precio) VALUES (?,?,?,?,?,?)",
+          [ruta, fechasalida, horasalida, combi, fechapublicacion, precio]
+        );
+      } else {
+        await pool.query(
+          "UPDATE viaje SET ruta=?,fecha_salida=?,hora_salida=?,combi=?,fecha_publicacion=?,precio=? WHERE id_viaje=?",
+          [ruta, fechasalida, horasalida, combi, fechapublicacion, precio, id]
+        );
+      }
+    }
+    res.send(errors);
+  });
+
+router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
+  const { id } = req.body;
+  const result = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
+  if (result.length > 0) {
+    await pool.query("DELETE FROM viaje WHERE id_viaje=?",[id]);
+    res.json({
+      result: true,
+      message: "Se ha eliminado el viaje exitosamente!",
+    });
+  }else{
+    res.json({
+      result: false,
+      message: "No se puede eliminar este viaje dado que no existe!",
+    });
+  }
+});
+
 //---------------------------------------------------------------------------------------------------FIN DE VIAJES-------------------------------------------------------------------------------------
 
 

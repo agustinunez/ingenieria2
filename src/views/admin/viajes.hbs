@@ -34,31 +34,442 @@
 </div>
 </strong>
 
+{{!-- ---------------------------------------------------------------------------------------------------EMPIEZA EL MODAL------------------------------------------------------------------------------------- --}}
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Agregar nuevo viaje</h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm">
+                <form id="modalForm" active="/admin/viajes" method="POST">
+                    <input type="number" id="recipient-id" name="id" hidden>
                     <div class="mb-3">
-                        <label for="recipient-name" class="col-form-label">Nombre:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <label for="ruta" class="form-label">Ruta:</label>
+                        <select class="form-select" id="recipient-ruta" name="ruta">
+                            {{#each rutas}}
+                                <option value={{id_ruta}}>{{nombreorigen}} - {{nombredestino}}</option>
+                            {{/each}}
+                        </select>
+                        <div class="invalid-feedback">
+                            <p id="invalid-ruta"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="fechasalida">Fecha de salida:</label>
+                        <input type="date" class="form-control" id="recipient-fechasalida" name="fechasalida">
+                        <div class="invalid-feedback">
+                            <p id="invalid-fechasalida"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="horasalida" class="form-label">Hora salida:</label>
+                        <input type="time" class="form-control" id="recipient-horasalida" name="horasalida">
+                        <div class="invalid-feedback">
+                                <p id="invalid-horasalida"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="combi" class="form-label">Combi:</label>
+                        <select class="form-select" id="recipient-combi" name="combi">
+                            {{#each combis}}
+                                <option value={{id_combi}}>{{patente}}</option>
+                            {{/each}}
+                        </select>
+                        <div class="invalid-feedback">
+                            <p id="invalid-combi"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechapublicacion" class="form-label">Fecha de publicacion:</label>
+                        <input type="date" class="form-control" id="recipient-fechapublicacion" name="fechapublicacion">
+                        <div class="invalid-feedback">
+                                <p id="invalid-fechapublicacion"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{!-- Chequear que sea de tipo number o double --}}
+                        <label for="precio" class="form-label">Precio:</label>
+                        <input type="number" class="form-control" id="recipient-precio" name="precio">
+                        <div class="invalid-feedback">
+                                <p id="invalid-precio"></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success" id="guardarButton"></button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success">Agregar</button>
             </div>
         </div>
     </div>
 </div>
 
+{{!-- ---------------------------------------------------------------------------------------------------TERMINA EL MODAL------------------------------------------------------------------------------------- --}}
+
 <script>
-    $(document).ready(function () {
+
+
+    //---------------------------------------------------------------------------------------------------AUTOFOCUS-------------------------------------------------------------------------------------
+
+
+    $('#recipient-ruta').focusout(function () {
+        const rutaElement = $('#recipient-ruta');
+        if (rutaElement.val() == null || rutaElement.val() == "") {       
+            $('#invalid-ruta').text('Este campo no puede estar vacio!');
+            rutaElement.addClass('is-invalid');
+        } else {
+            rutaElement.removeClass('is-invalid');
+            rutaElement.addClass('is-valid');
+        };
+    });
+
+    $('#recipient-fechasalida').focusout(function () {
+        const fechasalidaElement = $('#recipient-fechasalida');
+
+        if (fechasalidaElement.val() == null || fechasalidaElement.val() == "") {       
+            $('#invalid-fechasalida').text('Este campo no puede estar vacio!');
+            fechasalidaElement.addClass('is-invalid');
+        } else {
+            fechasalidaElement.removeClass('is-invalid');
+            fechasalidaElement.addClass('is-valid');
+        };
+        
+    });
+    $('#recipient-horasalida').focusout(function () {
+        const horasalidaElement = $('#recipient-horasalida');
+        console.log('ES ACA?', horasalidaElement.val() );
+        if (horasalidaElement.val() == null || horasalidaElement.val() == "") {       
+            $('#invalid-horasalida').text('Este campo no puede estar vacio!');
+            horasalidaElement.addClass('is-invalid');
+        } else {
+            horasalidaElement.removeClass('is-invalid');
+            horasalidaElement.addClass('is-valid');
+        };
+    });
+
+    $('#recipient-combi').focusout(function () {
+        const combiElement = $('#recipient-combi');
+        console.log('combiElement',combiElement.val())
+        if (combiElement.val() == null || combiElement.val() == "") {       
+            $('#invalid-combi').text('Este campo no puede estar vacio!');
+            combiElement.addClass('is-invalid');
+        } else {
+            combiElement.removeClass('is-invalid');
+            combiElement.addClass('is-valid');
+        };
+    });
+    $('#recipient-fechapublicacion').focusout(function () {
+        const fechapublicacionElement = $('#recipient-fechapublicacion');
+        if (fechapublicacionElement.val() == null || fechapublicacionElement.val() == "") {       
+            $('#invalid-fechapublicacion').text('Este campo no puede estar vacio!');
+            fechapublicacionElement.addClass('is-invalid');
+        } else {
+            fechapublicacionElement.removeClass('is-invalid');
+            fechapublicacionElement.addClass('is-valid');
+        };
+    });
+    $('#recipient-precio').focusout(function () {
+        const precioElement = $('#recipient-precio');
+        if (precioElement.val() == null || precioElement.val() == "") {       
+            $('#invalid-precio').text('Este campo no puede estar vacio!');
+            precioElement.addClass('is-invalid');
+        } else {
+            precioElement.removeClass('is-invalid');
+            precioElement.addClass('is-valid');
+        };
+    });
+
+//---------------------------------------------------------------------------------------------------FIN AUTOFOCUS-------------------------------------------------------------------------------------
+
+
+
+
+//---------------------------------------------------------------------------------------------------BOTON EDITAR-------------------------------------------------------------------------------------
+    function LinkFormatterEdit(value, row) {
+        return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
+            "data-toggle='modal' data-target='#exampleModal'" +
+            "data-id='" + row.id_viaje + "'" +
+            "data-ruta='" + row.ruta + "'" +
+            "data-fechasalida='" + row.fecha_salida + "'" +
+            "data-horasalida='" + row.hora_salida + "'" +
+            "data-combi='" + row.combi + "'" +
+            "data-fechapublicacion='" + row.fecha_publicacion + "'" +
+            "data-precio='" + row.precio + "'>" +
+            "Editar" +
+            "</button>"
+    }
+    $(document).on("click", '.edit_button', function () {
+        var id = $(this).data('id');
+        var ruta = $(this).data('ruta');
+        var fecha_salida = $(this).data('fechasalida');
+        var hora_salida = $(this).data('horasalida');
+        var combi = $(this).data('combi');
+        var fecha_publicacion = $(this).data('fechapublicacion');
+        var precio = $(this).data('precio');
+        
+
+        $('#exampleModalLabel').text('Editar combi');
+        $("#recipient-id").val(id);
+        $("#recipient-ruta").val(ruta);
+        $("#recipient-fechasalida").val(fecha_salida);
+        $("#recipient-horasalida").val(hora_salida);
+
+        $("#recipient-combi").val(combi);
+
+        $("#recipient-fechapublicacion").val(fecha_publicacion);
+        $("#recipient-precio").val(precio);
+
+        $("#recipient-ruta").removeClass("is-invalid is-valid");
+        $("#recipient-fechasalida").removeClass("is-invalid is-valid");
+        $("#recipient-horasalida").removeClass("is-invalid is-valid");
+        $("#recipient-combi").removeClass("is-invalid is-valid");
+        $("#recipient-fechapublicacion").removeClass("is-invalid is-valid");
+        $("#recipient-precio").removeClass("is-invalid is-valid");
+
+        $('#exampleModal').modal('show')
+        $('#guardarButton').text('Guardar');
+
+        const ruta2 = document.getElementById("recipient-ruta").value;
+        const fechasalida2 = document.getElementById("recipient-fechasalida").value;
+        const horasalida2 = document.getElementById("recipient-horasalida").value;
+        const combi2 = document.getElementById("recipient-combi").value;
+        const fechapublicacion2 = document.getElementById("recipient-fechapublicacion").value;
+        const precio2 = document.getElementById("recipient-precio").value;
+        const personalButton = document.getElementById("guardarButton");
+
+       // console.log('TrueOrFalse',document.getElementById("recipient-combi").value == combi2);
+       // console.log('Combi2',document.getElementById("recipient-combi").value);
+
+        const onChangeInputsPersonal = () => {
+            let rutaBoolean = document.getElementById("recipient-ruta").value == ruta2;
+            let fechasalidaBoolean = document.getElementById("recipient-fechasalida").value == fechasalida2;
+            let horasalidaBoolean = document.getElementById("recipient-horasalida").value == horasalida2;
+            let combiBoolean = document.getElementById("recipient-combi").value == combi2;
+            let fechapublicacionBoolean = document.getElementById("recipient-fechapublicacion").value == fechapublicacion2;
+            let precioBoolean = document.getElementById("recipient-precio").value == precio2;
+            
+            (rutaBoolean && fechasalidaBoolean && horasalidaBoolean && combiBoolean && fechapublicacionBoolean && precioBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+
+            document.getElementById("recipient-ruta").addEventListener('input', () => {
+                onChangeInputsPersonal();
+            });
+
+            document.getElementById("recipient-fechasalida").addEventListener('input', () => {
+                onChangeInputsPersonal();
+            });
+
+            document.getElementById("recipient-horasalida").addEventListener('input', () => {
+                onChangeInputsPersonal();
+            });
+            document.getElementById("recipient-combi").addEventListener('input', () => {
+                onChangeInputsPersonal();
+            });
+            document.getElementById("recipient-fechapublicacion").addEventListener('input', () => {
+                onChangeInputsPersonal();
+            });
+            document.getElementById("recipient-precio").addEventListener('input', () => {
+                onChangeInputsPersonal();
+            });
+
+            onChangeInputsPersonal();
+        }
+    });
+//---------------------------------------------------------------------------------------------------TERMINA EL BOTON EDITAR-------------------------------------------------------------------------------------
+
+
+
+
+//---------------------------------------------------------------------------------------------------BOTON ELIMINAR-------------------------------------------------------------------------------------   
+    function LinkFormatterDelete(value) {
+        return "<a onclick='confirmar(" + value + ")' ><button class='btn btn-danger'>Eliminar</button></a> ";
+    }
+//---------------------------------------------------------------------------------------------------TERMINO EL BOTON ELIMINAR--------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------------------BOTON AGREGAR-------------------------------------------------------------------------------------
+    function buttons() {
+        return {
+            btnAdd: {
+                text: 'Agregar viaje',
+                icon: 'fa fa-user-plus',
+                event: {
+                    click: () => {
+                        $('#exampleModalLabel').text('Agregar un nuevo viaje');
+                        $('#guardarButton').text('Agregar');
+                        $('#exampleModal').modal('show');
+
+                        $("#recipient-ruta").removeClass("is-invalid is-valid");
+                        $("#recipient-fechasalida").removeClass("is-invalid is-valid");
+                        $("#recipient-horasalida").removeClass("is-invalid is-valid");
+                        $("#recipient-combi").removeClass("is-invalid is-valid");
+                        $("#recipient-fechapublicacion").removeClass("is-invalid is-valid");
+                        $("#recipient-precio").removeClass("is-invalid is-valid");
+
+                        $('#modalForm').trigger("reset");
+                        $('#guardarButton').prop('disabled', false);
+                    }
+                },
+                attributes: {
+                    title: 'Agregar un nuevo viaje',
+                }
+            }
+        }
+    }
+//---------------------------------------------------------------------------------------------------TERMINO EL BOTON AGREGAR-------------------------------------------------------------------------------------
+
+
+
+    function LinkFormatterInsumos(value) {
+        return "<a href='/admin/viaje/insumos/" + value + "' ><button class='btn btn-warning'>Ver insumos</button></a> ";
+    }
+
+
+//--------------------------------------------------------------------------------------------------- BOTON SUBMIT------------------------------------------------------------------------------------------------
+    $("#modalForm").submit(function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var edit = array[0].value != '';
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#recipient-ruta').addClass('is-valid');
+                    $('#recipient-fechasalida').addClass('is-valid');
+                    $('#recipient-horasalida').addClass('is-valid');
+                    $('#recipient-combi').addClass('is-valid');
+                    $('#recipient-fechapublicacion').addClass('is-valid');
+                    $('#recipient-precio').addClass('is-valid');
+                    $.each(data, function (index, value) {
+                        if (value.param == 'ruta'){
+                            $('#recipient-ruta' ).addClass('is-invalid');
+                            $('#invalid-ruta').text(value.msg);
+                        } 
+                        if (value.param == 'fechasalida'){
+                            $('#recipient-fechasalida').addClass('is-invalid');
+                            $('#invalid-fechasalida').text(value.msg);
+                        }                        
+                        if (value.param == 'horasalida'){
+                            $('#recipient-horasalida').addClass('is-invalid');
+                            $('#invalid-horasalida').text(value.msg);
+                        } 
+                        if (value.param == 'combi'){
+                            $('#recipient-combi').addClass('is-invalid');
+                            $('#invalid-combi').text(value.msg);
+                        } 
+                        if (value.param == 'fechapublicacion'){
+                            $('#recipient-fechapublicacion').addClass('is-invalid');
+                            $('#invalid-fechapublicacion').text(value.msg);
+                        } 
+                        if (value.param == 'precio'){
+                            $('#recipient-precio').addClass('is-invalid');
+                            $('#invalid-precio').text(value.msg);
+                        }
+                        if (value.param = "viaje"){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: value.msg
+                            })
+                        } 
+                    });
+                } else {
+                    if (edit) {
+                        $('#exampleModal').modal('toggle');
+                        Swal.fire(
+                            'Editado!',
+                            'El viaje se ha editado exitosamente!',
+                            'success'
+                        )
+                    } else {
+                        Swal.fire(
+                            'Agregado!',
+                            'El viaje se ha agregado exitosamente!',
+                            'success'
+                        )
+                    }
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:3000/admin/viajesJSON',
+                        data: {},
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#table').bootstrapTable('load', data);
+                        }, error: function () {
+                            alert('Error conexion con el servidor');
+                        }
+                    });
+
+                }
+            }
+        })
+    });
+//---------------------------------------------------------------------------------------------------TERMINO EL BOTON SUBMIT-------------------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------------------------------SWEET ALERT-------------------------------------------------------------------------------------
+function confirmar(id) {
+        Swal.fire({
+            title: 'Seguro que quieres eliminarlo?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax('/admin/viajes/eliminar/', {
+                    type: 'DELETE',
+                    data: { id },
+                    success: function (res) {
+                        if (res.result) {
+                            $.ajax({
+                                type: 'GET',
+                                url: 'http://localhost:3000/admin/viajesJSON',
+                                data: {},
+                                dataType: 'json',
+                                success: function (data) {
+                                    $('#table').bootstrapTable('load', data);
+                                }, error: function () {
+                                    alert('Error conexion con el servidor');
+                                }
+                            });
+                            Swal.fire(
+                                'Eliminado!',
+                                res.message,
+                                'success'
+                            )
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: res.message
+                            })
+                        }
+                    },
+                    error: function (data) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!'
+                        })
+                    }
+                });
+            }
+        })
+    }; 
+//---------------------------------------------------------------------------------------------------TERMINO SWEET ALERT-------------------------------------------------------------------------------------
+
+
+
+
+        $(document).ready(function () {
         $table = $('#table');
         $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
         $.ajax({
@@ -73,30 +484,4 @@
             }
         });
     });
-    function LinkFormatterEdit(value) {
-        return "<a href='/admin/viaje/editar/" + value + "' ><button class='btn btn-primary'>Editar</button></a> ";
-    }
-    function LinkFormatterDelete(value) {
-        return "<a href='/admin/viaje/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
-    }
-    function LinkFormatterInsumos(value) {
-        return "<a href='/admin/viaje/insumos/" + value + "' ><button class='btn btn-success'>Ver insumos</button></a> ";
-    }
-    function buttons() {
-        return {
-            btnAdd: {
-                text: 'Agregar viaje',
-                icon: 'fa fa-user-plus',
-                event: {
-                    click: () => {
-                        $('#exampleModal').modal('show')
-                        $('#modalForm').trigger("reset");
-                    }
-                },
-                attributes: {
-                    title: 'Agregar un nuevo viaje',
-                }
-            }
-        }
-    }
 </script>
