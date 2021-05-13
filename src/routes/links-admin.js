@@ -390,37 +390,78 @@ router.get("/rutas", isAdmin, async (req, res) => {
   res.render("admin/rutas", { lugares });
 });
 
-router.post("/rutas", async (req, res) => {
-  const { id, origen, destino } = req.body;
-  if (origen == "" || destino == "") {
-    req.flash('warning', 'Lo siento, no se puede dejar ningun campo en blanco!');
+router.post("/ruta/lugar", async (req, res) => {
+  const { lugar } = req.body;
+  const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", [lugar]);
+  if (result.length > 0) {
+    res.json(true);
   } else {
-    const origenResult = await pool.query('SELECT * FROM lugar WHERE nombre=?', [origen]);
-    const destinoResult = await pool.query('SELECT * FROM lugar WHERE nombre=?', [destino]);
-    if (origenResult.length == 0 || destinoResult.length == 0) {
-      req.flash('warning', 'No existe el lugar seleccionado');
-    } else {
-      const result = await pool.query("SELECT * FROM ruta WHERE origen=? AND destino=?", [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
-      if (result.length > 0) {
-        req.flash('warning', 'Lo siento, dicha ruta ya existe!');
-      } else {
-        if (origen == destino) {
-          req.flash('warning', 'Lo siento, no se puede ingresar el mismo origen y destino!');
-        }
-        else {
-          if (id == "") {
-            await pool.query('INSERT INTO ruta (origen, destino) VALUES (?,?)', [origenResult[0].id_lugar, destinoResult[0].id_lugar]);
-            req.flash('success', 'Ruta agregada exitosamente!');
-          } else {
-            await pool.query("UPDATE ruta SET origen=? , destino=? WHERE id_ruta=?", [origenResult[0].id_lugar, destinoResult[0].id_lugar, id]);
-            req.flash('success', 'Ruta modificada exitosamente!');
-          }
-        }
+    res.json(false);
+  }
+});
+
+// POST DE RUTAS
+router.post("/rutas",
+  body('origen').custom(async (value) => {
+    const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", [value]);
+    if (result.length == 0) {
+      throw new Error("Lo siento, no existe el origen en el sistema!");
+    }
+  }),
+  body('destino').custom(async (value) => {
+    const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", [value]);
+    if (result.length == 0) {
+      throw new Error("Lo siento, no existe el destino en el sistema!");
+    }
+  }),
+  async (req, res) => {
+    var { id, origen, destino } = req.body;
+    const result = validationResult(req);
+    const errors = result.errors;
+    const resultOrigen = await pool.query("SELECT * FROM lugar WHERE nombre=?", origen);
+    const resultDestino = await pool.query("SELECT * FROM lugar WHERE nombre=?", destino);
+    if (resultOrigen.length > 0 && resultDestino.length > 0) {
+      const resultRuta = await pool.query("SELECT * FROM ruta WHERE origen=? AND destino=?", [resultOrigen[0].id_lugar, resultDestino[0].id_lugar]);
+      if (resultRuta.length > 0) {
+        errors.push({
+          value: '',
+          msg: 'La ruta ya existe en el sistema!',
+          param: 'ruta',
+          location: 'body'
+        });
       }
     }
+    if (errors.length == 0) {
+      if (id == "") {
+        await pool.query("INSERT INTO ruta (origen, destino) VALUES (?,?)", [resultOrigen[0].id_lugar, resultDestino[0].id_lugar]);
+      } else {
+        console.log('ENTRAAA!');
+        await pool.query("UPDATE ruta SET origen=?,destino=? WHERE id_ruta=?", [resultOrigen[0].id_lugar, resultDestino[0].id_lugar, id]);
+      }
+    }
+    res.send(errors);
+  });
+
+router.post("/ruta/editar", isAdmin, async (req, res) => {
+  const { id } = req.body;
+  const result = await pool.query("SELECT * FROM viaje WHERE ruta=?", [id]);
+  if (result.length > 0) {
+    res.json({ result: false, message: 'No es posible editar la ruta, ya que la misma tiene viaje/s asignado/s!' });
+  } else {
+    res.json({ result: true });
   }
-  res.redirect("/admin/rutas");
-});
+})
+
+router.delete("/rutas/eliminar", isAdmin, async (req, res) => {
+  const { id } = req.body;
+  const result = await pool.query("SELECT * FROM viaje WHERE ruta=?", [id]);
+  if (result.length > 0) {
+    res.json({ result: false, message: 'No es posible eliminar la ruta, ya que la misma tiene viaje/s asignado/s!' });
+  } else {
+    await pool.query("DELETE FROM ruta WHERE id_ruta=?", [id]);
+    res.json({ result: true, message: "La ruta se ha eliminado existosamente!" });
+  }
+})
 
 // ELIMINAR DE RUTAS
 router.get("/rutas/eliminar/:id", async (req, res) => {

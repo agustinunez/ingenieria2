@@ -29,11 +29,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm" href="/rutas" method="POST">
+                <form id="modalForm" action="/admin/rutas" method="POST">
                     <input type="number" id="recipient-id" name="id" hidden>
                     <div class="mb-3">
                         <label for="origen">Seleccione un origen</label>
                         <input list="origenes" name="origen" id="origen" class="form-select">
+                        <div class="invalid-feedback">
+                            <p id="invalid-origen"></p>
+                        </div>
                         <datalist id="origenes">
                             {{#each lugares}}
                             <option value="{{nombre}}">{{nombre}}</option>
@@ -43,6 +46,9 @@
                     <div class="mb-3">
                         <label for="destino">Seleccione un destino</label>
                         <input list="destinos" name="destino" id="destino" class="form-select">
+                        <div class="invalid-feedback">
+                            <p id="invalid-destino"></p>
+                        </div>
                         <datalist id="destinos">
                             {{#each lugares}}
                             <option value="{{nombre}}">{{nombre}}</option>
@@ -75,6 +81,43 @@
             }
         });
     });
+
+    $('#origen').focusout(function () {
+        const origenElement = $('#origen');
+        const lugar = origenElement.val();
+        $.ajax('/admin/ruta/lugar', {
+            type: 'POST',
+            data: { lugar },
+            success: function (res) {
+                if (res) {
+                    origenElement.removeClass('is-invalid');
+                    origenElement.addClass('is-valid');
+                } else {
+                    $('#invalid-origen').text('Lo siento, no existe el origen en el sistema!');
+                    origenElement.addClass('is-invalid');
+                }
+            }
+        });
+    })
+
+    $('#destino').focusout(function () {
+        const destinoElement = $('#destino');
+        const lugar = destinoElement.val();
+        $.ajax('/admin/ruta/lugar', {
+            type: 'POST',
+            data: { lugar },
+            success: function (res) {
+                if (res) {
+                    destinoElement.removeClass('is-invalid');
+                    destinoElement.addClass('is-valid');
+                } else {
+                    $('#invalid-destino').text('Lo siento, no existe el destino  en el sistema!');
+                    destinoElement.addClass('is-invalid');
+                }
+            }
+        });
+    })
+    
     function LinkFormatterEdit(value, row) {
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
             "data-toggle='modal' data-target='#exampleModal'" +
@@ -83,51 +126,131 @@
             "data-destino='" + row.destino + "'>" +
             "Editar" +
             "</button>"
-    }
-    $(function () {
-        $('#exampleModal').on('shown.bs.modal', function (e) {
-            $('#origen').focus();
-        })
-    });
+    } 
     $(document).on("click", '.edit_button', function () {
+        var id = $(this).data('id_ruta');
         var origen = $(this).data('origen');
         var destino = $(this).data('destino');
-        var id = $(this).data('id_ruta');
+        
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3000/admin/ruta/editar',
+            data: { id },
+            success: function (res) {
+                    console.log('ENTRA: ', origen);
+                    console.log('ENTRA: ', destino);
+                if (!res.result) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: res.message
+                    })
+                } else {
+                    $("#origen").val(origen);
+                    $("#destino").val(destino);
+                    $("#recipient-id").val(id);
+                    $('#exampleModal').modal('show');
+                    $("#origen").removeClass("is-invalid is-valid")
+                    $("#destino").removeClass("is-invalid is-valid")
+                    $('#guardarButton').text('Guardar');
 
-        $("#origen").val(origen);
-        $("#destino").val(destino);
-        $("#recipient-id").val(id);
-        $('#exampleModal').modal('show');
-        $('#guardarButton').text('Guardar');
+                    const unOrigen = document.getElementById("origen").value;
+                    const unDestino = document.getElementById("destino").value;
 
-        const unOrigen = document.getElementById("origen").value;
-        const unDestino = document.getElementById("destino").value;
+                    const personalButton = document.getElementById("guardarButton");
 
-        const personalButton = document.getElementById("guardarButton");
+                    const onChangeInputsPersonal = () => {
+                        let nombreOrigenBoolean = (document.getElementById("origen").value).toUpperCase() == unOrigen;
+                        let nombreDestinoBoolean = (document.getElementById("destino").value).toUpperCase() == unDestino;
 
-        const onChangeInputsPersonal = () => {
-            let nombreOrigenBoolean = document.getElementById("origen").value == unOrigen;
-            let nombreDestinoBoolean = document.getElementById("destino").value == unDestino;
+                        (nombreOrigenBoolean && nombreDestinoBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
-            (nombreOrigenBoolean && nombreDestinoBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+                    }
 
-        }
+                    document.getElementById("origen").addEventListener('input', () => {
+                        onChangeInputsPersonal();
+                    });
+                    document.getElementById("destino").addEventListener('input', () => {
+                        onChangeInputsPersonal();
+                    })
 
-        document.getElementById("origen").addEventListener('input', () => {
-            onChangeInputsPersonal();
+                    onChangeInputsPersonal();
+                }
+            }
         });
-        document.getElementById("destino").addEventListener('input', () => {
-            onChangeInputsPersonal();
-        })
-
-        onChangeInputsPersonal();
-
     });
 
     function LinkFormatterDelete(value) {
-        return "<a href='/admin/rutas/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
+        return "<a onclick='confirmar(" + value + ")' ><button class='btn btn-danger'>Eliminar</button></a>";
     }
 
+    $("#modalForm").submit(function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var edit = array[0].value != '';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements. 
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#origen').removeClass('is-invalid');
+                    $('#origen').addClass('is-valid');
+                    $('#destino').removeClass('is-invalid');
+                    $('#destino').addClass('is-valid');
+                    $.each(data, function (index, value) {
+                        if (value.param == 'origen') {
+                            $('#origen').addClass('is-invalid');
+                            $('#invalid-origen').text(value.msg);
+                        }
+                        if (value.param == 'destino') {
+                            $('#destino').addClass('is-invalid');
+                            $('#invalid-destino').text(value.msg);
+                        }
+                        if (value.param == 'ruta') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: value.msg
+                            })
+                        }
+                    })
+                } else {
+                    if (edit) {
+                        $('#exampleModal').modal('toggle');
+                        Swal.fire(
+                            'Editado!',
+                            'La ruta se ha editado exitosamente!',
+                            'success'
+                        )
+                    } else {
+                        Swal.fire(
+                            'Agregado!',
+                            'La ruta se ha agregado exitosamente!',
+                            'success'
+                        )
+                    }
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:3000/admin/rutasJSON',
+                        data: {},
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#table').bootstrapTable('load', data);
+                        }, error: function () {
+                            alert('Error conexion con el servidor');
+                        }
+                    });
+
+                }
+            }
+        });
+    });
 
     // BOTON DE AGREGAR
     function buttons() {
@@ -141,6 +264,9 @@
                         $('#exampleModalLabel').text('Agregar una nueva ruta');
                         $('#guardarButton').text('Agregar');
                         $('#exampleModal').modal('show');
+                        $('#guardarButton').prop('disabled', false);
+                        $("#origen").removeClass("is-invalid is-valid")
+                        $("#destino").removeClass("is-invalid is-valid")
                         $('#modalForm').trigger("reset");
                     }
                 },
@@ -150,4 +276,54 @@
             }
         }
     }
+        function confirmar(id) {
+        Swal.fire({
+            title: 'Seguro que quieres eliminarlo?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax('/admin/rutas/eliminar', {
+                    type: 'DELETE',
+                    data: { id },
+                    success: function (res) {
+                        if (res.result) {
+                            $.ajax({
+                                type: 'GET',
+                                url: 'http://localhost:3000/admin/rutasJSON',
+                                data: {},
+                                dataType: 'json',
+                                success: function (data) {
+                                    $('#table').bootstrapTable('load', data);
+                                }, error: function () {
+                                    alert('Error conexion con el servidor');
+                                }
+                            });
+                            Swal.fire(
+                                'Eliminado!',
+                                res.message,
+                                'success'
+                            )
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: res.message
+                            })
+                        }
+                    },
+                    error: function (data) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!'
+                        })
+                    }
+                });
+            }
+        })
+    };
 </script>
