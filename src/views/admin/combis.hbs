@@ -20,13 +20,14 @@
                     <th data-field="tipo_asiento" data-sortable="true">
                         Tipo de asientos
                     </th>
-                    <th data-field="id" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
-                    <th data-field="id" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i></th>
+                    <th data-field="id_combi" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
+                    <th data-field="id_combi" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i></th>
                 </tr>
             </thead>
         </table>
 </div>
 </strong>
+{{!-- ---------------------------------------------------------------------------------------------------EMPIEZA EL MODAL------------------------------------------------------------------------------------- --}}
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -35,11 +36,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm" href="/combis" method="POST">
+                <form id="modalForm" active="/admin/combis" method="POST">
                     <input type="number" id="recipient-id" name="id" hidden>
                     <div class="mb-3">
                         <label for="patente" class="form-label">Patente</label>
                         <input type="text" class="form-control" id="recipient-patente" name="patente">
+                        <div class="invalid-feedback">
+                        <p id="invalid-patente"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="chofer">Seleccione un chofer</label>
@@ -48,10 +52,16 @@
                                 <option value={{id_usuario}}>{{name}} {{lastname}}</option>
                             {{/each}}
                         </select>
+                        <div class="invalid-feedback">
+                            <p id="invalid-chofer"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="cantAsientos" class="form-label">Cantidad de asientos</label>
                         <input type="number" class="form-control" id="recipient-cantAsientos" name="cantAsientos">
+                        <div class="invalid-feedback">
+                                <p id="invalid-cantasientos"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="tipocama" class="form-label">Tipo de asientos</label>
@@ -59,6 +69,9 @@
                             <option value="cama">Cama</option>
                             <option value="semi-cama">Semi-cama</option>
                         </select>
+                        <div class="invalid-feedback">
+                            <p id="invalid-tipoasientos"></p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
@@ -69,31 +82,80 @@
         </div>
     </div>
 </div>
-
+{{!-- ---------------------------------------------------------------------------------------------------TERMINA EL MODAL------------------------------------------------------------------------------------- --}}
 <script>
-    $(document).ready(function () {
-        $table = $('#table');
-        $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
-        $.ajax({
-            type: 'GET',
-            url: 'http://localhost:3000/admin/combisJSON',
-            data: {},
-            dataType: 'json',
-            success: function (data) {
-                $('#table').bootstrapTable('load', data);
-            }, error: function () {
-                alert('Error conexion con el servidor');
-            }
-        });
-    });
-    $(function () {
-        $('#exampleModal').on('shown.bs.modal', function (e) {
-            $('#recipient-patente').focus();
-        })
+
+
+
+//---------------------------------------------------------------------------------------------------AUTOFOCUS-------------------------------------------------------------------------------------
+
+    $('#recipient-patente').focusout(function () {
+        const patenteElement = $('#recipient-patente');
+        const idElement = $('#recipient-id_combi');
+        if (patenteElement.val() == null || patenteElement.val() == "") {
+            $('#invalid-patente').text('Este campo no puede estar vacio!');
+            patenteElement.addClass('is-invalid');
+        } else {
+            const patenteValue = patenteElement.val();
+            const idValue = idElement.val();
+            $.ajax('/admin/combis/patente', {
+                type: 'POST',
+                data: { patenteValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        patenteElement.removeClass('is-invalid');
+                        patenteElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-dni').text('La Patente ya existe!');
+                        patenteElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    })
+
+    $('#recipient-chofer').focusout(function () {
+        const choferElement = $('#recipient-chofer');
+        if (choferElement.val() == null || choferElement.val() == "") {       
+            $('#invalid-chofer').text('Este campo no puede estar vacio!');
+            choferElement.addClass('is-invalid');
+        } else {
+            choferElement.removeClass('is-invalid');
+            choferElement.addClass('is-valid');
+        };
     });
 
+    $('#recipient-cantAsientos').focusout(function () {
+        const cantAsientosElement = $('#recipient-cantAsientos');
+        if (cantAsientosElement.val() == null || cantAsientosElement.val() == "") {       
+            $('#invalid-cantasientos').text('Este campo no puede estar vacio!');
+            cantAsientosElement.addClass('is-invalid');
+        } else {
+            cantAsientosElement.removeClass('is-invalid');
+            cantAsientosElement.addClass('is-valid');
+        };
+    });
+
+    $('#recipient-tipoAsientos').focusout(function () {
+        const tipoAsientosElement = $('#recipient-tipoAsientos');
+        if (tipoAsientosElement.val() == null || tipoAsientosElement.val() == "") {       
+            $('#invalid-tipoasientos').text('Este campo no puede estar vacio!');
+            tipoAsientosElement.addClass('is-invalid');
+        } else {
+            tipoAsientosElement.removeClass('is-invalid');
+            tipoAsientosElement.addClass('is-valid');
+        };
+    });
+
+//---------------------------------------------------------------------------------------------------FIN AUTOFOCUS-------------------------------------------------------------------------------------
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------BOTON EDITAR-------------------------------------------------------------------------------------
     function LinkFormatterEdit(value, row) {
-        console.log("aca: ", row.cant_asientos, row.tipo_asiento);
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
             "data-toggle='modal' data-target='#exampleModal'" +
             "data-id='" + row.id_combi + "'" +
@@ -118,8 +180,15 @@
         $("#recipient-chofer").val(chofer);
         $("#recipient-cantAsientos").val(cantAsientos);
         $("#recipient-tipoAsientos").val(tipoAsientos);
+
+        $("#recipient-patente").removeClass("is-invalid is-valid");
+        $("#recipient-lastname").removeClass("is-invalid is-valid");
+        $("#recipient-chofer").removeClass("is-invalid is-valid");
+        $("#recipient-cantAsientos").removeClass("is-invalid is-valid");
+        $("#recipient-tipoAsientos").removeClass("is-invalid is-valid");
         $('#exampleModal').modal('show')
         $('#guardarButton').text('Guardar');
+
         const patente2 = document.getElementById("recipient-patente").value;
         const chofer2 = document.getElementById("recipient-chofer").value;
         const cantAsientos2 = document.getElementById("recipient-cantAsientos").value;
@@ -131,7 +200,8 @@
             let choferBoolean = document.getElementById("recipient-chofer").value == chofer2;
             let cantAsientosBoolean = document.getElementById("recipient-cantAsientos").value == cantAsientos2;
             let tipoAsientosBoolean = document.getElementById("recipient-tipoAsientos").value == tipoAsientos2;
-            (choferBoolean && cantAsientosBoolean && tipoAsientosBoolean && nombreBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+            
+            (nombreBoolean && choferBoolean && cantAsientosBoolean && tipoAsientosBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
             document.getElementById("recipient-patente").addEventListener('input', () => {
                 onChangeInputsPersonal();
@@ -150,11 +220,17 @@
             onChangeInputsPersonal();
         }
     });
+//---------------------------------------------------------------------------------------------------TERMINA EL BOTON EDITAR-------------------------------------------------------------------------------------
 
 
+ //---------------------------------------------------------------------------------------------------BOTON ELIMINAR-------------------------------------------------------------------------------------   
     function LinkFormatterDelete(value) {
-        return "<a href='/admin/combis/eliminar/" + value + "' ><button class='btn btn-danger'>Eliminar</button></a> ";
+        return "<a onclick='confirmar(" + value + ")' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
+//---------------------------------------------------------------------------------------------------TERMINO EL BOTON ELIMINAR-------------------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------------------------------BOTON AGREGAR-------------------------------------------------------------------------------------
     function buttons() {
         return {
             btnAdd: {
@@ -162,16 +238,163 @@
                 icon: 'fa fa-user-plus',
                 event: {
                     click: () => {
-                        $('#exampleModal').modal('show')
-                        $('#modalForm').trigger("reset");
-                        $('#guardarButton').text('Agregar');
                         $('#exampleModalLabel').text('Agregar una nueva combi');
+                        $('#guardarButton').text('Agregar');
+                        $('#exampleModal').modal('show');
+
+                        $("#recipient-patente").removeClass("is-invalid is-valid");
+                        $("#recipient-chofer").removeClass("is-invalid is-valid");
+                        $("#recipient-cantAsientos").removeClass("is-invalid is-valid");
+                        $("#recipient-tipoAsientos").removeClass("is-invalid is-valid");
+
+                        $('#modalForm').trigger("reset");
+                        $('#guardarButton').prop('disabled', false);
                     }
                 },
                 attributes: {
-                    title: 'Agregar una nueva combi',
+                    title: 'Agregar un nuevo chofer',
                 }
             }
         }
     }
+//---------------------------------------------------------------------------------------------------TERMINO EL BOTON AGREGAR-------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------------- BOTON SUBMIT------------------------------------------------------------------------------------------------
+    $("#modalForm").submit(function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var edit = array[0].value != '';
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#recipient-patente').addClass('is-valid');
+                    $('#recipient-chofer').addClass('is-valid');
+                    $('#recipient-cantAsientos').addClass('is-valid');
+                    $('#recipient-tipoAsientos').addClass('is-valid');
+                    $.each(data, function (index, value) {
+                        if (value.param == 'patente'){
+                            $('#recipient-patente' ).addClass('is-invalid');
+                            $('#invalid-patente').text(value.msg);
+                        } 
+                        if (value.param == 'chofer'){
+                            $('#recipient-chofer').addClass('is-invalid');
+                            $('#invalid-chofer').text(value.msg);
+                        }                        
+                        if (value.param == 'cantAsientos'){
+                            $('#recipient-cantAsientos').addClass('is-invalid');
+                            $('#invalid-cantasientos').text(value.msg);
+                        } 
+                        if (value.param == 'tipoAsientos'){
+                            $('#recipient-tipoAsientos').addClass('is-invalid');
+                            $('#invalid-tipoasientos').text(value.msg);
+                        } 
+                    });
+                } else {
+                    if (edit) {
+                        $('#exampleModal').modal('toggle');
+                        Swal.fire(
+                            'Editado!',
+                            'La combi se ha editado exitosamente!',
+                            'success'
+                        )
+                    } else {
+                        Swal.fire(
+                            'Agregado!',
+                            'La combi se ha agregado exitosamente!',
+                            'success'
+                        )
+                    }
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:3000/admin/combisJSON',
+                        data: {},
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#table').bootstrapTable('load', data);
+                        }, error: function () {
+                            alert('Error conexion con el servidor');
+                        }
+                    });
+
+                }
+            }
+        })
+    });
+//---------------------------------------------------------------------------------------------------TERMINO EL BOTON SUBMIT-------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------------------SWEET ALERT-------------------------------------------------------------------------------------
+function confirmar(id) {
+        Swal.fire({
+            title: 'Seguro que quieres eliminarlo?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax('/admin/combis/eliminar/', {
+                    type: 'DELETE',
+                    data: { id },
+                    success: function (res) {
+                        if (res.result) {
+                            $.ajax({
+                                type: 'GET',
+                                url: 'http://localhost:3000/admin/combisJSON',
+                                data: {},
+                                dataType: 'json',
+                                success: function (data) {
+                                    $('#table').bootstrapTable('load', data);
+                                }, error: function () {
+                                    alert('Error conexion con el servidor');
+                                }
+                            });
+                            Swal.fire(
+                                'Eliminado!',
+                                res.message,
+                                'success'
+                            )
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: res.message
+                            })
+                        }
+                    },
+                    error: function (data) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!'
+                        })
+                    }
+                });
+            }
+        })
+    }; 
+//---------------------------------------------------------------------------------------------------TERMINO SWEET ALERT-------------------------------------------------------------------------------------
+
+        $(document).ready(function () {
+        $table = $('#table');
+        $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:3000/admin/combisJSON',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                $('#table').bootstrapTable('load', data);
+            }, error: function () {
+                alert('Error conexion con el servidor');
+            }
+        });
+    });
 </script>

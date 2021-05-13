@@ -33,11 +33,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm" href="/choferes" method="POST">
+                <form id="modalForm" active="/admin/insumos" method="POST">
                     <div class="mb-3">
                         <input type="number" id="recipient-id" name="id" hidden>
                         <label for="recipient-name" class="col-form-label">Nombre:</label>
-                        <input type="text" class="form-control" id="recipient-name" name="nombre" autofocus>
+                        <input type="text" class="form-control" id="recipient-name" name="nombre">
                         <div class="invalid-feedback">
                             <p id="invalid-name"></p>
                         </div>
@@ -82,11 +82,7 @@
             }
         });
     });
-    $(function () {
-        $('#exampleModal').on('shown.bs.modal', function (e) {
-            $('#recipient-name').focus();
-        })
-    });
+
 
     $('#recipient-name').focusout(function () {
         const nameElement = $('#recipient-name');
@@ -132,6 +128,7 @@
             "Editar" +
             "</button>"
     }
+    
     $(document).on("click", '.edit_button', function () {
         var nombre = $(this).data('nombre');
         var precio = $(this).data('precio');
@@ -144,6 +141,9 @@
         $("#recipient-precio").val(precio);
         $("#recipient-cantidad").val(cantidad);
         $("#recipient-id").val(id);
+        $("#recipient-name").removeClass("is-invalid is-valid");
+        $("#recipient-cantidad").removeClass("is-invalid is-valid");
+        $("#recipient-precio").removeClass("is-invalid is-valid");
         $('#exampleModal').modal('show')
         $('#guardarButton').text('Guardar');
 
@@ -198,9 +198,10 @@
                         $('#guardarButton').text('Agregar');
                         $('#exampleModal').modal('show');
                         $('#guardarButton').prop('disabled', false);
-                        $("#recipient-name").removeClass("is-invalid is-valid")
-                        $("#recipient-cantidad").removeClass("is-invalid is-valid")
-                        $("#recipient-precio").removeClass("is-invalid is-valid")
+                        $("#recipient-name").removeClass("is-invalid is-valid");
+                        $("#recipient-cantidad").removeClass("is-invalid is-valid");
+                        $("#recipient-precio").removeClass("is-invalid is-valid");
+
                         $('#modalForm').trigger("reset");
                     }
                 },

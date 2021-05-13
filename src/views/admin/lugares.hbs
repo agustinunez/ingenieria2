@@ -130,11 +130,7 @@
     function LinkFormatterDelete(value) {
         return "<a onclick='confirmar(" + value + ")' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
-    $(function () {
-        $('#exampleModal').on('shown.bs.modal', function (e) {
-            $('#recipient-name').focus();
-        })
-    });
+
     function buttons() {
         return {
             btnAdd: {
