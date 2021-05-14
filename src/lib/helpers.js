@@ -19,27 +19,32 @@ helpers.matchPassword = async (password, savedPassword) => {
 helpers.combiViajagando = (fechasalida, horasalida, fechallegada, horallegada, combicomparar) => {
   combicomparar.fecha_salida = dateFormat(combicomparar.fecha_salida, "yyyy-mm-dd");
   combicomparar.fecha_llegada = dateFormat(combicomparar.fecha_llegada, "yyyy-mm-dd");
-  if (combicomparar.fecha_salida = fechasalida && combicomparar.fecha_llegada == fechallegada) {
-    if ((combicomparar.hora_salida < horasalida && combicomparar.hora_llegada > horallegada) ||
-      (combicomparar.hora_salida > horasalida && combicomparar.hora_salida < horallegada) ||
-      (combicomparar.hora_llegada > horasalida && combicomparar.hora_llegada < horallegada)) {
-      return true
+  if (fechasalida == combicomparar.fecha_salida && fechallegada == combicomparar.fecha_llegada) {
+    if (fechasalida != fechallegada) {
+      return true;
     } else {
-      return false
-    }
-  } else {
-    if (combicomparar.fecha_salida = fechasalida) {
-      if (combicomparar.hora_salida < horallegada) {
+      if ((combicomparar.hora_salida < horasalida && combicomparar.hora_llegada > horallegada) ||
+        (combicomparar.hora_salida > horasalida && combicomparar.hora_salida < horallegada) ||
+        (combicomparar.hora_llegada > horasalida && combicomparar.hora_llegada < horallegada)) {
         return true
       } else {
         return false
       }
+    }
+  } else {
+    if (combicomparar.fecha_llegada == fechasalida) {
+      if (horasalida >= combicomparar.hora_llegada) {
+        return false
+      } else {
+        return true
+      }
     } else {
-      if (combicomparar.fecha_llegada = fechallegada) {
-        if (combicomparar.hora_llegada > horasalida) {
+      if (combicomparar.fecha_salida == fechallegada) {
+        if (combicomparar.hora_salida < horallegada) {
           return true
         } else {
-           return flase }
+           return false 
+        }
       } else {
         if (combicomparar.fecha_salida < fechasalida && combicomparar.fecha_llegada > fechallegada) {
           return false

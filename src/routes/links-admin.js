@@ -586,7 +586,7 @@ router.post("/viajes",
     }
 
     if (fechasalida != '' && fechapublicacion != '') {
-      if (fechapublicacion < fechasalida) {
+      if (fechapublicacion > fechasalida) {
         errors.push({
           value: "",
           msg: "Lo siento, la Fecha de publicacion debe ser mayor o igual a la Fecha de salida!",
@@ -618,7 +618,7 @@ router.post("/viajes",
             if (estaViajando) {
               errors.push({
                 value: "",
-                msg: "Lo siento, la ruta esta enm viajeeeeee",
+                msg: "Lo siento, la combi esta en viaje",
                 param: "combi",
                 location: "body",
               });
