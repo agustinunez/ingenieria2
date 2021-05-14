@@ -16,23 +16,23 @@
       {{/if}}
       <div class="mb-3">
         <label for="name" class="form-label">Nombre</label>
-        <input type="text" value="{{userInfo.name}}" class="form-control" id="name" name="name" autofocus required>
+        <input type="text" value="{{userInfo.name}}" class="form-control" id="name" name="name" autocomplete='off' autofocus required>
       </div>
       <div class="mb-3">
         <label for="lastname" class="form-label">Apellido</label>
-        <input type="text" value="{{userInfo.lastname}}" class="form-control" id="lastname" name="lastname" required>
+        <input type="text" value="{{userInfo.lastname}}" class="form-control" id="lastname" name="lastname" autocomplete='off' required>
       </div>
       <div class="mb-3">
         <label for="birthdate" class="form-label">Fecha de nacimiento</label>
-        <input type="date" value="{{userInfo.birthday}}" class="form-control" id="birthdate" name="birthdate" required>
+        <input type="date" value="{{userInfo.birthday}}" class="form-control" id="birthdate" name="birthdate" autocomplete='off' required>
       </div>
       <div class="mb-3">
         <label for="mail" class="form-label">Email</label>
-        <input type="email" value="{{userInfo.email}}" class="form-control" id="email" name="email" required>
+        <input type="email" value="{{userInfo.email}}" class="form-control" id="email" name="email" autocomplete='off' required>
       </div>
       <div class="mb-3">
         <label for="username" class="form-label">Nombre de usuario</label>
-        <input type="text" value="{{userInfo.username}}" class="form-control" id="username" name="username" required>
+        <input type="text" value="{{userInfo.username}}" class="form-control" id="username" name="username" autocomplete='off' required>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
@@ -54,17 +54,17 @@
           <h5 class="card-header bg-dark">Datos de la tarjeta</h5>
           <div class="card-body bg-secondary">
             <label for="owner" class="form-label">Nombre y apellido del titular</label>
-            <input type="text" class="form-control mb-3" id="owner" name="owner">
+            <input type="text" class="form-control mb-3" id="owner" name="owner" autocomplete='off'>
 
             <label for="cardnumber" class="form-label">Numero de tarjeta</label>
             <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3" id="cardnumber"
-              name="cardnumber">
+              name="cardnumber" autocomplete='off'>
 
             <label for="cvv" class="form-label">Codigo de seguridad</label>
-            <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv">
+            <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv" autocomplete='off'>
 
             <label for="expireddate" class="form-label">Fecha de vencimiento</label>
-            <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate" name="expireddate">
+            <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate" name="expireddate" autocomplete='off'>
           </div>
         </div>
       </div>

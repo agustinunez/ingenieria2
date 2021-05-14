@@ -298,9 +298,7 @@ MODAL---------------------------------------------------------------------------
             const fechasalidaValue = $('#recipient-fechasalida').val();
             const fechapublicacionaValue = fechapublicacionElement.val();
             if (fechasalidaValue != '') {
-                console.log('ENTRA 1');
                 if (fechasalidaValue > fechapublicacionaValue){
-                    console.log('ENTRA 2');
                     $('#invalid-fechapublicacion').text('Lo siento, la Fecha de publicacion debe ser mayor o igual a la Fecha de salida!');
                     fechapublicacionElement.addClass('is-invalid');
                 }else{
@@ -321,6 +319,35 @@ MODAL---------------------------------------------------------------------------
         } else {
             precioElement.removeClass('is-invalid');
             precioElement.addClass('is-valid');
+        };
+    });
+
+    $('#insumo').focusout(function () {
+        const nombreElement = $('#insumo');
+        if (nombreElement.val() == null || nombreElement.val() == "") {
+            $('#invalid-nombre').text('Este campo no puede estar vacio!');
+            nombreElement.addClass('is-invalid');
+        } else {
+            nombreElement.removeClass('is-invalid');
+            nombreElement.addClass('is-valid');
+        };
+    });
+
+
+    $('#cantidad').focusout(function () {
+        const cantidadElement = $('#cantidad');
+        if (cantidadElement.val() == null || cantidadElement.val() == "") {
+            $('#invalid-cantidad').text('Este campo no puede estar vacio!');
+            cantidadElement.addClass('is-invalid');
+        } else {
+            if (cantidadElement.val() < 1){
+                $('#invalid-cantidad').text("Lo siento, la Cantidad debe ser mayor a 0!");
+                cantidadElement.addClass('is-invalid');
+                cantidadElement.removeClass('is-valid');
+            }else{
+                cantidadElement.removeClass('is-invalid');
+                cantidadElement.addClass('is-valid');
+            }
         };
     });
 
@@ -519,17 +546,23 @@ MODAL---------------------------------------------------------------------------
             data: form.serialize(),
             success: function (data) {
                 if (data.length > 0) {
-                    console.log('ASDASD');
-                    $('#nombre').addClass('is-valid');
+                    $('#insumo').addClass('is-valid');
                     $('#cantidad').addClass('is-valid');
                     $.each(data, function (index, value) {
-                        if (value.param == 'nombre') {
-                            $('#nombre').addClass('is-invalid');
+                        if (value.param == 'insumo') {
+                            $('#insumo').addClass('is-invalid');
                             $('#invalid-nombre').text(value.msg);
                         }
                         if (value.param == 'cantidad') {
                             $('#cantidad').addClass('is-invalid');
                             $('#invalid-cantidad').text(value.msg);
+                        }
+                        if (value.param == 'personalizado'){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: value.msg
+                            })
                         }
                     });
                 } else {

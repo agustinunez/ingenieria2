@@ -515,11 +515,36 @@ router.get("/insumosViajeJSON/:id", isAdmin, async (req, res) => {
   res.send(aux);
 });
 
-router.post("/viajes/insumos", async (req, res) => {
+router.post("/viajes/insumos", 
+body("insumo").notEmpty().withMessage("Este campo no puede estar vacio!"),
+body("cantidad").notEmpty().withMessage("Este campo no puede estar vacio!"),
+body("cantidad").custom(async (value) => {
+  if (value < 1) {
+    throw new Error("Lo siento, la Cantidad debe ser mayor a 0!");
+  }
+}),
+
+async (req, res) => {
   const { id_insumoViaje, insumo, cantidad } = req.body;
-  await pool.query('INSERT INTO viaje_insumos (viaje, insumo, cantidad) VALUES(?,?,?)', [id_insumoViaje, insumo, cantidad]);
-  const aux = [];
-  res.send(aux);
+    const result = validationResult(req);
+    const errors = result.errors;
+
+    if (cantidad != '' && cantidad > 0){
+    const aux = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?",[id_insumoViaje,insumo]);
+    if (aux.length > 0) {
+      errors.push({
+        value: "",
+        msg: "Lo siento, este Insumo ya existe en el viaje!",
+        param: "personalizado",
+        location: "body",
+      });
+    }
+  }
+
+    if (errors.length == 0) {
+        await pool.query('INSERT INTO viaje_insumos (viaje, insumo, cantidad) VALUES(?,?,?)', [id_insumoViaje, insumo, cantidad]);    
+    }
+  res.send(errors);
 });
 
 router.post("/viajes",
