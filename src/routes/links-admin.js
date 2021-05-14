@@ -527,11 +527,12 @@ body("cantidad").custom(async (value) => {
 
 async (req, res) => {
   const { id_insumoViaje, insumo, cantidad } = req.body;
-    const result = validationResult(req);
-    const errors = result.errors;
+  const result = validationResult(req);
+  const errors = result.errors;
+  const resultInsumo = await pool.query("SELECT * FROM insumo WHERE id_insumo=?", [insumo]);
 
-    if (cantidad != '' && cantidad > 0){
-    const aux = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?",[id_insumoViaje,insumo]);
+  if (cantidad != '' && cantidad > 0) {
+    const aux = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?", [id_insumoViaje, insumo]);
     if (aux.length > 0) {
       errors.push({
         value: "",
@@ -539,12 +540,22 @@ async (req, res) => {
         param: "personalizado",
         location: "body",
       });
+    } else {
+      if (cantidad > resultInsumo[0].cantidad) {
+        errors.push({
+          value: "",
+          msg: "Cantidad superior al stock! (Stock = " + resultInsumo[0].cantidad + ')',
+          param: "cantidad",
+          location: "body",
+        });
+      }
     }
   }
 
-    if (errors.length == 0) {
-        await pool.query('INSERT INTO viaje_insumos (viaje, insumo, cantidad) VALUES(?,?,?)', [id_insumoViaje, insumo, cantidad]);    
-    }
+  if (errors.length == 0) {
+      await pool.query('INSERT INTO viaje_insumos (viaje, insumo, cantidad) VALUES(?,?,?)', [id_insumoViaje, insumo, cantidad]); 
+      await pool.query('UPDATE insumo SET cantidad=? WHERE id_insumo=?', [(resultInsumo[0].cantidad - cantidad), insumo]);   
+  }
   res.send(errors);
 });
 
@@ -661,6 +672,14 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
   const result = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
   if (result.length > 0) {
+    const resultInsumos = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=?", [id]);
+    // for (let index = 0; index < resultInsumos.length; index++) {
+    //   var resultInsumo = await pool.query("SELECT * FROM insumo WHERE id_insumo=?", [resultInsumos[index].insumo]);
+    //   await pool.query(('UPDATE insumo SET cantidad=? WHERE id_insumo=?', [(resultInsumo[0].cantidad + resultInsumos[index].cantidad), resultInsumos[index].insumo]));
+    // }
+    if (resultInsumos.length > 0) {
+      await pool.query("DELETE FROM viaje_insumos WHERE viaje=?", [id]);
+    }
     await pool.query("DELETE FROM viaje WHERE id_viaje=?", [id]);
     res.json({
       result: true,
