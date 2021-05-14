@@ -278,6 +278,7 @@ MODAL---------------------------------------------------------------------------
         var hora_llegada = $(this).data('horallegada');
         var fecha_publicacion = $(this).data('fechapublicacion');
         var precio = $(this).data('precio');
+
         $.ajax('/admin/viajes/ruta', {
             type: 'POST',
             data: { id },
@@ -309,12 +310,11 @@ MODAL---------------------------------------------------------------------------
                 }
             }
         });
-
         $('#exampleModalLabel').text('Editar combi');
         $("#recipient-id").val(id);
         $("#recipient-fechasalida").val(fecha_salida);
         $("#recipient-horasalida").val(hora_salida);
-        $("#recipient-fechallegada").val(fecha_llegada);
+        $("#recipient-fechallegada").val(fecha_llegada)
         $("#recipient-horallegada").val(hora_llegada);
         $("#recipient-fechapublicacion").val(fecha_publicacion);
         $("#recipient-precio").val(precio);

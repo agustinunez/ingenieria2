@@ -504,10 +504,8 @@ router.get("/viajesJSON", isAdmin, async (req, res) => {
     aux[i].ruta = rutasViaje[0].nombreorigen + ' - ' + rutasViaje[0].nombredestino;
     //  console.log(rutasViaje);
     aux[i].fecha_salida = dateFormat(aux[i].fecha_salida, "yyyy-mm-dd");
-    aux[i].fecha_publicacion = dateFormat(
-      aux[i].fecha_publicacion,
-      "yyyy-mm-dd"
-    );
+    aux[i].fecha_publicacion = dateFormat(aux[i].fecha_publicacion, "yyyy-mm-dd");
+    aux[i].fecha_llegada = dateFormat(aux[i].fecha_llegada, "yyyy-mm-dd");
   }
   res.send(aux);
 });
@@ -516,6 +514,8 @@ router.get("/viajesJSON", isAdmin, async (req, res) => {
 router.post("/viajes",
   body("ruta").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("fechasalida").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("fechallegada").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("horallegada").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("fechasalida").custom(async (value) => {
     if (value != '' && value < moment().format('YYYY-MM-DD')) {
       throw new Error("Lo siento, la Fecha de salida debe ser mayor o igual a la fecha actual!");
@@ -527,7 +527,7 @@ router.post("/viajes",
   body("precio").notEmpty().withMessage("Este campo no puede estar vacio!"),
 
   async (req, res) => {
-    var { id, ruta, fechasalida, horasalida, combi, fechapublicacion, precio } =
+    var { id, ruta, fechasalida, horasalida, combi, fechapublicacion, precio, fechallegada, horallegada } =
       req.body;
     const result = validationResult(req);
     const errors = result.errors;
@@ -572,17 +572,36 @@ router.post("/viajes",
         }
       }
     }
+    if (combi != '' && fechasalida != '' && horasalida != '' && fechallegada != '' && horallegada != '') {
+      const isOk = await pool.query("SELECT * FROM viaje WHERE combi=?", [combi]);
+      if (isOk.length > 0) {
+        for (let i = 0; i < isOk.length; i++) {
+          if (isOk[i].id_viaje != id) {
+            var estaViajando = helpers.combiViajagando(fechasalida, horasalida, fechallegada, horallegada, isOk[i]);
+            if (estaViajando) {
+              errors.push({
+                value: "",
+                msg: "Lo siento, la ruta esta enm viajeeeeee",
+                param: "combi",
+                location: "body",
+              });
+              break;
+            }
+          }
+        }
+      }
+    }
 
     if (errors.length == 0) {
       if (id == "") {
         await pool.query(
-          "INSERT INTO viaje (ruta, fecha_salida, hora_salida, combi, fecha_publicacion, precio) VALUES (?,?,?,?,?,?)",
-          [ruta, fechasalida, horasalida, combi, fechapublicacion, precio]
+          "INSERT INTO viaje (ruta, fecha_salida, hora_salida, combi, fecha_publicacion, precio,fecha_llegada,hora_llegada) VALUES (?,?,?,?,?,?,?,?)",
+          [ruta, fechasalida, horasalida, combi, fechapublicacion, precio, fechallegada, horallegada]
         );
       } else {
         await pool.query(
-          "UPDATE viaje SET ruta=?,fecha_salida=?,hora_salida=?,combi=?,fecha_publicacion=?,precio=? WHERE id_viaje=?",
-          [ruta, fechasalida, horasalida, combi, fechapublicacion, precio, id]
+          "UPDATE viaje SET ruta=?,fecha_salida=?,hora_salida=?,combi=?,fecha_publicacion=?,precio=?,fecha_llegada=?,hora_llegada=? WHERE id_viaje=?",
+          [ruta, fechasalida, horasalida, combi, fechapublicacion, precio, fechallegada, horallegada, id]
         );
       }
     }
