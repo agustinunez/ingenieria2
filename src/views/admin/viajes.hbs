@@ -17,6 +17,12 @@
                     <th data-field="hora_salida" data-sortable="true">
                         Hora de salida
                     </th>
+                    <th data-field="fecha_llegada" data-sortable="true">
+                        Fecha de llegada
+                    </th>
+                    <th data-field="hora_llegada" data-sortable="true">
+                        Hora de llegada
+                    </th>
                     <th data-field="combi" data-sortable="true">
                         Combi
                     </th>
@@ -67,12 +73,28 @@ MODAL---------------------------------------------------------------------------
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="horasalida" class="form-label">Hora salida:</label>
+                        <label for="horasalida" class="form-label">Hora de salida:</label>
                         <input type="time" class="form-control" id="recipient-horasalida" name="horasalida">
                         <div class="invalid-feedback">
                             <p id="invalid-horasalida"></p>
                         </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="fechasalida">Fecha de llegada:</label>
+                        <input type="date" class="form-control" id="recipient-fechallegada" name="fechallegada">
+                        <div class="invalid-feedback">
+                            <p id="invalid-fechallegada"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="horasalida" class="form-label">Hora de llegada:</label>
+                        <input type="time" class="form-control" id="recipient-horallegada" name="horallegada">
+                        <div class="invalid-feedback">
+                            <p id="invalid-horallegada"></p>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="combi" class="form-label">Combi:</label>
                         <select class="form-select" id="recipient-combi" name="combi">
@@ -201,8 +223,10 @@ MODAL---------------------------------------------------------------------------
             const fechasalidaValue = $('#recipient-fechasalida').val();
             const fechapublicacionaValue = fechapublicacionElement.val();
             if (fechasalidaValue != '') {
+                console.log('ENTRA 1');
                 if (fechasalidaValue > fechapublicacionaValue){
-                    $('#invalid-fechapublicacion').text('Este campo no puede estar vacio!');
+                    console.log('ENTRA 2');
+                    $('#invalid-fechapublicacion').text('Lo siento, la Fecha de publicacion debe ser mayor o igual a la Fecha de salida!');
                     fechapublicacionElement.addClass('is-invalid');
                 }else{
                     fechapublicacionElement.removeClass('is-invalid');
@@ -238,6 +262,8 @@ MODAL---------------------------------------------------------------------------
             "data-ruta='" + row.ruta + "'" +
             "data-fechasalida='" + row.fecha_salida + "'" +
             "data-horasalida='" + row.hora_salida + "'" +
+            "data-fechallegada='" + row.fecha_llegada + "'" +
+            "data-horallegada='" + row.hora_llegada + "'" +
             "data-combi='" + row.combi + "'" +
             "data-fechapublicacion='" + row.fecha_publicacion + "'" +
             "data-precio='" + row.precio + "'>" +
@@ -248,6 +274,8 @@ MODAL---------------------------------------------------------------------------
         var id = $(this).data('id');
         var fecha_salida = $(this).data('fechasalida');
         var hora_salida = $(this).data('horasalida');
+        var fecha_llegada = $(this).data('fechallegada');
+        var hora_llegada = $(this).data('horallegada');
         var fecha_publicacion = $(this).data('fechapublicacion');
         var precio = $(this).data('precio');
         $.ajax('/admin/viajes/ruta', {
@@ -286,6 +314,8 @@ MODAL---------------------------------------------------------------------------
         $("#recipient-id").val(id);
         $("#recipient-fechasalida").val(fecha_salida);
         $("#recipient-horasalida").val(hora_salida);
+        $("#recipient-fechallegada").val(fecha_llegada);
+        $("#recipient-horallegada").val(hora_llegada);
         $("#recipient-fechapublicacion").val(fecha_publicacion);
         $("#recipient-precio").val(precio);
 
