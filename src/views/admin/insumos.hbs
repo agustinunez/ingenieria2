@@ -86,12 +86,26 @@
 
     $('#recipient-name').focusout(function () {
         const nameElement = $('#recipient-name');
+        const idElement = $('#recipient-id');
         if (nameElement.val() == null || nameElement.val() == "") {
             nameElement.addClass('is-invalid');
             $('#invalid-name').text('El campo Nombre no puede estar vacio!');
         } else {
-            nameElement.removeClass('is-invalid');
-            nameElement.addClass('is-valid');
+            const nombreValue = nameElement.val();
+            const idValue = idElement.val();
+            $.ajax('/admin/insumo/nombre', {
+                type: 'POST',
+                data: { nombreValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        nameElement.removeClass('is-invalid');
+                        nameElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-name').text('Lo siento, el insumo ya existe en el sistema!');
+                        nameElement.addClass('is-invalid');
+                    }
+                }
+            });
         };
     })
 

@@ -127,25 +127,52 @@
 
     $('#recipient-fechasalida').focusout(function () {
         const fechasalidaElement = $('#recipient-fechasalida');
-
+        const idElement = $('#recipient-id');
         if (fechasalidaElement.val() == null || fechasalidaElement.val() == "") {       
             $('#invalid-fechasalida').text('Este campo no puede estar vacio!');
             fechasalidaElement.addClass('is-invalid');
         } else {
-            fechasalidaElement.removeClass('is-invalid');
-            fechasalidaElement.addClass('is-valid');
+            const fechasalidaValue = fechasalidaElement.val();
+            const idValue = idElement.val();
+            $.ajax('/admin/viajes/fechasalida', {
+                type: 'POST',
+                data: { fechasalidaValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        fechasalidaElement.removeClass('is-invalid');
+                        fechasalidaElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-fechasalida').text('Lo siento, la Fecha de salida debe ser mayor o igual a la fecha actual!');
+                        fechasalidaElement.addClass('is-invalid');
+                    }
+                }
+            });
         };
         
     });
     $('#recipient-horasalida').focusout(function () {
         const horasalidaElement = $('#recipient-horasalida');
-        console.log('ES ACA?', horasalidaElement.val() );
+        const idElement = $('#recipient-id');
         if (horasalidaElement.val() == null || horasalidaElement.val() == "") {       
             $('#invalid-horasalida').text('Este campo no puede estar vacio!');
             horasalidaElement.addClass('is-invalid');
         } else {
-            horasalidaElement.removeClass('is-invalid');
-            horasalidaElement.addClass('is-valid');
+            const fechasalidaValue = $('#recipient-fechasalida').val();
+            const horasalidaValue = horasalidaElement.val();
+            const idValue = idElement.val();
+            $.ajax('/admin/viajes/horasalida', {
+                type: 'POST',
+                data: { horasalidaValue, fechasalidaValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        horasalidaElement.removeClass('is-invalid');
+                        horasalidaElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-horasalida').text('Lo siento, la Hora de salida debe ser mayor o igual a la hora actual!');
+                        horasalidaElement.addClass('is-invalid');
+                    }
+                }
+            });
         };
     });
 
@@ -202,22 +229,46 @@
     }
     $(document).on("click", '.edit_button', function () {
         var id = $(this).data('id');
-        var ruta = $(this).data('ruta');
         var fecha_salida = $(this).data('fechasalida');
         var hora_salida = $(this).data('horasalida');
-        var combi = $(this).data('combi');
         var fecha_publicacion = $(this).data('fechapublicacion');
         var precio = $(this).data('precio');
-        
+        $.ajax('/admin/viajes/ruta', {
+            type: 'POST',
+            data: { id },
+            success: function (res) {
+                if (res.result) {
+                    console.log('ASD');
+                    $("#recipient-ruta").val(res.value);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Lo siento, ha ocurrido un error!'
+                    })
+                }
+            }
+        });
+        $.ajax('/admin/viajes/combi', {
+            type: 'POST',
+            data: { id },
+            success: function (res) {
+                if (res.result) {
+                    $("#recipient-combi").val(res.value);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Lo siento, ha ocurrido un error!'
+                    })
+                }
+            }
+        });
 
         $('#exampleModalLabel').text('Editar combi');
         $("#recipient-id").val(id);
-        $("#recipient-ruta").val(ruta);
         $("#recipient-fechasalida").val(fecha_salida);
         $("#recipient-horasalida").val(hora_salida);
-
-        $("#recipient-combi").val(combi);
-
         $("#recipient-fechapublicacion").val(fecha_publicacion);
         $("#recipient-precio").val(precio);
 
@@ -371,7 +422,7 @@
                             $('#recipient-precio').addClass('is-invalid');
                             $('#invalid-precio').text(value.msg);
                         }
-                        if (value.param = "viaje"){
+                        if (value.param == "viaje"){
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
@@ -405,8 +456,14 @@
                             alert('Error conexion con el servidor');
                         }
                     });
-
-                }
+                    $("#recipient-ruta").removeClass("is-invalid is-valid");
+                    $("#recipient-fechasalida").removeClass("is-invalid is-valid");
+                    $("#recipient-horasalida").removeClass("is-invalid is-valid");
+                    $("#recipient-combi").removeClass("is-invalid is-valid");
+                    $("#recipient-fechapublicacion").removeClass("is-invalid is-valid");
+                    $("#recipient-precio").removeClass("is-invalid is-valid");
+                    $('#modalForm').trigger("reset");
+                }   
             }
         })
     });
@@ -469,7 +526,7 @@ function confirmar(id) {
 
 
 
-        $(document).ready(function () {
+    $(document).ready(function () {
         $table = $('#table');
         $('#table').bootstrapTable('load', []); //aca cuando se carga la pag , lo incializamos y luewgos por el get rellenamos la tabla 
         $.ajax({

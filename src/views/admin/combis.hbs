@@ -91,7 +91,7 @@
 
     $('#recipient-patente').focusout(function () {
         const patenteElement = $('#recipient-patente');
-        const idElement = $('#recipient-id_combi');
+        const idElement = $('#recipient-id');
         if (patenteElement.val() == null || patenteElement.val() == "") {
             $('#invalid-patente').text('Este campo no puede estar vacio!');
             patenteElement.addClass('is-invalid');
@@ -167,17 +167,28 @@
             "</button>"
     }
     $(document).on("click", '.edit_button', function () {
+        var id = $(this).data('id');
         var patente = $(this).data('patente');
-        var chofer = $(this).data('chofer');
         var cantAsientos = $(this).data('cantasientos');
         var tipoAsientos = $(this).data('tipoasientos');
-        var id = $(this).data('id');
-
-
+        $.ajax('/admin/combis/chofer', {
+            type: 'POST',
+            data: { id },
+            success: function (res) {
+                if (res.result) {
+                    $("#recipient-chofer").val(res.value);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Lo siento, ha ocurrido un error!'
+                    })
+                }
+            }
+        });
         $('#exampleModalLabel').text('Editar combi');
         $("#recipient-id").val(id);
         $("#recipient-patente").val(patente);
-        $("#recipient-chofer").val(chofer);
         $("#recipient-cantAsientos").val(cantAsientos);
         $("#recipient-tipoAsientos").val(tipoAsientos);
 
@@ -196,29 +207,30 @@
         const personalButton = document.getElementById("guardarButton");
 
         const onChangeInputsPersonal = () => {
-            let nombreBoolean = document.getElementById("recipient-patente").value == patente2;
+            let nombreBoolean = (document.getElementById("recipient-patente").value).toUpperCase() == patente2.toUpperCase();
             let choferBoolean = document.getElementById("recipient-chofer").value == chofer2;
             let cantAsientosBoolean = document.getElementById("recipient-cantAsientos").value == cantAsientos2;
             let tipoAsientosBoolean = document.getElementById("recipient-tipoAsientos").value == tipoAsientos2;
             
             (nombreBoolean && choferBoolean && cantAsientosBoolean && tipoAsientosBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
-            document.getElementById("recipient-patente").addEventListener('input', () => {
-                onChangeInputsPersonal();
-            });
-
-            document.getElementById("recipient-chofer").addEventListener('input', () => {
-                onChangeInputsPersonal();
-            });
-
-            document.getElementById("recipient-cantAsientos").addEventListener('input', () => {
-                onChangeInputsPersonal();
-            });
-            document.getElementById("recipient-tipoAsientos").addEventListener('input', () => {
-                onChangeInputsPersonal();
-            });
-            onChangeInputsPersonal();
         }
+        document.getElementById("recipient-patente").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("recipient-chofer").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("recipient-cantAsientos").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("recipient-tipoAsientos").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        
+        onChangeInputsPersonal();
     });
 //---------------------------------------------------------------------------------------------------TERMINA EL BOTON EDITAR-------------------------------------------------------------------------------------
 
@@ -241,12 +253,10 @@
                         $('#exampleModalLabel').text('Agregar una nueva combi');
                         $('#guardarButton').text('Agregar');
                         $('#exampleModal').modal('show');
-
                         $("#recipient-patente").removeClass("is-invalid is-valid");
                         $("#recipient-chofer").removeClass("is-invalid is-valid");
                         $("#recipient-cantAsientos").removeClass("is-invalid is-valid");
                         $("#recipient-tipoAsientos").removeClass("is-invalid is-valid");
-
                         $('#modalForm').trigger("reset");
                         $('#guardarButton').prop('disabled', false);
                     }
@@ -322,7 +332,11 @@
                             alert('Error conexion con el servidor');
                         }
                     });
-
+                    $("#recipient-patente").removeClass("is-invalid is-valid");
+                    $("#recipient-chofer").removeClass("is-invalid is-valid");
+                    $("#recipient-cantAsientos").removeClass("is-invalid is-valid");
+                    $("#recipient-tipoAsientos").removeClass("is-invalid is-valid");
+                    $('#modalForm').trigger("reset");
                 }
             }
         })
