@@ -211,19 +211,20 @@ router.post("/insumo/nombre", isAdmin, async (req, res) => {
 
 router.delete("/insumos/eliminar/", isAdmin, async (req, res) => {
   const { id } = req.body;
-  /*const result = await pool.query("SELECT * FROM viaje WHERE insumo=?", [id]);
+  const result = await pool.query("SELECT * FROM viaje_insumos WHERE insumo=?", [id]);
   if (result.length > 0) {
     res.json({
-      result: false,                          aca va la comprobacion de q no este en un viaje vendido este inusmo pero no tenemos una vrg de viajes asi qno se puede hacer :D
+      result: false,                        
       message:
-        "No es posible eliminar el insumo porqn esta en un vieja !",
+        "No es posible eliminar el insumo ya que pertenece a un viaje!",
     });
-  }*/
-  await pool.query("DELETE FROM insumo WHERE id_insumo=?", [id]);
-  res.json({
-    result: true,
-    message: "El insumo se ha eliminado existosamente!",
-  });
+  } else {
+    await pool.query("DELETE FROM insumo WHERE id_insumo=?", [id]);
+    res.json({
+      result: true,
+      message: "El insumo se ha eliminado existosamente!",
+    });
+  }
 })
 
 router.post("/insumos",
