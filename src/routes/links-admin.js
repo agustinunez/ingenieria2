@@ -493,7 +493,6 @@ router.post('/viajes/ruta', async (req, res) => {
   }
 })
 
-
 router.get("/viajesJSON", isAdmin, async (req, res) => {
   const aux = await pool.query("SELECT * FROM viaje");
   for (let i = 0; i < aux.length; i++) {
@@ -510,6 +509,18 @@ router.get("/viajesJSON", isAdmin, async (req, res) => {
   res.send(aux);
 });
 
+router.get("/insumosViajeJSON/:id", isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const aux = await pool.query("SELECT i.nombre AS nombre, vi.cantidad AS cantidad, vi.id_viajeinsumos AS id_viaje FROM viaje_insumos vi INNER JOIN insumo i ON (vi.insumo = i.id_insumo) WHERE viaje=?", [id]);
+  res.send(aux);
+});
+
+router.post("/viajes/insumos", async (req, res) => {
+  const { id_insumoViaje, insumo, cantidad } = req.body;
+  await pool.query('INSERT INTO viaje_insumos (viaje, insumo, cantidad) VALUES(?,?,?)', [id_insumoViaje, insumo, cantidad]);
+  const aux = [];
+  res.send(aux);
+});
 
 router.post("/viajes",
   body("ruta").notEmpty().withMessage("Este campo no puede estar vacio!"),
@@ -607,6 +618,18 @@ router.post("/viajes",
     }
     res.send(errors);
   });
+
+
+router.delete("/insumoViaje/eliminar", isAdmin, async (req, res) => {
+  const { id } = req.body;
+  const result = await pool.query("SELECT * FROM viaje_insumos WHERE id_viajeinsumos=?", [id]);
+  await pool.query("DELETE FROM viaje_insumos WHERE id_viajeinsumos=?", [id]);
+  res.json({
+    value: result[0].viaje,
+    result: true,
+    message: "Se ha eliminado el insumo del viaje exitosamente!"
+  });
+});
 
 router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
