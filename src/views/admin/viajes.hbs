@@ -1,7 +1,8 @@
 <div class="mx-3 container_tablas">
     <strong>
         <table class="table table-dark table-borderless" id="table" data-search="true" data-toggle="table"
-            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-pagination="true" data-locale="es-AR">
+            data-buttons="buttons" data-buttons-class="success" data-show-button-text="true" data-pagination="true"
+            data-locale="es-AR">
             <thead>
                 <tr class="">
                     <th data-field="id_viaje" data-sortable="true">
@@ -27,14 +28,16 @@
                     </th>
                     <th data-field="id_viaje" data-formatter="LinkFormatterInsumos">Insumos</th>
                     <th data-field="id_viaje" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
-                    <th data-field="id_viaje" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i></th>
+                    <th data-field="id_viaje" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i>
+                    </th>
                 </tr>
             </thead>
         </table>
 </div>
 </strong>
 
-{{!-- ---------------------------------------------------------------------------------------------------EMPIEZA EL MODAL------------------------------------------------------------------------------------- --}}
+{{!-- ---------------------------------------------------------------------------------------------------EMPIEZA EL
+MODAL------------------------------------------------------------------------------------- --}}
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -49,7 +52,7 @@
                         <label for="ruta" class="form-label">Ruta:</label>
                         <select class="form-select" id="recipient-ruta" name="ruta">
                             {{#each rutas}}
-                                <option value={{id_ruta}}>{{nombreorigen}} - {{nombredestino}}</option>
+                            <option value={{id_ruta}}>{{nombreorigen}} - {{nombredestino}}</option>
                             {{/each}}
                         </select>
                         <div class="invalid-feedback">
@@ -58,7 +61,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="fechasalida">Fecha de salida:</label>
-                        <input type="date" class="form-control" id="recipient-fechasalida" name="fechasalida" >
+                        <input type="date" class="form-control" id="recipient-fechasalida" name="fechasalida">
                         <div class="invalid-feedback">
                             <p id="invalid-fechasalida"></p>
                         </div>
@@ -67,14 +70,14 @@
                         <label for="horasalida" class="form-label">Hora salida:</label>
                         <input type="time" class="form-control" id="recipient-horasalida" name="horasalida">
                         <div class="invalid-feedback">
-                                <p id="invalid-horasalida"></p>
+                            <p id="invalid-horasalida"></p>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="combi" class="form-label">Combi:</label>
                         <select class="form-select" id="recipient-combi" name="combi">
                             {{#each combis}}
-                                <option value={{id_combi}}>{{patente}}</option>
+                            <option value={{id_combi}}>{{patente}}</option>
                             {{/each}}
                         </select>
                         <div class="invalid-feedback">
@@ -85,15 +88,16 @@
                         <label for="fechapublicacion" class="form-label">Fecha de publicacion:</label>
                         <input type="date" class="form-control" id="recipient-fechapublicacion" name="fechapublicacion">
                         <div class="invalid-feedback">
-                                <p id="invalid-fechapublicacion"></p>
+                            <p id="invalid-fechapublicacion"></p>
                         </div>
                     </div>
                     <div class="mb-3">
                         {{!-- Chequear que sea de tipo number o double --}}
                         <label for="precio" class="form-label">Precio:</label>
-                        <input type="number" class="form-control" id="recipient-precio" name="precio" autocomplete='off'>
+                        <input type="number" class="form-control" id="recipient-precio" name="precio"
+                            autocomplete='off'>
                         <div class="invalid-feedback">
-                                <p id="invalid-precio"></p>
+                            <p id="invalid-precio"></p>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -106,7 +110,8 @@
     </div>
 </div>
 
-{{!-- ---------------------------------------------------------------------------------------------------TERMINA EL MODAL------------------------------------------------------------------------------------- --}}
+{{!-- ---------------------------------------------------------------------------------------------------TERMINA EL
+MODAL------------------------------------------------------------------------------------- --}}
 
 <script>
 
@@ -116,7 +121,7 @@
 
     $('#recipient-ruta').focusout(function () {
         const rutaElement = $('#recipient-ruta');
-        if (rutaElement.val() == null || rutaElement.val() == "") {       
+        if (rutaElement.val() == null || rutaElement.val() == "") {
             $('#invalid-ruta').text('Este campo no puede estar vacio!');
             rutaElement.addClass('is-invalid');
         } else {
@@ -128,7 +133,7 @@
     $('#recipient-fechasalida').focusout(function () {
         const fechasalidaElement = $('#recipient-fechasalida');
         const idElement = $('#recipient-id');
-        if (fechasalidaElement.val() == null || fechasalidaElement.val() == "") {       
+        if (fechasalidaElement.val() == null || fechasalidaElement.val() == "") {
             $('#invalid-fechasalida').text('Este campo no puede estar vacio!');
             fechasalidaElement.addClass('is-invalid');
         } else {
@@ -148,12 +153,12 @@
                 }
             });
         };
-        
+
     });
     $('#recipient-horasalida').focusout(function () {
         const horasalidaElement = $('#recipient-horasalida');
         const idElement = $('#recipient-id');
-        if (horasalidaElement.val() == null || horasalidaElement.val() == "") {       
+        if (horasalidaElement.val() == null || horasalidaElement.val() == "") {
             $('#invalid-horasalida').text('Este campo no puede estar vacio!');
             horasalidaElement.addClass('is-invalid');
         } else {
@@ -178,28 +183,40 @@
 
     $('#recipient-combi').focusout(function () {
         const combiElement = $('#recipient-combi');
-        console.log('combiElement',combiElement.val())
-        if (combiElement.val() == null || combiElement.val() == "") {       
+        console.log('combiElement', combiElement.val())
+        if (combiElement.val() == null || combiElement.val() == "") {
             $('#invalid-combi').text('Este campo no puede estar vacio!');
             combiElement.addClass('is-invalid');
         } else {
-            combiElement.removeClass('is-invalid');
-            combiElement.addClass('is-valid');
+            $('#invalid-fechapublicacion').text('Este campo no puede estar vacio!');
+            fechapublicacionElement.addClass('is-invalid');
         };
     });
     $('#recipient-fechapublicacion').focusout(function () {
         const fechapublicacionElement = $('#recipient-fechapublicacion');
-        if (fechapublicacionElement.val() == null || fechapublicacionElement.val() == "") {       
+        if (fechapublicacionElement.val() == null || fechapublicacionElement.val() == "") {
             $('#invalid-fechapublicacion').text('Este campo no puede estar vacio!');
             fechapublicacionElement.addClass('is-invalid');
         } else {
-            fechapublicacionElement.removeClass('is-invalid');
-            fechapublicacionElement.addClass('is-valid');
-        };
+            const fechasalidaValue = $('#recipient-fechasalida').val();
+            const fechapublicacionaValue = fechapublicacionElement.val();
+            if (fechasalidaValue != '') {
+                if (fechasalidaValue > fechapublicacionaValue){
+                    $('#invalid-fechapublicacion').text('Este campo no puede estar vacio!');
+                    fechapublicacionElement.addClass('is-invalid');
+                }else{
+                    fechapublicacionElement.removeClass('is-invalid');
+                    fechapublicacionElement.addClass('is-valid');
+                }
+            }else{
+                fechapublicacionElement.removeClass('is-invalid');
+                fechapublicacionElement.addClass('is-valid');
+            }
+        }
     });
     $('#recipient-precio').focusout(function () {
         const precioElement = $('#recipient-precio');
-        if (precioElement.val() == null || precioElement.val() == "") {       
+        if (precioElement.val() == null || precioElement.val() == "") {
             $('#invalid-precio').text('Este campo no puede estar vacio!');
             precioElement.addClass('is-invalid');
         } else {
@@ -208,12 +225,12 @@
         };
     });
 
-//---------------------------------------------------------------------------------------------------FIN AUTOFOCUS-------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------FIN AUTOFOCUS-------------------------------------------------------------------------------------
 
 
 
 
-//---------------------------------------------------------------------------------------------------BOTON EDITAR-------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------BOTON EDITAR-------------------------------------------------------------------------------------
     function LinkFormatterEdit(value, row) {
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
             "data-toggle='modal' data-target='#exampleModal'" +
@@ -290,8 +307,8 @@
         const precio2 = document.getElementById("recipient-precio").value;
         const personalButton = document.getElementById("guardarButton");
 
-       // console.log('TrueOrFalse',document.getElementById("recipient-combi").value == combi2);
-       // console.log('Combi2',document.getElementById("recipient-combi").value);
+        // console.log('TrueOrFalse',document.getElementById("recipient-combi").value == combi2);
+        // console.log('Combi2',document.getElementById("recipient-combi").value);
 
         const onChangeInputsPersonal = () => {
             let rutaBoolean = document.getElementById("recipient-ruta").value == ruta2;
@@ -300,7 +317,7 @@
             let combiBoolean = document.getElementById("recipient-combi").value == combi2;
             let fechapublicacionBoolean = document.getElementById("recipient-fechapublicacion").value == fechapublicacion2;
             let precioBoolean = document.getElementById("recipient-precio").value == precio2;
-            
+
             (rutaBoolean && fechasalidaBoolean && horasalidaBoolean && combiBoolean && fechapublicacionBoolean && precioBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
 
             document.getElementById("recipient-ruta").addEventListener('input', () => {
@@ -327,18 +344,18 @@
             onChangeInputsPersonal();
         }
     });
-//---------------------------------------------------------------------------------------------------TERMINA EL BOTON EDITAR-------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------TERMINA EL BOTON EDITAR-------------------------------------------------------------------------------------
 
 
 
 
-//---------------------------------------------------------------------------------------------------BOTON ELIMINAR-------------------------------------------------------------------------------------   
+    //---------------------------------------------------------------------------------------------------BOTON ELIMINAR-------------------------------------------------------------------------------------   
     function LinkFormatterDelete(value) {
         return "<a onclick='confirmar(" + value + ")' ><button class='btn btn-danger'>Eliminar</button></a> ";
     }
-//---------------------------------------------------------------------------------------------------TERMINO EL BOTON ELIMINAR--------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------TERMINO EL BOTON ELIMINAR--------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------------------------------BOTON AGREGAR-------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------BOTON AGREGAR-------------------------------------------------------------------------------------
     function buttons() {
         return {
             btnAdd: {
@@ -367,7 +384,7 @@
             }
         }
     }
-//---------------------------------------------------------------------------------------------------TERMINO EL BOTON AGREGAR-------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------TERMINO EL BOTON AGREGAR-------------------------------------------------------------------------------------
 
 
 
@@ -376,7 +393,7 @@
     }
 
 
-//--------------------------------------------------------------------------------------------------- BOTON SUBMIT------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------- BOTON SUBMIT------------------------------------------------------------------------------------------------
     $("#modalForm").submit(function (e) {
 
         e.preventDefault(); // avoid to execute the actual submit of the form.
@@ -398,37 +415,37 @@
                     $('#recipient-fechapublicacion').addClass('is-valid');
                     $('#recipient-precio').addClass('is-valid');
                     $.each(data, function (index, value) {
-                        if (value.param == 'ruta'){
-                            $('#recipient-ruta' ).addClass('is-invalid');
+                        if (value.param == 'ruta') {
+                            $('#recipient-ruta').addClass('is-invalid');
                             $('#invalid-ruta').text(value.msg);
-                        } 
-                        if (value.param == 'fechasalida'){
+                        }
+                        if (value.param == 'fechasalida') {
                             $('#recipient-fechasalida').addClass('is-invalid');
                             $('#invalid-fechasalida').text(value.msg);
-                        }                        
-                        if (value.param == 'horasalida'){
+                        }
+                        if (value.param == 'horasalida') {
                             $('#recipient-horasalida').addClass('is-invalid');
                             $('#invalid-horasalida').text(value.msg);
-                        } 
-                        if (value.param == 'combi'){
+                        }
+                        if (value.param == 'combi') {
                             $('#recipient-combi').addClass('is-invalid');
                             $('#invalid-combi').text(value.msg);
-                        } 
-                        if (value.param == 'fechapublicacion'){
+                        }
+                        if (value.param == 'fechapublicacion') {
                             $('#recipient-fechapublicacion').addClass('is-invalid');
                             $('#invalid-fechapublicacion').text(value.msg);
-                        } 
-                        if (value.param == 'precio'){
+                        }
+                        if (value.param == 'precio') {
                             $('#recipient-precio').addClass('is-invalid');
                             $('#invalid-precio').text(value.msg);
                         }
-                        if (value.param == "viaje"){
+                        if (value.param == "viaje") {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
                                 text: value.msg
                             })
-                        } 
+                        }
                     });
                 } else {
                     if (edit) {
@@ -463,15 +480,15 @@
                     $("#recipient-fechapublicacion").removeClass("is-invalid is-valid");
                     $("#recipient-precio").removeClass("is-invalid is-valid");
                     $('#modalForm').trigger("reset");
-                }   
+                }
             }
         })
     });
-//---------------------------------------------------------------------------------------------------TERMINO EL BOTON SUBMIT-------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------TERMINO EL BOTON SUBMIT-------------------------------------------------------------------------------------
 
 
-//---------------------------------------------------------------------------------------------------SWEET ALERT-------------------------------------------------------------------------------------
-function confirmar(id) {
+    //---------------------------------------------------------------------------------------------------SWEET ALERT-------------------------------------------------------------------------------------
+    function confirmar(id) {
         Swal.fire({
             title: 'Seguro que quieres eliminarlo?',
             icon: 'warning',
@@ -520,8 +537,8 @@ function confirmar(id) {
                 });
             }
         })
-    }; 
-//---------------------------------------------------------------------------------------------------TERMINO SWEET ALERT-------------------------------------------------------------------------------------
+    };
+    //---------------------------------------------------------------------------------------------------TERMINO SWEET ALERT-------------------------------------------------------------------------------------
 
 
 

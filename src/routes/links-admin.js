@@ -107,8 +107,8 @@ router.post("/choferes",
     const errors = result.errors;
 
     const rowDni = await pool.query(
-      "SELECT u.id_usuario "+
-      "FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) "+
+      "SELECT u.id_usuario " +
+      "FROM usuario u INNER JOIN autoridad a ON (u.id_usuario=a.id_usuario) " +
       "WHERE a.rol='ROL_CHOFER' AND u.dni=?", [dni]);
     if (rowDni.length > 0) {
       if (rowDni[0].id_usuario != id) {
@@ -197,7 +197,7 @@ router.get("/insumos", isAdmin, async (req, res) => {
 
 router.post("/insumo/nombre", isAdmin, async (req, res) => {
   const { nombreValue, idValue } = req.body;
-  const result = await pool.query("SELECT * FROM insumo WHERE nombre=?", [nombreValue]); 
+  const result = await pool.query("SELECT * FROM insumo WHERE nombre=?", [nombreValue]);
   if (result.length > 0) {
     if (idValue == result[0].id_insumo) {
       res.json(true);
@@ -226,8 +226,8 @@ router.delete("/insumos/eliminar/", isAdmin, async (req, res) => {
   });
 })
 
-router.post("/insumos", 
-  body("nombre").notEmpty().withMessage("El campo Nombre no puede estar vacio!"), 
+router.post("/insumos",
+  body("nombre").notEmpty().withMessage("El campo Nombre no puede estar vacio!"),
   body("precio").notEmpty().withMessage("El campo Precio no puede estar vacio!"),
   body("cantidad").notEmpty().withMessage("El campo Cantidad no puede estar vacio!"),
   async (req, res) => {
@@ -332,7 +332,7 @@ router.get("/lugaresJSON", isAdmin, async (req, res) => {
 //---------------------------------------------------------------------------------------------------COMBIS-------------------------------------------------------------------------------------
 router.post("/combis/patente", async (req, res) => {
   const { patenteValue, idValue } = req.body;
-  const result = await pool.query("SELECT * FROM combi WHERE patente=? ",[patenteValue]);
+  const result = await pool.query("SELECT * FROM combi WHERE patente=? ", [patenteValue]);
   if (result.length > 0) {
     if (result[0].id_combi == idValue) {
       res.json(true);
@@ -355,7 +355,7 @@ router.get('/combisJSON', isAdmin, async (req, res) => {
 
   for (let i = 0; i < aux.length; i++) {
     const choferResult = await pool.query("SELECT name, lastname FROM usuario WHERE id_usuario=?", [aux[i].chofer]);
-    aux[i].chofer = choferResult[0].name+' '+choferResult[0].lastname;
+    aux[i].chofer = choferResult[0].name + ' ' + choferResult[0].lastname;
   }
 
   res.send(aux);
@@ -390,9 +390,9 @@ router.post("/combis",
     }
     if (errors.length == 0) {
       if (id == "") {
-        await pool.query("INSERT INTO combi (patente,chofer,cant_asientos,tipo_asiento) VALUES (?,?,?,?)",[patente, chofer, cantAsientos, tipoAsientos]);
+        await pool.query("INSERT INTO combi (patente,chofer,cant_asientos,tipo_asiento) VALUES (?,?,?,?)", [patente, chofer, cantAsientos, tipoAsientos]);
       } else {
-        await pool.query("UPDATE combi SET patente=?,chofer=?,cant_asientos=?,tipo_asiento=? WHERE id_combi=?",[patente, chofer, cantAsientos, tipoAsientos, id]);
+        await pool.query("UPDATE combi SET patente=?,chofer=?,cant_asientos=?,tipo_asiento=? WHERE id_combi=?", [patente, chofer, cantAsientos, tipoAsientos, id]);
       }
     }
     res.send(errors);
@@ -419,7 +419,7 @@ router.delete("/combis/eliminar", isAdmin, async (req, res) => {
   } else {
     res.json({
       result: false,
-      message: 'No existe la combi con ID '+id+'!',
+      message: 'No existe la combi con ID ' + id + '!',
     });
   }
 });
@@ -497,11 +497,11 @@ router.post('/viajes/ruta', async (req, res) => {
 router.get("/viajesJSON", isAdmin, async (req, res) => {
   const aux = await pool.query("SELECT * FROM viaje");
   for (let i = 0; i < aux.length; i++) {
-      
-      const patenteCombi = await pool.query(" SELECT patente FROM combi WHERE id_combi=?",[aux[i].combi]);
-      aux[i].combi = patenteCombi[0].patente;
-      const rutasViaje = await pool.query("SELECT r.origen AS origenid ,r.destino AS destinoid,r.id_ruta AS id_ruta,l.nombre AS nombreorigen,l2.nombre AS nombredestino FROM ruta r INNER JOIN lugar l ON (r.origen=l.id_lugar) INNER JOIN lugar l2 ON (r.destino=l2.id_lugar) WHERE id_ruta=?",[aux[i].ruta]);
-      aux[i].ruta = rutasViaje[0].nombreorigen +' - '+ rutasViaje[0].nombredestino;
+
+    const patenteCombi = await pool.query(" SELECT patente FROM combi WHERE id_combi=?", [aux[i].combi]);
+    aux[i].combi = patenteCombi[0].patente;
+    const rutasViaje = await pool.query("SELECT r.origen AS origenid ,r.destino AS destinoid,r.id_ruta AS id_ruta,l.nombre AS nombreorigen,l2.nombre AS nombredestino FROM ruta r INNER JOIN lugar l ON (r.origen=l.id_lugar) INNER JOIN lugar l2 ON (r.destino=l2.id_lugar) WHERE id_ruta=?", [aux[i].ruta]);
+    aux[i].ruta = rutasViaje[0].nombreorigen + ' - ' + rutasViaje[0].nombredestino;
     //  console.log(rutasViaje);
     aux[i].fecha_salida = dateFormat(aux[i].fecha_salida, "yyyy-mm-dd");
     aux[i].fecha_publicacion = dateFormat(
@@ -562,12 +562,14 @@ router.post("/viajes",
     if (combi != '' && fechasalida != '' && horasalida != '') {
       const isOk = await pool.query("SELECT * FROM viaje WHERE combi=? AND fecha_salida=? AND hora_salida=?", [combi, fechasalida, horasalida]);
       if (isOk.length > 0) {
-        errors.push({
-          value: "",
-          msg: "Lo siento, ya existe un viaje con dicha Combi, Fecha y Hora!",
-          param: "viaje",
-          location: "body",
-        });
+        if (id != isOk[0].id_viaje) {
+          errors.push({
+            value: "",
+            msg: "Lo siento, ya existe un viaje con dicha Combi, Fecha y Hora!",
+            param: "viaje",
+            location: "body",
+          });
+        }
       }
     }
 
@@ -591,12 +593,12 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
   const result = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
   if (result.length > 0) {
-    await pool.query("DELETE FROM viaje WHERE id_viaje=?",[id]);
+    await pool.query("DELETE FROM viaje WHERE id_viaje=?", [id]);
     res.json({
       result: true,
       message: "Se ha eliminado el viaje exitosamente!",
     });
-  }else{
+  } else {
     res.json({
       result: false,
       message: "No se puede eliminar este viaje dado que no existe!",
