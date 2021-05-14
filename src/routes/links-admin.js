@@ -673,10 +673,10 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
   const result = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
   if (result.length > 0) {
     const resultInsumos = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=?", [id]);
-    // for (let index = 0; index < resultInsumos.length; index++) {
-    //   var resultInsumo = await pool.query("SELECT * FROM insumo WHERE id_insumo=?", [resultInsumos[index].insumo]);
-    //   await pool.query(('UPDATE insumo SET cantidad=? WHERE id_insumo=?', [(resultInsumo[0].cantidad + resultInsumos[index].cantidad), resultInsumos[index].insumo]));
-    // }
+    for (let index = 0; index < resultInsumos.length; index++) {
+      var insumo = await pool.query("SELECT * FROM insumo WHERE id_insumo=?", [resultInsumos[index].insumo]);
+      await pool.query('UPDATE insumo SET cantidad=? WHERE id_insumo=?', [(insumo[0].cantidad + resultInsumos[index].cantidad), resultInsumos[index].insumo]);
+    }
     if (resultInsumos.length > 0) {
       await pool.query("DELETE FROM viaje_insumos WHERE viaje=?", [id]);
     }
