@@ -433,7 +433,7 @@ router.delete("/combis/eliminar", isAdmin, async (req, res) => {
 router.get("/viajes", isAdmin, async (req, res) => {
   const insumos = await pool.query("SELECT nombre,id_insumo FROM insumo");
   const combis = await pool.query("SELECT patente,id_combi FROM combi");
-  const rutas = await pool.query("SELECT r.origen AS origenid ,r.destino AS destinoid,r.id_ruta AS id_ruta,l.nombre AS nombreorigen,l2.nombre AS nombredestino FROM ruta r INNER JOIN lugar l ON (r.origen=l.id_lugar) INNER JOIN lugar l2 ON (r.destino=l2.id_lugar) ORDER BY r.id_ruta ASC");
+  const rutas = await pool.query("SELECT r.origen AS origenid ,r.destino AS destinoid,r.id_ruta AS id_ruta,l.nombre AS nombreorigen,l2.nombre AS nombredestino FROM ruta r INNER JOIN lugar l ON (r.origen=l.id_lugar) INNER JOIN lugar l2 ON (r.destino=l2.id_lugar) ORDER BY l.nombre, l2.nombre");
   res.render("admin/viajes", { rutas, combis, insumos });
 });
 
