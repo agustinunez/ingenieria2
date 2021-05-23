@@ -9,6 +9,14 @@ module.exports = {
         return next();
     },
 
+    hasPermission(req, res, next) {
+        if (!req.isAuthenticated()) {
+            req.flash('warning', 'No puedes acceder a esta ruta!');
+            return res.redirect('/');
+        }
+        return next();
+    },
+
     async isAdmin(req, res, next) {
         if (req.isAuthenticated()) {
             const result = await pool.query('SELECT * FROM autoridad WHERE id_usuario=? AND rol=?', [req.user.id_usuario, ROLE.ADMIN]);
