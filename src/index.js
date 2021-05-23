@@ -73,6 +73,8 @@ app.use(async (req, res, next) => {
 
 app.use(require('./routes/home'));
 app.use('/admin', require('./routes/links-admin'));
+app.use('/user', require('./routes/links-user'));
+app.use('/profile', require('./routes/profile'));
 app.use(require('./routes/auth'));
 
 //Public
