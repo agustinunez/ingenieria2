@@ -4,11 +4,12 @@
 
 const express = require('express');
 const router = express.Router();
+const { hasPermission } = require("../lib/auth");
 
-// ACA VA EL BUSCAR VIAJE DE LUCAS
+router.get('/',hasPermission, (req, res) => {
+    const user = req.user;
 
-router.get('/', (req, res) => {
-    res.render('home');
+    res.render("perfil", {user});
 });
 
 

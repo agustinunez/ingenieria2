@@ -1,77 +1,110 @@
 <nav class="navbar-main navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
-      <img src="/images/logo_is.png" alt="" width="80" height="80" class="d-inline-block align-top">
+      <img
+        src="/images/logo_is.png"
+        alt=""
+        width="80"
+        height="80"
+        class="d-inline-block align-top"
+      />
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item dropdown">
-          {{!-- <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+          {{! <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
             Sobre Nosotros
-          </a> --}}
+          </a> }}
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" href="#">Acerca de</a></li>
             <li><a class="dropdown-item" href="#">.</a></li>
             <li>
-              <hr class="dropdown-divider">
+              <hr class="dropdown-divider" />
             </li>
             <li><a class="dropdown-item" href="#">Ayuda</a></li>
           </ul>
         </li>
-        {{#if (isRole role 'ROL_ADMIN')}}
-        <li>
-          <a class="nav-link" href="/admin/viajes">Viajes</a>
-        </li>
-        <li>
-          <a class="nav-link" href="/admin/rutas">Rutas</a>
-        </li>
-        <li>
-          <a class="nav-link" href="/admin/lugares">Lugares</a>
-        </li>
-        <li>
-          <a class="nav-link" href="/admin/combis">Combis</a>
-        </li>
-        <li>
-          <a class="nav-link" href="/admin/choferes">Choferes</a>
-        </li>
-        <li>
-          <a class="nav-link" href="/admin/insumos">Insumos</a>
-        </li>
+        {{#if (isRole role "ROL_ADMIN")}}
+          <li>
+            <a class="nav-link" href="/admin/viajes">Viajes</a>
+          </li>
+          <li>
+            <a class="nav-link" href="/admin/rutas">Rutas</a>
+          </li>
+          <li>
+            <a class="nav-link" href="/admin/lugares">Lugares</a>
+          </li>
+          <li>
+            <a class="nav-link" href="/admin/combis">Combis</a>
+          </li>
+          <li>
+            <a class="nav-link" href="/admin/choferes">Choferes</a>
+          </li>
+          <li>
+            <a class="nav-link" href="/admin/insumos">Insumos</a>
+          </li>
         {{/if}}
       </ul>
       <ul class="navbar-nav mb-2 mb-lg-0">
         {{#if user}}
-        <li class="nav-item">
-          <a class="nav-link" href="/user/tickets">Listar Pasajes</a>
-        </li>
-        <li class="nav-item">
-          {{!-- Aca va el tema del profile --}}
-          <a class="nav-link" href="/logout" >Cerrar Sesion</a>
-        </li>
+          <li class="profile-general">
+            {{! Aca va el tema del profile }}
+            <div class="action">
+              <div class="profile" onclick="menuToggle();">
+                <img src="/images/perfil.jpg"/>
+              </div>
+              <div class="menu">
+                <h3> Perfil de usuario <span> Combi-19 </span></h3>
+                <ul>
+                  <li>
+                    <img src="/images/userprofile.png" /><a href="/profile">Mi perfil</a></li>
+                  <li> <img src="/images/portapapeles.png"> <a href="/user/tickets">Listar pasajes</a></li>
+                  <li> <img src="/images/help.png" /><a href="#">Ayuda</a></li>
+                  <li>
+                    <img src="/images/cerrarsesion.png" /><a href="/logout">Cerrar
+                      sesion</a></li>
+                </ul>
+
+              </div>
+            </div>
+            <script>
+              function menuToggle(){ const toggleMenu =
+              document.querySelector('.menu');
+              toggleMenu.classList.toggle('active'); }
+            </script>
+            {{! <a class="nav-link" href="/logout" >Cerrar Sesion</a> }}
+          </li>
         {{else}}
-        <li class="nav-item">
-          <a class="nav-link" href="/login">Iniciar Sesion</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/signup">Registrase</a>
-        </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Iniciar Sesion</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/signup">Registrase</a>
+          </li>
         {{/if}}
       </ul>
     </div>
   </div>
 </nav>
 {{#if success}}
-<div class="alert alert-success m-2 text-center" role="success">
-  {{success}}
-</div>
+  <div class="alert alert-success m-2 text-center" role="success">
+    {{success}}
+  </div>
 {{/if}}
 {{#if warning}}
-<div class="alert alert-danger m-2 text-center" role="alert">
-  {{warning}}
-</div>
+  <div class="alert alert-danger m-2 text-center" role="alert">
+    {{warning}}
+  </div>
 {{/if}}
