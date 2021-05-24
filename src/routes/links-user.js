@@ -18,7 +18,7 @@ router.get("/ticketsJSON", hasPermission, async (req, res) => {
     const usuario = req.user
     id_usuario=usuario.id_usuario
     const aux = await pool.query(
-        "SELECT viaje,estado,cantidad FROM usuario_viaje WHERE usuario=?",[id_usuario]
+        "SELECT id_usuarioviaje,viaje,estado,cantidad FROM usuario_viaje WHERE usuario=?",[id_usuario]
     );
     for (let i = 0; i < aux.length; i++) {
         viaje= await pool.query("SELECT ruta,fecha_salida,fecha_llegada,hora_salida,hora_llegada FROM viaje WHERE id_viaje=?",[aux[i].viaje]);
@@ -41,6 +41,29 @@ router.get("/ticketsJSON", hasPermission, async (req, res) => {
 });
 // Aca exporto el enrutador
 
+router.delete("/tickets/devolver/", hasPermission, async (req, res) => {
+    const { id } = req.body;
+    const result = await pool.query("SELECT * FROM usuario_viaje WHERE id_usuarioviaje=?", [id]);
+    console.log(result[0].estado)
+    if (result[0].estado=="pendiente"){
+    //const viaje= result[0].viaje          TODO ESTO ES PARA UPDATEAR LA CATIDAD DE VIAJES LA QUE TENIA + LA Q DEVOLVIERON :D ME FALTA CONSAS EN LA BASE DE DATOS PORQ ESO NO FUNKA
+    //let cantidadAnterior= await pool.query("SELECT cantidad FROM viaje WHERE id_viaje=?", [viaje]);
+    //cantidadAnterior = cantidadAnterior + result[0].cantidad
+    //const devolverCantidadViaje=await pool.query("UPDATE viaje SET cantidad=? WHERE id_viaje=?", [cantidadAnterior,viaje]);   DESPUES DE ESTO TMB HAY Q UPDATEAR LOS INSUMOS Y DEOLVER EL DINERO PERO NO PUEDO HHACER NADA 
+    //const await pool.query("DELETE FROM usuario_viaje WHERE id_usuarioviaje=?", [id]);    aca se elimina cuando este todo bien pero no puedi hacer las comprobaciones porq no tengo todo lo anterior :D
+    // TENGO Q CAMBIAR EL COLOR DEL BOTON Y LA FIGURA DE LA COLUMNA 
+    res.json({
+      value: result[0].viaje,
+      result: true,
+      message: "Se ha devuelto el pasaje exitosamente!"
+    });
+    }else{
+        res.json({
+            result: false,
+            message: "No se puede eliminar ya que el viaje ya finalizo!",
+          });
+    }
+  });
 module.exports = router;
 
 
