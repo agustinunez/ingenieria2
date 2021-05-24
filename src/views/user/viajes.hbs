@@ -1,0 +1,54 @@
+<div class="mx-3 container_tablas">
+    <div class="my-2" id="div_route">
+        <div class="tramo">
+            <p>IDA</p>
+        </div>
+        <div>
+            <span>Origen</span>
+            <span class="place">Berisso</span>
+        </div>
+        <div class="route_icon"><i class="fas fa-arrow-circle-right"></i></div>
+        <div>
+            <span>Destino</span>
+            <span class="place">La Plata</span>
+        </div>
+    </div>
+    <strong>
+        <table class="" id="table_trips" data-toggle="table"
+            data-show-button-text="true" data-pagination="true" data-locale="es-AR">
+            <thead>
+                <tr class="table-dark">
+                    <th data-field="salida" data-sortable="true">Salida</th>
+                    <th data-field="llegada" data-sortable="true">Llegada</th>
+                    <th data-field="duracion" data-sortable="true">Duracion</th>
+                    <th data-field="comodidad" data-sortable="true">Comodidad</th>
+                    <th data-field="precio" data-sortable="true">Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each viajes}}
+                    <tr>
+                        <td>
+                            <div class="hora">{{hora_salida}}</div>
+                            <span class="info_fecha">{{diaSalida}}</span>
+                            <span class="info_fecha">{{mesSalida}}</span>
+                        </td>
+                        <td>
+                            <div class="hora">{{hora_llegada}}</div>
+                            <span class="info_fecha">{{diaLlegada}}</span>
+                            <span class="info_fecha">{{mesLlegada}}</span>
+                        </td>
+                        <td><span class="duracion">{{duracion}}</span></td>
+                        <td><span class="asiento">{{tipo_asiento}}</span></td>
+                        <td>
+                            <button class="btn">
+                                <span style="font-size: 1.2rem; ">${{precio}}</span>
+                                <span class="info_fecha">Por persona</span>
+                            </button>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </strong>
+</div>

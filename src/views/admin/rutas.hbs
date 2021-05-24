@@ -18,8 +18,9 @@
                 </tr>
             </thead>
         </table>
+    </strong>
 </div>
-</strong>
+
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -117,7 +118,7 @@
             }
         });
     })
-    
+
     function LinkFormatterEdit(value, row) {
         return "<button type='button' class='btn btn-primary btn-xs edit_button'" +
             "data-toggle='modal' data-target='#exampleModal'" +
@@ -126,19 +127,19 @@
             "data-destino='" + row.destino + "'>" +
             "Editar" +
             "</button>"
-    } 
+    }
     $(document).on("click", '.edit_button', function () {
         var id = $(this).data('id_ruta');
         var origen = $(this).data('origen');
         var destino = $(this).data('destino');
-        
+
         $.ajax({
             type: 'POST',
             url: 'http://localhost:3000/admin/ruta/editar',
             data: { id },
             success: function (res) {
-                    console.log('ENTRA: ', origen);
-                    console.log('ENTRA: ', destino);
+                console.log('ENTRA: ', origen);
+                console.log('ENTRA: ', destino);
                 if (!res.result) {
                     Swal.fire({
                         icon: 'error',
@@ -278,7 +279,7 @@
             }
         }
     }
-        function confirmar(id) {
+    function confirmar(id) {
         Swal.fire({
             title: 'Seguro que quieres eliminarlo?',
             icon: 'warning',

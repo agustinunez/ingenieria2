@@ -76,6 +76,11 @@ body {
     border-width: 3px;
     text-align: center;
 }
+
+.bootstrap-table .fixed-table-container .table thead th {
+    vertical-align: middle !important;
+}
+
 .modal-content{
     background-color: #212529;
     color:#efe6e6
@@ -331,3 +336,139 @@ body {
 }  */
 
 /* FIN DEL PERFIL */
+/* Styles buscador de viajes */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #BBB #EEE;
+}
+  
+*::-webkit-scrollbar {
+    width: 10px;
+}
+  
+*::-webkit-scrollbar-track {
+    background: #C0C3C6;
+}
+  
+*::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 3px solid #C0C3C6;
+}
+
+input {
+    padding: 10px;
+    font-size: 1em;
+    width: calc(100% - 20px);
+    border: var(--border);
+    border-radius: 3px;
+}
+
+input[list]:focus {
+    outline: none;
+}
+
+input[list] + div[list] {
+    position: absolute;
+    display: none;
+    width: 100%;
+    max-height: 164px;
+    overflow-y: auto;
+    background: #FFF;
+    border: var(--border);
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 3px 3px -3px #333;
+    z-index: 100;
+}
+
+input[list] + div[list] span {
+    display: block;
+    padding: 7px 5px 7px 20px;
+    color: #069;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input[list] + div[list] span:not(:last-child) {
+    border-bottom: 1px solid #EEE;  
+}
+
+input[list] + div[list] span:hover {
+    background: rgba(100, 120, 140, .2);
+}
+
+#form-findTrips .mb-3 {
+    position: relative;
+}
+
+
+#table_trips {
+    border: none !important;
+}
+
+#table_trips th {
+    font-weight: 400;
+    font-size: 1.1rem;
+}
+
+#table_trips.table-bordered>:not(caption)>*>* {
+    border-width: 0;
+}
+
+#table_trips.table-hover>tbody>tr:hover {
+    color: #efe9e9;
+}
+
+#table_trips div.hora,
+#table_trips span.duracion,
+#table_trips span.asiento {
+    font-size: 1.19rem;
+    font-weight: 500;
+}
+
+#table_trips span.info_fecha {
+    font-size: .9rem;
+}
+
+#table_trips .btn span,
+#table_trips span.info_fecha,
+#div_route div span {
+    display: block;
+    font-weight: 400;
+}
+
+span.place {
+    font-size: 1.5rem;
+}
+
+#table_trips button {
+    background-color: #F4CC70;
+}
+
+#div_route {
+    background-color: #F4CC70;
+    top: .5rem;
+    position: relative;
+    border-radius: .2rem;
+    display: flex;
+}
+
+#div_route div {
+    padding: 1rem;
+}
+
+div.tramo {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0,0,0,.15);
+}
+
+div.tramo p {
+    margin-bottom: 0;
+}
+
+.route_icon {
+    font-size: 1.7rem;
+    align-self: flex-end;
+}

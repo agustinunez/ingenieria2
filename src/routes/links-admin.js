@@ -450,19 +450,66 @@ router.post("/viajes/horasalida", isAdmin, async (req, res) => {
   const { horasalidaValue, fechasalidaValue, idValue } = req.body;
 
   if (fechasalidaValue != '') {
-    if (
-      !(fechasalidaValue > moment().format("YYYY-MM-DD")) &&
-      !(fechasalidaValue < moment().format("YYYY-MM-DD"))
-    ) {
+    if (fechasalidaValue.toString() === moment().format("YYYY-MM-DD").toString()) {
       if (horasalidaValue < moment().format("HH:mm")) {
         res.json(false);
       } else {
         res.json(true);
       }
     }
+  } else {
+    res.json(true);
   }
-
 });
+
+router.post("/viajes/fechallegada", isAdmin, async (req, res) => {
+  const { fechasalidaValue, fechallegadaValue, idValue } = req.body;
+
+  if (fechasalidaValue != '') {
+    if (fechasalidaValue > fechallegadaValue) {
+      res.json(false);
+    } else {
+      res.json(true);
+    }
+  } else {
+    res.json(true);
+  }
+});
+
+router.post("/viajes/horallegada", isAdmin, async (req, res) => {
+  const { fechasalidaValue, fechallegadaValue, horasalidaValue, horallegadaValue, idValue } = req.body;
+
+  if (fechasalidaValue != '' && fechallegadaValue != '' && horasalidaValue != '') {
+    if (horasalidaValue > horallegadaValue) {
+      res.json(false);
+    } else {
+      res.json(true);
+    }
+  } else {
+    res.json(true);
+  }
+});
+
+router.post('/viajes/asientos', async (req, res) => {
+  const { asientosValue, combiValue } = req.body;
+  const resultCombi = await pool.query("SELECT cant_asientos FROM combi WHERE id_combi=?", [combiValue]);
+  if (resultCombi.length > 0) {
+    if (asientosValue > resultCombi[0].cant_asientos) {
+      res.send({
+        result: false,
+        value: resultCombi[0].cant_asientos
+      });
+    } else {
+      res.send({
+        result: true
+      });
+    }
+  } else {
+    res.send({
+      result: true
+    });
+  }
+})
 
 router.post('/viajes/combi', async (req, res) => {
   const { id } = req.body;
@@ -562,20 +609,21 @@ async (req, res) => {
 router.post("/viajes",
   body("ruta").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("fechasalida").notEmpty().withMessage("Este campo no puede estar vacio!"),
-  body("fechallegada").notEmpty().withMessage("Este campo no puede estar vacio!"),
-  body("horallegada").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("fechasalida").custom(async (value) => {
     if (value != '' && value < moment().format('YYYY-MM-DD')) {
       throw new Error("Lo siento, la Fecha de salida debe ser mayor o igual a la fecha actual!");
     }
   }),
   body("horasalida").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("fechallegada").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("horallegada").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("combi").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("asientosAsignados").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("fechapublicacion").notEmpty().withMessage("Este campo no puede estar vacio!"),
   body("precio").notEmpty().withMessage("Este campo no puede estar vacio!"),
 
   async (req, res) => {
-    var { id, ruta, fechasalida, horasalida, combi, fechapublicacion, precio, fechallegada, horallegada } =
+    var { id, ruta, fechasalida, horasalida, fechallegada, horallegada, combi, asientosAsignados, fechapublicacion, precio } =
       req.body;
     const result = validationResult(req);
     const errors = result.errors;
@@ -596,6 +644,30 @@ router.post("/viajes",
       }
     }
 
+    if (fechasalida != '' && fechallegada != '') {
+      if (fechasalida > fechallegada) {
+        errors.push({
+          value: "",
+          msg: "Lo siento, la Fecha de llegada debe ser mayor o igual a la Fecha de salida!",
+          param: "fechallegada",
+          location: "body",
+        });
+      }
+    }
+
+    if (fechasalida != '' && fechallegada != '' && horasalida != '' && horallegada != '') {
+      if (fechasalida.toString() === fechallegada.toString()) {
+        if (horallegada < horasalida) {
+          errors.push({
+            value: "",
+            msg: "Lo siento, la Hora de llegada debe ser mayor o igual a la Hora de salida!",
+            param: "horallegada",
+            location: "body",
+          });
+        }
+      }
+    }
+
     if (fechasalida != '' && fechapublicacion != '') {
       if (fechapublicacion > fechasalida) {
         errors.push({
@@ -607,13 +679,27 @@ router.post("/viajes",
       }
     }
 
+    if (asientosAsignados != '' && combi != '') {
+      const resultCombi = await pool.query("SELECT cant_asientos FROM combi WHERE id_combi=?", [combi]);
+      if (resultCombi.length > 0) {
+        if (asientosAsignados > resultCombi[0].cant_asientos) {
+          errors.push({
+            value: "",
+            msg: "Lo siento, la combi posee ["+resultCombi[0].cant_asientos+"] asientos!",
+            param: "asientosAsignados",
+            location: "body",
+          });
+        }
+      }
+    }
+
     if (combi != '' && fechasalida != '' && horasalida != '') {
       const isOk = await pool.query("SELECT * FROM viaje WHERE combi=? AND fecha_salida=? AND hora_salida=?", [combi, fechasalida, horasalida]);
       if (isOk.length > 0) {
         if (id != isOk[0].id_viaje) {
           errors.push({
             value: "",
-            msg: "Lo siento, ya existe un viaje con dicha Combi, Fecha y Hora!",
+            msg: "Lo siento, la combi no esta disponible para dicha Fecha y Hora!",
             param: "viaje",
             location: "body",
           });
@@ -621,30 +707,33 @@ router.post("/viajes",
       }
     }
     if (combi != '' && fechasalida != '' && horasalida != '' && fechallegada != '' && horallegada != '') {
-      const isOk = await pool.query("SELECT * FROM viaje WHERE combi=?", [combi]);
-      if (isOk.length > 0) {
-        for (let i = 0; i < isOk.length; i++) {
-          if (isOk[i].id_viaje != id) {
-            var estaViajando = helpers.combiViajagando(fechasalida, horasalida, fechallegada, horallegada, isOk[i]);
-            if (estaViajando) {
-              errors.push({
-                value: "",
-                msg: "Lo siento, la combi esta en viaje",
-                param: "combi",
-                location: "body",
-              });
-              break;
+      if (fechallegada >= fechasalida && !(fechallegada.toString() === fechasalida.toString() && horallegada < horasalida)) {
+        const viajes = await pool.query("SELECT * FROM viaje WHERE combi=?", [combi]);
+        if (viajes.length > 0) {
+          for (let i = 0; i < viajes.length; i++) {
+            if (viajes[i].id_viaje != id) {
+              var estaViajando = helpers.combiViajagando(fechasalida, horasalida, fechallegada, horallegada, viajes[i]);
+              if (estaViajando) {
+                errors.push({
+                  value: "",
+                  msg: "Lo siento, la combi no esta disponible para dicha Fecha y Hora!",
+                  param: "combi",
+                  location: "body",
+                });
+                break;
+              }
             }
           }
         }
       }
+
     }
 
     if (errors.length == 0) {
       if (id == "") {
         await pool.query(
-          "INSERT INTO viaje (ruta, fecha_salida, hora_salida, combi, fecha_publicacion, precio,fecha_llegada,hora_llegada) VALUES (?,?,?,?,?,?,?,?)",
-          [ruta, fechasalida, horasalida, combi, fechapublicacion, precio, fechallegada, horallegada]
+          "INSERT INTO viaje (ruta, fecha_salida, hora_salida, fecha_llegada, hora_llegada, asientos_asignados, asientos_disponibles, combi, fecha_publicacion, precio) VALUES (?,?,?,?,?,?,?,?,?,?)",
+          [ruta, fechasalida, horasalida, fechallegada, horallegada, asientosAsignados, asientosAsignados, combi, fechapublicacion, precio]
         );
       } else {
         await pool.query(
@@ -660,6 +749,9 @@ router.post("/viajes",
 router.delete("/insumoViaje/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
   const result = await pool.query("SELECT * FROM viaje_insumos WHERE id_viajeinsumos=?", [id]);
+  const resultInsumo = await pool.query("SELECT * FROM insumo WHERE id_insumo=?", [result[0].insumo]);
+  const cantidadActualizada = resultInsumo[0].cantidad + result[0].cantidad;
+  await pool.query("UPDATE insumo SET cantidad=? WHERE id_insumo=?", [cantidadActualizada, result[0].insumo]);
   await pool.query("DELETE FROM viaje_insumos WHERE id_viajeinsumos=?", [id]);
   res.json({
     value: result[0].viaje,

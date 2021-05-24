@@ -1,24 +1,48 @@
-<div class="outer-container mt-5"> 
+<div class="outer-container mt-5">
     <div class="container_login">
         <h3 class="px-4 py-2">Busca tu viaje</h3>
         <div class="dropdown-divider"></div>
-        <form href="/login" method="POST" class="px-4 py-3">
+        <form action="/viajesValidacion" method="POST" class="px-4 py-3" id="form-findTrips">
             <div class="mb-3">
                 <label for="origin" class="form-label">Origen</label>
-                <input type="text" class="form-control" id="origin" name="origin">
+                <input type="text" class="form-control" id="origin" name="origin" list="list-origins"
+                    autocomplete="off">
+                <div list="list-origins">
+                    {{#each lugares}}
+                        <span>{{nombre}}</span>
+                    {{/each}}
+                </div>
+                <div class="invalid-feedback">
+                    <p id="invalid-origin"></p>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="destination" class="form-label">Destino</label>
-                <input type="text" class="form-control" id="destination" name="destination">
+                <input type="text" class="form-control" id="destination" name="destination" list="list-destinations"
+                    autocomplete="off">
+                <div list="list-destinations">
+                    {{#each lugares}}
+                        <span>{{nombre}}</span>
+                    {{/each}}
+                </div>
+                <div class="invalid-feedback">
+                    <p id="invalid-destination"></p>
+                </div>
             </div>
             <div class="departureDate-container">
                 <div class="mb-3">
                     <label for="departureDate" class="form-label">Fecha de salida</label>
                     <input type="date" class="form-control" id="departureDate" name="departureDate">
+                    <div class="invalid-feedback">
+                        <p id="invalid-departureDate"></p>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="amount" class="form-label">Cantidad</label>
-                    <input type="text" class="form-control" id="amount" name="amount">
+                    <input type="number" class="form-control" id="amount" name="amount">
+                    <div class="invalid-feedback">
+                        <p id="invalid-amount"></p>
+                    </div>
                 </div>
             </div>
             <div class="alert alert-info" role="alert">
@@ -28,3 +52,120 @@
         </form>
     </div>
 </div>
+<b>INSTRUCTIONS:</b>
+<hr>
+<p><b>Double click on the input:</b><br>Show/hide the datalist.</p>
+<p><b>Press esc on the input:</b><br>Hides datalist if visible.</p>
+<p><b>Onkeypress in the input:</b><br>Displays the datalist filtering according to the entered string.
+</p>
+
+<script>
+    $(document).on('dblclick', 'input[list]', function (event) {
+        event.preventDefault();
+        var str = $(this).val();
+        $('div[list=' + $(this).attr('list') + '] span').each(function (k, obj) {
+            if ($(this).html().toLowerCase().indexOf(str.toLowerCase()) < 0) {
+                $(this).hide();
+            }
+        })
+        $('div[list=' + $(this).attr('list') + ']').toggle(100);
+        $(this).focus();
+    })
+
+    $(document).on('blur', 'input[list]', function (event) {
+        event.preventDefault();
+        var list = $(this).attr('list');
+        setTimeout(function () {
+            $('div[list=' + list + ']').hide(100);
+        }, 100);
+    })
+
+    $(document).on('click', 'div[list] span', function (event) {
+        event.preventDefault();
+        var list = $(this).parent().attr('list');
+        var item = $(this).html();
+        $('input[list=' + list + ']').val(item);
+        $('div[list=' + list + ']').hide(100);
+    })
+
+    $(document).on('keyup', 'input[list]', function (event) {
+        event.preventDefault();
+        var list = $(this).attr('list');
+        var divList = $('div[list=' + $(this).attr('list') + ']');
+        if (event.which == 27) { // esc
+            $(divList).hide(200);
+            $(this).focus();
+        }
+        else if (event.which == 13) { // enter
+            if ($('div[list=' + list + '] span:visible').length == 1) {
+                var str = $('div[list=' + list + '] span:visible').html();
+                $('input[list=' + list + ']').val(str);
+                $('div[list=' + list + ']').hide(100);
+            }
+        }
+        else if (event.which == 9) { // tab
+            $('div[list]').hide();
+        }
+        else {
+            $('div[list=' + list + ']').show(100);
+            var str = $(this).val();
+            $('div[list=' + $(this).attr('list') + '] span').each(function () {
+                if ($(this).html().toLowerCase().indexOf(str.toLowerCase()) < 0) {
+                    $(this).hide(200);
+                }
+                else {
+                    $(this).show(200);
+                }
+            })
+        }
+    })
+
+    $("#form-findTrips").submit(function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var edit = array[0].value != '';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements. 
+            success: function (result) {
+                if (result.length > 0) {
+                    $('#origin').removeClass('is-invalid');
+                    $('#origin').addClass('is-valid');
+                    $('#destination').removeClass('is-invalid');
+                    $('#destination').addClass('is-valid');
+                    $('#departureDate').removeClass('is-invalid');
+                    $('#departureDate').addClass('is-valid');
+                    $('#amount').removeClass('is-invalid');
+                    $('#amount').addClass('is-valid');
+                    $.each(result, function (index, value) {
+                        if (value.param == 'origin') {
+                            $('#origin').addClass('is-invalid');
+                            $('#invalid-origin').text(value.msg);
+                        }
+                        if (value.param == 'destination') {
+                            $('#destination').addClass('is-invalid');
+                            $('#invalid-destination').text(value.msg);
+                        }
+                        if (value.param == 'departureDate') {
+                            $('#departureDate').addClass('is-invalid');
+                            $('#invalid-departureDate').text(value.msg);
+                        }
+                        if (value.param == 'amount') {
+                            $('#amount').addClass('is-invalid');
+                            $('#invalid-amount').text(value.msg);
+                        }
+                    })
+                } else {
+                    form.attr('action', '/viajes');
+                    $("#form-findTrips").unbind("submit").submit();
+                }
+            }
+        });
+    });
+</script>

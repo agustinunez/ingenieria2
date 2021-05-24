@@ -16,6 +16,7 @@ helpers.matchPassword = async (password, savedPassword) => {
     console.log(e);
   }
 };
+
 helpers.combiViajagando = (fechasalida, horasalida, fechallegada, horallegada, combicomparar) => {
   combicomparar.fecha_salida = dateFormat(combicomparar.fecha_salida, "yyyy-mm-dd");
   combicomparar.fecha_llegada = dateFormat(combicomparar.fecha_llegada, "yyyy-mm-dd");
@@ -56,5 +57,18 @@ helpers.combiViajagando = (fechasalida, horasalida, fechallegada, horallegada, c
   }
 };
 
+helpers.duracion = ( horaSalida, horaLlegada ) => {
+  var partSalida = horaSalida.match(/(\d+):(\d+)/);
+  var partLlegada = horaLlegada.match(/(\d+):(\d+)/);
+  var duracion = { hh: 0, mm: 0 };
+  duracion.hh = partLlegada[1] - partSalida[1];
+  if (partLlegada[2] < partSalida[2]) {
+    duracion.hh = duracion.hh - 1;
+    duracion.mm = partLlegada[2] + (60 - partSalida[2]);
+  } else {
+    duracion.mm = partLlegada[2] - partSalida[2];
+  }
+  return duracion.hh+':'+duracion.mm;
+}
 
 module.exports = helpers;

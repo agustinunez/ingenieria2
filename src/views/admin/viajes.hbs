@@ -12,22 +12,42 @@
                         Ruta
                     </th>
                     <th data-field="fecha_salida" data-sortable="true">
-                        Fecha de salida
+                        Fecha de
+                        <br>
+                        salida
                     </th>
                     <th data-field="hora_salida" data-sortable="true">
-                        Hora de salida
+                        Hora de
+                        <br>
+                        salida
                     </th>
                     <th data-field="fecha_llegada" data-sortable="true">
-                        Fecha de llegada
+                        Fecha de
+                        <br>
+                        llegada
                     </th>
                     <th data-field="hora_llegada" data-sortable="true">
-                        Hora de llegada
+                        Hora de
+                        <br>
+                        llegada
                     </th>
                     <th data-field="combi" data-sortable="true">
                         Combi
                     </th>
+                    <th data-field="asientos_asignados" data-sortable="true">
+                        Asientos
+                        <br>
+                        asignados
+                    </th>
+                    <th data-field="asientos_disponibles" data-sortable="true">
+                        Asientos
+                        <br>
+                        disponibles
+                    </th>
                     <th data-field="fecha_publicacion" data-sortable="true">
-                        Fecha de publicacion
+                        Fecha de
+                        <br>
+                        publicacion
                     </th>
                     <th data-field="precio" data-sortable="true">
                         Precio
@@ -56,7 +76,7 @@ MODAL---------------------------------------------------------------------------
                 <form id="modalForm" action="/admin/viajes" method="POST">
                     <input type="number" id="recipient-id" name="id" hidden>
                     <div class="mb-3">
-                        <label for="ruta" class="form-label">Ruta:</label>
+                        <label for="recipient-ruta" class="form-label">Ruta:</label>
                         <select class="form-select" id="recipient-ruta" name="ruta">
                             {{#each rutas}}
                             <option value={{id_ruta}}>{{nombreorigen}} - {{nombredestino}}</option>
@@ -67,14 +87,14 @@ MODAL---------------------------------------------------------------------------
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="fechasalida">Fecha de salida:</label>
+                        <label class="form-label" for="recipient-fechasalida">Fecha de salida:</label>
                         <input type="date" class="form-control" id="recipient-fechasalida" name="fechasalida">
                         <div class="invalid-feedback">
                             <p id="invalid-fechasalida"></p>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="horasalida" class="form-label">Hora de salida:</label>
+                        <label for="recipient-horasalida" class="form-label">Hora de salida:</label>
                         <input type="time" class="form-control" id="recipient-horasalida" name="horasalida">
                         <div class="invalid-feedback">
                             <p id="invalid-horasalida"></p>
@@ -82,14 +102,14 @@ MODAL---------------------------------------------------------------------------
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label" for="fechasalida">Fecha de llegada:</label>
+                        <label class="form-label" for="recipient-fechallegada">Fecha de llegada:</label>
                         <input type="date" class="form-control" id="recipient-fechallegada" name="fechallegada">
                         <div class="invalid-feedback">
                             <p id="invalid-fechallegada"></p>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="horasalida" class="form-label">Hora de llegada:</label>
+                        <label for="recipient-horallegada" class="form-label">Hora de llegada:</label>
                         <input type="time" class="form-control" id="recipient-horallegada" name="horallegada">
                         <div class="invalid-feedback">
                             <p id="invalid-horallegada"></p>
@@ -97,7 +117,7 @@ MODAL---------------------------------------------------------------------------
                     </div>
 
                     <div class="mb-3">
-                        <label for="combi" class="form-label">Combi:</label>
+                        <label for="recipient-combi" class="form-label">Combi:</label>
                         <select class="form-select" id="recipient-combi" name="combi">
                             {{#each combis}}
                             <option value={{id_combi}}>{{patente}}</option>
@@ -108,7 +128,14 @@ MODAL---------------------------------------------------------------------------
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="fechapublicacion" class="form-label">Fecha de publicacion:</label>
+                        <label for="recipient-asientosAsignados" class="form-label">Asientos asignados:</label>
+                        <input type="number" class="form-control" id="recipient-asientosAsignados" name="asientosAsignados">
+                        <div class="invalid-feedback">
+                            <p id="invalid-asientosAsignados"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-fechapublicacion" class="form-label">Fecha de publicacion:</label>
                         <input type="date" class="form-control" id="recipient-fechapublicacion" name="fechapublicacion">
                         <div class="invalid-feedback">
                             <p id="invalid-fechapublicacion"></p>
@@ -116,7 +143,7 @@ MODAL---------------------------------------------------------------------------
                     </div>
                     <div class="mb-3">
                         {{!-- Chequear que sea de tipo number o double --}}
-                        <label for="precio" class="form-label">Precio:</label>
+                        <label for="recipient-precio" class="form-label">Precio:</label>
                         <input type="number" class="form-control" id="recipient-precio" name="precio"
                             autocomplete='off'>
                         <div class="invalid-feedback">
@@ -262,6 +289,8 @@ MODAL---------------------------------------------------------------------------
             const fechasalidaValue = $('#recipient-fechasalida').val();
             const horasalidaValue = horasalidaElement.val();
             const idValue = idElement.val();
+            horasalidaElement.removeClass('is-invalid');
+            horasalidaElement.addClass('is-valid');
             $.ajax('/admin/viajes/horasalida', {
                 type: 'POST',
                 data: { horasalidaValue, fechasalidaValue, idValue },
@@ -278,6 +307,64 @@ MODAL---------------------------------------------------------------------------
         };
     });
 
+    $('#recipient-fechallegada').focusout(function () {
+        const fechallegadaElement = $('#recipient-fechallegada');
+        const idElement = $('#recipient-id');
+        if (fechallegadaElement.val() == null || fechallegadaElement.val() == "") {
+            $('#invalid-fechallegada').text('Este campo no puede estar vacio!');
+            fechallegadaElement.addClass('is-invalid');
+        } else {
+            const fechasalidaValue = $('#recipient-fechasalida').val();
+            const fechallegadaValue = fechallegadaElement.val();
+            const idValue = idElement.val();
+            fechallegadaElement.removeClass('is-invalid');
+            fechallegadaElement.addClass('is-valid');
+            $.ajax('/admin/viajes/fechallegada', {
+                type: 'POST',
+                data: { fechasalidaValue, fechallegadaValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        fechallegadaElement.removeClass('is-invalid');
+                        fechallegadaElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-fechallegada').text('Lo siento, la Fecha de llegada debe ser mayor o igual a la Fecha de salida!');
+                        fechallegadaElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
+    $('#recipient-horallegada').focusout(function () {
+        const horallegadaElement = $('#recipient-horallegada');
+        const idElement = $('#recipient-id');
+        if (horallegadaElement.val() == null || horallegadaElement.val() == "") {
+            $('#invalid-horallegada').text('Este campo no puede estar vacio!');
+            horallegadaElement.addClass('is-invalid');
+        } else {
+            const fechasalidaValue = $('#recipient-fechasalida').val();
+            const fechallegadaValue = $('#recipient-fechallegada').val();
+            const horasalidaValue = $('#recipient-horasalida').val();
+            const horallegadaValue = horallegadaElement.val();
+            const idValue = idElement.val();
+            horallegadaElement.removeClass('is-invalid');
+            horallegadaElement.addClass('is-valid');
+            $.ajax('/admin/viajes/horallegada', {
+                type: 'POST',
+                data: { fechasalidaValue, fechallegadaValue, horasalidaValue, horallegadaValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        horallegadaElement.removeClass('is-invalid');
+                        horallegadaElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-horallegada').text('Lo siento, la Hora de llegada debe ser mayor o igual a la Hora de salida!');
+                        horallegadaElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
     $('#recipient-combi').focusout(function () {
         const combiElement = $('#recipient-combi');
         console.log('combiElement', combiElement.val())
@@ -285,10 +372,40 @@ MODAL---------------------------------------------------------------------------
             $('#invalid-combi').text('Este campo no puede estar vacio!');
             combiElement.addClass('is-invalid');
         } else {
-            $('#invalid-fechapublicacion').text('Este campo no puede estar vacio!');
-            combiElement.addClass('is-invalid');
+            $('#invalid-combi').text('Este campo no puede estar vacio!');
+            combiElement.removeClass('is-invalid');
+            combiElement.addClass('is-valid');
         };
     });
+
+    $('#recipient-asientosAsignados').focusout(function () {
+        const asientosAsignadosElement = $('#recipient-asientosAsignados');
+        if (asientosAsignadosElement.val() == null || asientosAsignadosElement.val() == "") {
+            $('#invalid-asientosAsignados').text('Este campo no puede estar vacio!');
+            asientosAsignadosElement.addClass('is-invalid');
+        } else {
+            const combiValue = $('#recipient-combi').val();
+            asientosAsignadosElement.removeClass('is-invalid');
+            asientosAsignadosElement.addClass('is-valid');
+            if (combiValue != '') {
+                const asientosValue = asientosAsignadosElement.val();
+                $.ajax('/admin/viajes/asientos', {
+                    type: 'POST',
+                    data: { asientosValue, combiValue },
+                    success: function (res) {
+                        if (res.result) {
+                            asientosAsignadosElement.removeClass('is-invalid');
+                            asientosAsignadosElement.addClass('is-valid');
+                        } else {
+                            $('#invalid-asientosAsignados').text('Lo siento, la combi posee ['+res.value+'] asientos!');
+                            asientosAsignadosElement.addClass('is-invalid');
+                        }
+                    }
+                });
+            }
+        };
+    });
+
     $('#recipient-fechapublicacion').focusout(function () {
         const fechapublicacionElement = $('#recipient-fechapublicacion');
         if (fechapublicacionElement.val() == null || fechapublicacionElement.val() == "") {
@@ -507,10 +624,12 @@ MODAL---------------------------------------------------------------------------
                         $("#recipient-ruta").removeClass("is-invalid is-valid");
                         $("#recipient-fechasalida").removeClass("is-invalid is-valid");
                         $("#recipient-horasalida").removeClass("is-invalid is-valid");
+                        $("#recipient-fechallegada").removeClass("is-invalid is-valid");
+                        $("#recipient-horallegada").removeClass("is-invalid is-valid");
                         $("#recipient-combi").removeClass("is-invalid is-valid");
+                        $("#recipient-asientosAsignados").removeClass("is-invalid is-valid");
                         $("#recipient-fechapublicacion").removeClass("is-invalid is-valid");
                         $("#recipient-precio").removeClass("is-invalid is-valid");
-
                         $('#modalForm').trigger("reset");
                         $('#guardarButton').prop('disabled', false);
                     }
@@ -606,12 +725,25 @@ MODAL---------------------------------------------------------------------------
             data: form.serialize(), // serializes the form's elements.
             success: function (data) {
                 if (data.length > 0) {
+                    $('#recipient-fechasalida').removeClass('is-invalid');
+                    $('#recipient-horasalida').removeClass('is-invalid');
+                    $('#recipient-fechallegada').removeClass('is-invalid');
+                    $('#recipient-horallegada').removeClass('is-invalid');
+                    $('#recipient-combi').removeClass('is-invalid');
+                    $('#recipient-asientosAsignados').removeClass('is-invalid');
+                    $('#recipient-fechapublicacion').removeClass('is-invalid');
+                    $('#recipient-precio').removeClass('is-invalid');
+
                     $('#recipient-ruta').addClass('is-valid');
                     $('#recipient-fechasalida').addClass('is-valid');
                     $('#recipient-horasalida').addClass('is-valid');
+                    $('#recipient-fechallegada').addClass('is-valid');
+                    $('#recipient-horallegada').addClass('is-valid');
                     $('#recipient-combi').addClass('is-valid');
+                    $('#recipient-asientosAsignados').addClass('is-valid');
                     $('#recipient-fechapublicacion').addClass('is-valid');
                     $('#recipient-precio').addClass('is-valid');
+                    console.log('DATA: ', data);
                     $.each(data, function (index, value) {
                         if (value.param == 'ruta') {
                             $('#recipient-ruta').addClass('is-invalid');
@@ -625,9 +757,26 @@ MODAL---------------------------------------------------------------------------
                             $('#recipient-horasalida').addClass('is-invalid');
                             $('#invalid-horasalida').text(value.msg);
                         }
+                        if (value.param == 'fechallegada') {
+                            $('#recipient-fechallegada').addClass('is-invalid');
+                            $('#invalid-fechallegada').text(value.msg);
+                        }
+                        if (value.param == 'horallegada') {
+                            $('#recipient-horallegada').addClass('is-invalid');
+                            $('#invalid-horallegada').text(value.msg);
+                        }
+                        if (value.param == 'asientosAsignados') {
+                            $('#recipient-asientosAsignados').addClass('is-invalid');
+                            $('#invalid-asientosAsignados').text(value.msg);
+                        }
                         if (value.param == 'combi') {
                             $('#recipient-combi').addClass('is-invalid');
                             $('#invalid-combi').text(value.msg);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: value.msg
+                            })
                         }
                         if (value.param == 'fechapublicacion') {
                             $('#recipient-fechapublicacion').addClass('is-invalid');
@@ -638,6 +787,8 @@ MODAL---------------------------------------------------------------------------
                             $('#invalid-precio').text(value.msg);
                         }
                         if (value.param == "viaje") {
+                            $('#recipient-combi').addClass('is-invalid');
+                            $('#invalid-combi').text(value.msg);
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
@@ -674,7 +825,10 @@ MODAL---------------------------------------------------------------------------
                     $("#recipient-ruta").removeClass("is-invalid is-valid");
                     $("#recipient-fechasalida").removeClass("is-invalid is-valid");
                     $("#recipient-horasalida").removeClass("is-invalid is-valid");
+                    $("#recipient-fechallegada").removeClass("is-invalid is-valid");
+                    $("#recipient-horallegada").removeClass("is-invalid is-valid");
                     $("#recipient-combi").removeClass("is-invalid is-valid");
+                    $("#recipient-asientosAsignados").removeClass("is-invalid is-valid");
                     $("#recipient-fechapublicacion").removeClass("is-invalid is-valid");
                     $("#recipient-precio").removeClass("is-invalid is-valid");
                     $('#modalForm').trigger("reset");
