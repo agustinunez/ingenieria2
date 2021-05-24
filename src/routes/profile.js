@@ -1,15 +1,15 @@
-// ACA VA LO DE AGUS
-
 // Constantes
 
 const express = require('express');
 const router = express.Router();
 const { hasPermission } = require("../lib/auth");
+var dateFormat = require("dateformat");
 
 router.get('/',hasPermission, (req, res) => {
     const user = req.user;
-
-    res.render("perfil", {user});
+    user.birthdate= dateFormat(user.birthdate, "yyyy-mm-dd");
+    const username = user.username.toUpperCase();
+    res.render("perfil", {user, username});
 });
 
 

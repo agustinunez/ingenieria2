@@ -135,7 +135,8 @@ body {
 }
 .action .menu.active{
     z-index: 2;
-    top: 80px;
+    top: 95px;
+    right: 5px;
     visibility: visible;
     opacity: 1;
 }
@@ -198,6 +199,8 @@ body {
 }
 /* FIN DEL BOTON PARA EL PERFIL */
 
+
+
 /* INICIO DEL PERFIL */
 
 
@@ -214,8 +217,11 @@ body {
 .profile-img img{
     width: 70%;
     height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
 }
 .profile-img .file {
+    
     position: relative;
     overflow: hidden;
     margin-top: -20%;
@@ -226,6 +232,7 @@ body {
     background: #212529b8;
 }
 .profile-img .file input {
+    cursor:pointer;
     position: absolute;
     opacity: 0;
     right: 0;
@@ -259,10 +266,7 @@ body {
 .profile-head .nav-tabs{
     margin-bottom:5%;
 }
-.profile-head .nav-tabs .nav-link{
-    font-weight:600;
-    border: none;
-}
+
 .profile-head .nav-tabs .nav-link.active{
     cursor:default;
     border: none;
@@ -293,6 +297,12 @@ body {
 .profile-tab p{
     font-weight: 600;
     color: #0062cc;
+    display:inline-block;
+}
+.profile-tab img {
+    max-width: 20px;
+    margin-right: 10px;
+    margin-left: 10px;
 }
 .container.emp-profile .row .col-md-4 .profile-work ul li img {
     max-width: 20px;
@@ -307,5 +317,17 @@ body {
     display: flex;
     align-items: center;
 }
+.navbar-main.navbar.navbar-expand-lg.navbar-dark.bg-dark{
+    background-color: #212529!important;
+}
+
+.modal-dialog .modal-content{
+    background-color:#212529;
+    color: #fff;
+}
+
+ /* .nav.nav-tabs{
+    transform: translate(5px, 60px);
+}  */
 
 /* FIN DEL PERFIL */
