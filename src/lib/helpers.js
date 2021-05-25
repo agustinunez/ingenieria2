@@ -71,7 +71,7 @@ helpers.duracion = ( horaSalida, horaLlegada ) => {
   if (duracion.hh < 0) {
     duracion.hh = duracion.hh + 24
   }
-  return duracion.hh+':'+duracion.mm;
+  return duracion.hh+':'+ ((duracion.mm == 0)? '00':duracion.mm);
 }
 
 module.exports = helpers;
