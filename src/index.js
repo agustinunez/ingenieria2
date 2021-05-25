@@ -7,6 +7,9 @@ const flash = require('connect-flash');
 const path = require('path');
 const passport = require('passport');
 const pool = require('./database');
+
+//const fileinput = require('bootstrap-fileinput');
+
 //Inicializar
 
 const app = express();

@@ -1,23 +1,29 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
 
 <div class="container emp-profile">
+    
                 <div class="row">
+                    
                     <div class="col-md-4">
+                        
                         <div class="profile-img">
+                            
+                            <br>
+                            <br>
                             <img src="/images/perfil.jpg"/>
                             <br>
                             <br>
+                            <button id="buttonUpload" type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
+                                Subir archivo
+                            </button>
                             <br>
-                            <br>
-                            <div class="file btn btn-lg btn-primary">
-                                Cambiar foto
-                                <input type="file" name="file"/>
-                            </div>
+                            <br>                         
                         </div>
+                        
                     </div>
+                    
                     <div class="col-md-6">
                         <div class="profile-head">
                                     <h5>
@@ -40,6 +46,10 @@
                             </ul>
                         </div>
                     </div>
+
+
+
+                    
 {{!-- ---------------------------------------------------------------------------------------------------BOTON EDITAR------------------------------------------------------------------------------------- --}}
                     <div class="col-md-2">
                         <input type="button" class="profile-edit-btn" name="btnAddMore" value="Editar perfil" id="button_edit"/>
@@ -116,7 +126,7 @@
                                                 <label>Contraseña</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p id="password">Contraseña?</p>
+                                                <p id="password">*********</p>
                                                 <a href="#" id="editarcontraseña"><img src="/images/editar.png"/></a>
                                             </div>
                                         </div>
@@ -126,7 +136,32 @@
                 </div>       
         </div>
 
-        {{!-- MODAL --}}
+        <!-- MODAL SUBIR FOTO-->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Elegir foto</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="file-loading">
+          <input id="input-b9" name="input-b9[]" type="file" >
+         </div>
+        <div id="kartik-file-errors"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" title="Your custom upload logic">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        {{!-- MODAL DATOS NORMALES--}}
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -135,54 +170,44 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm" action="#" method="POST">
+                <form id="modalForm" action="/profile/editarPerfil" method="POST">
                     <div class="mb-3">
-                        <input type="number" id="recipient-id" name="id" hidden>
+                        <input type="number" id="recipient-id" name="id" value={{user.id_usuario}} hidden>
+
                         <label for="nombredeusuario" class="col-form-label">Nombre de Usuario:</label>
                         <input type="text" class="form-control" id="nombredeusuario" name="nombredeusuario" autocomplete='off'>
+                        <div class="invalid-feedback">
+                            <p id="invalid-username"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="apellido" class="col-form-label">Apellido:</label>
                         <input type="text" class="form-control" id="apellido" name="apellido" autocomplete='off'>
+                        <div class="invalid-feedback">
+                            <p id="invalid-lastname"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="nombre" class="col-form-label">Nombre:</label>
                         <input type="text" class="form-control" id="nombre" name="nombre" autocomplete='off'>
+                        <div class="invalid-feedback">
+                            <p id="invalid-name"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="col-form-label">Email:</label>
                         <input type="email" class="form-control" id="email" name="email" autocomplete='off'>
+                        <div class="invalid-feedback">
+                            <p id="invalid-email"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="fechadenacimiento" class="col-form-label">Fecha de nacimiento:</label>
                         <input type="date" class="form-control" id="fechadenacimiento" name="fechadenacimiento" autocomplete='off'>
-                    </div>
-                    {{!-- <div class="mb-3">
-                        <label for="plan" class="form-label">Plan:</label>
-                        <select class="form-select" id="plan" name="plan">
-                            <option value="basico" {{selectedIfEqual userInfo.plan 'basico'}}>Basico</option>
-                            <option value="gold" {{selectedIfEqual userInfo.plan 'gold'}}>Gold</option>
-                        </select>
-                    </div> --}}
-                    {{!-- <div class="container mb-3">
-                     <div class="card" id="card-inputs" hidden>
-                     <h5 class="card-header bg-dark">Datos de la tarjeta</h5>
-                        <div class="card-body bg-secondary">
-                            <label for="owner" class="form-label">Nombre y apellido del titular</label>
-                            <input type="text" class="form-control mb-3" id="owner" name="owner" autocomplete='off'>
-
-                            <label for="cardnumber" class="form-label">Numero de tarjeta</label>
-                            <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3" id="cardnumber"
-                            name="cardnumber" autocomplete='off'>
-
-                            <label for="cvv" class="form-label">Codigo de seguridad</label>
-                            <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv" autocomplete='off'>
-
-                            <label for="expireddate" class="form-label">Fecha de vencimiento</label>
-                            <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate" name="expireddate" autocomplete='off'>
+                        <div class="invalid-feedback">
+                            <p id="invalid-birthdate"></p>
                         </div>
-                     </div>
-                    </div> --}}
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success" id="guardarButton">Guardar</button>
@@ -204,22 +229,28 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <div class="modal-body">
-                <form id="modalForm" action="#" method="POST">
+                <form id="modalFormContraseña" action="/profile/editarContraseña" method="POST">
                     <div class="mb-3">
                         <input type="number" id="recipient-id" name="id" hidden>
                         <label for="contraseñavieja" class="col-form-label">Contraseña anterior:</label>
                         <input type="password" class="form-control" id="contraseñavieja" name="contraseñavieja" autocomplete='off'>
-                        {{!-- <div class="invalid-feedback">
-                            <p id="invalid-confirmpassword"></p>
-                        </div> --}}
+                        <div class="invalid-feedback">
+                            <p id="invalid-password"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="contraseñanueva" class="col-form-label">Contraseña nueva:</label>
                         <input type="password" class="form-control" id="contraseñanueva" name="contraseñanueva" autocomplete='off'>
+                        <div class="invalid-feedback">
+                            <p id="invalid-newpassword"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="confirmarcontraseña" class="col-form-label">Confirmar contraseña nueva:</label>
                         <input type="password" class="form-control" id="confirmarcontraseña" name="confirmarcontraseña" autocomplete='off'>
+                        <div class="invalid-feedback">
+                            <p id="invalid-confirmpassword"></p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <small>
@@ -289,14 +320,311 @@
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 </div>
 
 
 <script>
-//BOTON DE EDITAR PLAN
+//FOCUSOUT NORMAL ................................................................................................
+$('#nombredeusuario').focusout(function () {
+        const nombreDeUsuarioElement = $('#nombredeusuario');
+        const idElement = $('#recipient-id');
+        if (nombreDeUsuarioElement.val() == null || nombreDeUsuarioElement.val() == "") {
+            $('#invalid-username').text('Este campo no puede estar vacio!');
+            nombreDeUsuarioElement.addClass('is-invalid');
+        } else {
+            const nombreDeUsuarioValue = nombreDeUsuarioElement.val();
+            const idValue = idElement.val();
+            $.ajax('/profile/editarPerfil/username', {
+                type: 'POST',
+                data: { nombreDeUsuarioValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        nombreDeUsuarioElement.removeClass('is-invalid');
+                        nombreDeUsuarioElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-username').text('Lo siento, ya existe un Nombre de Usuario asi!');
+                        nombreDeUsuarioElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+});
+
+$('#apellido').focusout(function () {
+        const apellidoElement = $('#apellido');
+        if (apellidoElement.val() == null || apellidoElement.val() == "") {
+            $('#invalid-lastname').text('Este campo no puede estar vacio!');
+            apellidoElement.addClass('is-invalid');
+        } else {
+            apellidoElement.removeClass('is-invalid');
+            apellidoElement.addClass('is-valid');
+        };
+    });
+$('#nombre').focusout(function () {
+        const nombreElement = $('#nombre');
+        if (nombreElement.val() == null || nombreElement.val() == "") {
+            $('#invalid-name').text('Este campo no puede estar vacio!');
+            nombreElement.addClass('is-invalid');
+        } else {
+            nombreElement.removeClass('is-invalid');
+            nombreElement.addClass('is-valid');
+        };
+    });
+
+$('#email').focusout(function () {
+        const emailElement = $('#email');
+        const idElement = $('#recipient-id');
+        if (emailElement.val() == null || emailElement.val() == "") {
+            $('#invalid-email').text('Este campo no puede estar vacio!');
+            emailElement.addClass('is-invalid');
+        } else {
+            const emailValue = emailElement.val();
+            const idValue = idElement.val();
+            $.ajax('/profile/editarPerfil/email', {
+                type: 'POST',
+                data: { emailValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        emailElement.removeClass('is-invalid');
+                        emailElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-email').text('Lo siento, ya existe un Email asi!');
+                        emailElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
+$('#fechadenacimiento').focusout(function () {
+        const fechadenacimientoElement = $('#fechadenacimiento');
+        const idElement = $('#recipient-id');
+        if (fechadenacimientoElement.val() == null || fechadenacimientoElement.val() == "") {
+            $('#invalid-birthdate').text('Este campo no puede estar vacio!');
+            fechadenacimientoElement.addClass('is-invalid');
+        } else {
+            const fechadenacimientoValue = fechadenacimientoElement.val();
+            const idValue = idElement.val();
+            $.ajax('/profile/editarPerfil/birthdate', {
+                type: 'POST',
+                data: { fechadenacimientoValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        fechadenacimientoElement.removeClass('is-invalid');
+                        fechadenacimientoElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-birthdate').text('Lo siento, debe ser mayor a 18 años!');
+                        fechadenacimientoElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+// FIN FOCUSOUT NORMAL...................................................................................
+
+// AJAX DE VALIDACION PARA DATOS NORMALES...................................................................................
+$("#modalForm").submit(function (e) {
+
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var id = array[0].value;
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#nombredeusuario').addClass('is-valid');
+                    $('#nombre').addClass('is-valid');
+                    $('#apellido').addClass('is-valid');
+                    $('#email').addClass('is-valid');
+                    $('#fechanacimiento').addClass('is-valid');
+                    $.each(data, function (index, value) {
+
+                        if (value.param == 'nombredeusuario') {
+                            $('#nombredeusuario').addClass('is-invalid');
+                            $('#invalid-username').text(value.msg);
+                        }
+                        if (value.param == 'apellido') {
+                            $('#apellido').addClass('is-invalid');
+                            $('#invalid-lastname').text(value.msg);
+                        }
+                        if (value.param == 'nombre') {
+                            $('#nombre').addClass('is-invalid');
+                            $('#invalid-name').text(value.msg);
+                        }
+                        if (value.param == 'email') {
+                            $('#email').addClass('is-invalid');
+                            $('#invalid-email').text(value.msg);
+                        }
+                        if (value.param == 'fechadecumpleaños') {
+                            $('#fechadecumpleaños').addClass('is-invalid');
+                            $('#invalid-birthdate').text(value.msg);
+                        }
+                    });
+                } else {
+                    Swal.fire(
+                        'Actualizado!',
+                        'Se ha editado el perfil exitosamente!',
+                        'success',
+                    )
+
+                    $("#nombredeusuario").removeClass("is-invalid is-valid");
+                    $("#apellido").removeClass("is-invalid is-valid");
+                    $("#nombre").removeClass("is-invalid is-valid");
+                    $("#email").removeClass("is-invalid is-valid");
+                    $("#fechadecumpleaños").removeClass("is-invalid is-valid");
+                    $('#exampleModal').modal('toggle');
+
+                    $("#username").text(array[1].value);
+                    $("#lastname").text(array[2].value);
+                    $("#name").text(array[3].value);
+                    $("#mail").text(array[4].value);
+                    $("#fechanacimiento").text(array[5].value);
+                }
+            }
+        })
+    });
+// FIN AJAX VALIDACIONES NORMALES...................................................................................
+
+
+//FOCUSOUT CONTRASEÑA...............................................................................................
+$('#contraseñavieja').focusout(function () {
+        const contraseñaElement = $('#contraseñavieja');
+        const idElement = $('#recipient-id');
+        if (contraseñaElement.val() == null || contraseñaElement.val() == "") {
+            $('#invalid-password').text('Este campo no puede estar vacio!');
+            contraseñaElement.addClass('is-invalid');
+        } else {
+            const contraseñaValue = contraseñaElement.val();
+            const idValue = idElement.val();
+            $.ajax('/profile/editarContrasena/contrasenavieja', {
+                type: 'POST',
+                data: { contraseñaValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        contraseñaElement.removeClass('is-invalid');
+                        contraseñaElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-password').text('Lo siento, la Contraseña no coincide con la anterior!');
+                        contraseñaElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
+$('#contraseñanueva').focusout(function () {
+        const contraseñanuevaElement = $('#contraseñanueva');
+        const idElement = $('#recipient-id');
+        if (contraseñanuevaElement.val() == null || contraseñanuevaElement.val() == "") {
+            $('#invalid-newpassword').text('Este campo no puede estar vacio!');
+            contraseñanuevaElement.addClass('is-invalid');
+        } else {
+            const contraseñanuevaValue = contraseñanuevaElement.val();
+            const idValue = idElement.val();
+            $.ajax('/profile/editarContrasena/contrasenanueva', {
+                type: 'POST',
+                data: { contraseñanuevaValue, idValue },
+                success: function (res) {
+                    if (res) {
+                        contraseñanuevaElement.removeClass('is-invalid');
+                        contraseñanuevaElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-newpassword').text('Lo siento, la Contraseña debe ser mayor a 6 digitos!');
+                        contraseñanuevaElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+$('#confirmarcontraseña').focusout(function () {
+        const confirmarcontraseñaElement = $('#confirmarcontraseña');
+        const contraseñanuevaElement = $('#contraseñanueva');
+        if (confirmarcontraseñaElement.val() == null || confirmarcontraseñaElement.val() == "") {
+            $('#invalid-confirmpassword').text('Este campo no puede estar vacio!');
+            confirmarcontraseñaElement.addClass('is-invalid');
+        } else {
+            const confirmarcontraseñaValue = confirmarcontraseñaElement.val();
+            const contraseñanuevaValue = contraseñanuevaElement.val();
+            $.ajax('/profile/editarContrasena/confirmarcontrasena', {
+                type: 'POST',
+                data: { confirmarcontraseñaValue, contraseñanuevaValue },
+                success: function (res) {
+                    if (res) {
+                        confirmarcontraseñaElement.removeClass('is-invalid');
+                        confirmarcontraseñaElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-confirmpassword').text('Lo siento, la contraseña no coincide con la contraseña nueva ingresad!');
+                        confirmarcontraseñaElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
+
+
+//AJAX VALIDACIONES CONTRASEÑA......................................................................................
+
+$("#modalFormContraseña").submit(function (e) {
+
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var id = array[0].value;
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#contraseñavieja').addClass('is-valid');
+                    $('#contraseñanueva').addClass('is-valid');
+                    $('#confirmarcontraseña').addClass('is-valid');
+                    $.each(data, function (index, value) {
+                        if (value.param == 'contraseñavieja') {
+                            $('#contraseñavieja').addClass('is-invalid');
+                            $('#invalid-password').text(value.msg);
+                        }
+                        if (value.param == 'contraseñanueva') {
+                            $('#contraseñanueva').addClass('is-invalid');
+                            $('#invalid-newpassword').text(value.msg);
+                        }
+                        if (value.param == 'confirmarcontraseña') {
+                            $('#confirmarcontraseña').addClass('is-invalid');
+                            $('#invalid-confirmpassword').text(value.msg);
+                        }
+                    });
+                } else {
+                    Swal.fire(
+                        'Actualizado!',
+                        'Se ha editado el perfil exitosamente!',
+                        'success',
+                    )
+
+                    $("#contraseñavieja").removeClass("is-invalid is-valid");
+                    $("#contraseñanueva").removeClass("is-invalid is-valid");
+                    $("#confirmarcontraseña").removeClass("is-invalid is-valid");
+                    $('#editPasswordModal').modal('toggle');
+
+                    //Aca no debe actualizarse nada dado que no tiene que mostrase la contraseña
+                }
+            }
+        })
+    });
+
+
+
+
+//BOTON DE EDITAR PLAN ...................................................................................
 $(document).on("click", '#editarplan', function () {
         const aux = $('#plann').text();
         if (aux == 'basico'){
@@ -310,7 +638,8 @@ $(document).on("click", '#editarplan', function () {
         $('#modalEditarPlanLabel').text('Editar Plan');
         $('#modalEditarPlan').modal('show');
     });
-//BOTON DE CAMBIAR DE PLAN
+
+//BOTON DE CAMBIAR DE PLAN...................................................................................
 $(document).on("click", '#cambiarPlan', function () {
         const aux = $('#plann').text();
         if (aux == 'basico'){
@@ -339,13 +668,13 @@ $(document).on("click", '#cambiarPlan', function () {
     });
 
 
-//BOTON DE EDITAR CONTRASEÑA
+//BOTON DE EDITAR CONTRASEÑA...................................................................................
 $(document).on("click", '#editarcontraseña', function () {
         $('#editPasswordModalLabel').text('Editar contraseña');
         $('#editPasswordModal').modal('show');
     });
 
-//BOTON DE EDITAR NORMAL
+//BOTON DE EDITAR NORMAL...................................................................................
     $(document).on("click", '#button_edit', function () {
         var nombre = $('#name').text();
         var username = $('#username').text();
@@ -362,6 +691,7 @@ $(document).on("click", '#editarcontraseña', function () {
         $('#exampleModal').modal('show');
     });
 
+//MOSTRAR CONTRASEÑAS...................................................................................
         function hideOrShowPassword() {
         const password1 = document.getElementById("contraseña");
         //const password2 = document.getElementById("recipient-confirmpassword")
@@ -377,42 +707,15 @@ $(document).on("click", '#editarcontraseña', function () {
             //password2.type = "password";
         }
     }
-/*
-    const select = document.getElementById('plan');
-  const divinputs = document.getElementById('card-inputs');
-  const owner = document.getElementById('owner');
-  const cardnumber = document.getElementById('cardnumber');
-  const cvv = document.getElementById('cvv');
-  const expireddate = document.getElementById('expireddate');
-
-  const onChangeInputsAccount = () => {
-            
-    let valor = select.value;
-    if (valor == 'gold') {
-      divinputs.hidden = false;
-      owner.required = true;
-      cardnumber.required = true;
-      cvv.required = true;
-      expireddate.required = true;
-    } else {
-      owner.value = '';
-      cardnumber.value = '';
-      cvv.value = '';
-      expireddate.value = '';
-
-      owner.required = false;
-      cardnumber.required = false;
-      cvv.required = false;
-      expireddate.required = false;
-      divinputs.hidden = true;
-    }
-            
-    }
-
-  select.addEventListener('change', () => {
-    onChangeInputsAccount();
-  })
-
-  onChangeInputsAccount(); */
+//FUNCTION PARA UPLOAD FILE...................................................................................
+$(document).ready(function() {
+    $("#input-b9").fileinput({
+        showPreview: false,
+        showUpload: false,
+        elErrorContainer: '#kartik-file-errors',
+        allowedFileExtensions: ["jpg", "png", "gif"]
+        //uploadUrl: '/site/file-upload-single'
+    });
+});
 
 </script>
