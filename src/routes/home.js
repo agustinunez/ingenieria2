@@ -56,6 +56,16 @@ router.get(['','/', '/home'], async(req, res) => {
     res.render('home', { lugares });
 });
 
+router.post('/lugarValidation', async(req, res) => {
+    const { lugarValue } = req.body;
+    const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", lugarValue);
+    if (result.length > 0) {
+        res.json(true);
+    } else {
+        res.json(false);
+    }
+})
+
 router.post('/viajes', async(req, res) => {
     var { origin, destination, departureDate, amount } = req.body;
     const actualTime = moment().format("HH:mm:ss");
@@ -78,23 +88,36 @@ router.post('/viajes', async(req, res) => {
         viajes[i].hora_llegada = viajes[i].hora_llegada+" HS"
         viajes[i].mesLlegada = dateFormat(viajes[i].salida, "mmm. yyyy");
     }
-    res.render('user/viajes', { viajes });
+    res.render('user/viajes', { viajes, origin, destination });
 })
 
 router.post('/viajesValidacion',
+    body("origin").notEmpty().withMessage("Este campo no puede estar vacio!"),
     body('origin').custom(async (value) => {
-        const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", [value]);
-        if (result.length == 0) {
-            throw new Error("Lo siento, no existe el origen en el sistema!");
+        if (value != '') {
+            const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", [value]);
+            if (result.length == 0) {
+                throw new Error("Lo siento, no existe el origen en el sistema!");
+            }
         }
     }),
+    body("destination").notEmpty().withMessage("Este campo no puede estar vacio!"),
     body('destination').custom(async (value) => {
-        const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", [value]);
-        if (result.length == 0) {
-            throw new Error("Lo siento, no existe el destino en el sistema!");
+        if (value != '') {
+            const result = await pool.query("SELECT * FROM lugar WHERE nombre=?", [value]);
+            if (result.length == 0) {
+                throw new Error("Lo siento, no existe el destino en el sistema!");
+            }
         }
     }),
     body("departureDate").notEmpty().withMessage("Este campo no puede estar vacio!"),
+    body("departureDate").custom(async(value) => {
+        if (value != '') {
+           if (value < moment().format('YYYY-MM-DD')) {
+            throw new Error("Lo siento, la fecha debe ser mayor o igual a la actual!");
+            } 
+        }
+    }),
     body("amount").notEmpty().withMessage("Este campo no puede estar vacio!"),
     (req, res) => {
     const result = validationResult(req);

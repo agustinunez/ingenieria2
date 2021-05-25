@@ -389,15 +389,20 @@ MODAL---------------------------------------------------------------------------
             asientosAsignadosElement.addClass('is-valid');
             if (combiValue != '') {
                 const asientosValue = asientosAsignadosElement.val();
+                const idValue = $('#recipient-id').val();
                 $.ajax('/admin/viajes/asientos', {
                     type: 'POST',
-                    data: { asientosValue, combiValue },
+                    data: { asientosValue, combiValue, idValue },
                     success: function (res) {
                         if (res.result) {
                             asientosAsignadosElement.removeClass('is-invalid');
                             asientosAsignadosElement.addClass('is-valid');
                         } else {
-                            $('#invalid-asientosAsignados').text('Lo siento, la combi posee ['+res.value+'] asientos!');
+                            if (res.reason == 'combi') {
+                                $('#invalid-asientosAsignados').text('Lo siento, la combi posee ['+res.value+'] asientos!');
+                            } else {
+                                $('#invalid-asientosAsignados').text('Lo siento, no puedes asignar menos asientos que los ya vendidos!');
+                            }
                             asientosAsignadosElement.addClass('is-invalid');
                         }
                     }
@@ -483,6 +488,7 @@ MODAL---------------------------------------------------------------------------
             "data-horasalida='" + row.hora_salida + "'" +
             "data-fechallegada='" + row.fecha_llegada + "'" +
             "data-horallegada='" + row.hora_llegada + "'" +
+            "data-asientosasignados='" + row.asientos_asignados + "'" +
             "data-combi='" + row.combi + "'" +
             "data-fechapublicacion='" + row.fecha_publicacion + "'" +
             "data-precio='" + row.precio + "'>" +
@@ -495,6 +501,7 @@ MODAL---------------------------------------------------------------------------
         var hora_salida = $(this).data('horasalida');
         var fecha_llegada = $(this).data('fechallegada');
         var hora_llegada = $(this).data('horallegada');
+        var asientos_asignados = $(this).data('asientosasignados');
         var fecha_publicacion = $(this).data('fechapublicacion');
         var precio = $(this).data('precio');
 
@@ -535,6 +542,8 @@ MODAL---------------------------------------------------------------------------
         $("#recipient-horasalida").val(hora_salida);
         $("#recipient-fechallegada").val(fecha_llegada)
         $("#recipient-horallegada").val(hora_llegada);
+        console.log('ASIENTOS ASIGNADOS: ', asientos_asignados);
+        $("#recipient-asientosAsignados").val(asientos_asignados);
         $("#recipient-fechapublicacion").val(fecha_publicacion);
         $("#recipient-precio").val(precio);
 

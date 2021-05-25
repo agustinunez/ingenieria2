@@ -480,8 +480,12 @@ router.post("/viajes/horallegada", isAdmin, async (req, res) => {
   const { fechasalidaValue, fechallegadaValue, horasalidaValue, horallegadaValue, idValue } = req.body;
 
   if (fechasalidaValue != '' && fechallegadaValue != '' && horasalidaValue != '') {
-    if (horasalidaValue > horallegadaValue) {
-      res.json(false);
+    if (fechasalidaValue == fechallegadaValue) {
+      if (horasalidaValue > horallegadaValue) {
+        res.json(false);
+      } else {
+        res.json(true);
+      }
     } else {
       res.json(true);
     }
@@ -491,18 +495,46 @@ router.post("/viajes/horallegada", isAdmin, async (req, res) => {
 });
 
 router.post('/viajes/asientos', async (req, res) => {
-  const { asientosValue, combiValue } = req.body;
+  const { asientosValue, combiValue, idValue } = req.body;
   const resultCombi = await pool.query("SELECT cant_asientos FROM combi WHERE id_combi=?", [combiValue]);
   if (resultCombi.length > 0) {
     if (asientosValue > resultCombi[0].cant_asientos) {
       res.send({
         result: false,
+        reason: 'combi',
         value: resultCombi[0].cant_asientos
       });
     } else {
-      res.send({
-        result: true
-      });
+      if (idValue != '') {
+        let currentTrip2 = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [idValue]);
+        if (currentTrip2.length > 0) {
+          if (asientosValue < currentTrip2[0].asientos_asignados) {
+            let diferenciaAsientos2 = currentTrip2[0].asientos_asignados - asientosValue;
+            if (currentTrip2[0].asientos_disponibles - diferenciaAsientos2 < 0) {
+              res.send({
+                result: false,
+                reason: 'disponibles'
+              });
+            } else {
+              res.send({
+                result: true
+              });
+            }
+          } else {
+            res.send({
+              result: true
+            });
+          }
+        } else {
+          res.send({
+            result: true
+          });
+        }
+      } else {
+        res.send({
+          result: true
+        });
+      }
     }
   } else {
     res.send({
@@ -693,6 +725,23 @@ router.post("/viajes",
       }
     }
 
+    if (asientosAsignados != '' && id != '') {
+      const currentTrip = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
+      if (currentTrip.length > 0) {
+        if (asientosAsignados < currentTrip[0].asientos_asignados) {
+          let diferenciaAsientos = currentTrip[0].asientos_asignados - asientosAsignados;
+          if (currentTrip[0].asientos_disponibles - diferenciaAsientos < 0) {
+            errors.push({
+              value: "",
+              msg: "Lo siento, no puedes asignar menos asientos que los ya vendidos!",
+              param: "asientosAsignados",
+              location: "body",
+            });
+          }
+        }
+      }
+    }
+
     if (combi != '' && fechasalida != '' && horasalida != '') {
       const isOk = await pool.query("SELECT * FROM viaje WHERE combi=? AND fecha_salida=? AND hora_salida=?", [combi, fechasalida, horasalida]);
       if (isOk.length > 0) {
@@ -736,6 +785,29 @@ router.post("/viajes",
           [ruta, fechasalida, horasalida, fechallegada, horallegada, asientosAsignados, asientosAsignados, combi, fechapublicacion, precio]
         );
       } else {
+        const viajeActual = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
+        if (asientosAsignados == viajeActual[0].asientos_asignados) {
+          await pool.query(
+            "UPDATE viaje SET ruta=?,fecha_salida=?,hora_salida=?,combi=?,fecha_publicacion=?,precio=?,fecha_llegada=?,hora_llegada=? WHERE id_viaje=?",
+            [ruta, fechasalida, horasalida, combi, fechapublicacion, precio, fechallegada, horallegada, id]
+          );
+        } else {
+          let diferencia;
+          if (asientosAsignados > viajeActual[0].asientos_asignados) {
+            diferencia = asientosAsignados - viajeActual[0].asientos_asignados;
+            await pool.query(
+              "UPDATE viaje SET ruta=?, fecha_salida=?, hora_salida=?, fecha_llegada=?, hora_llegada=?, asientos_asignados=?, asientos_disponibles=asientos_disponibles+?, combi=?, fecha_publicacion=?, precio=? WHERE id_viaje=?",
+              [ruta, fechasalida, horasalida, fechallegada, horallegada, asientosAsignados, diferencia, combi, fechapublicacion, precio, id]
+            );
+          } else {
+            diferencia = viajeActual[0].asientos_asignados - asientosAsignados;
+            await pool.query(
+              "UPDATE viaje SET ruta=?, fecha_salida=?, hora_salida=?, fecha_llegada=?, hora_llegada=?, asientos_asignados=?, asientos_disponibles=asientos_disponibles-?, combi=?, fecha_publicacion=?, precio=? WHERE id_viaje=?",
+              [ruta, fechasalida, horasalida, fechallegada, horallegada, asientosAsignados, diferencia, combi, fechapublicacion, precio, id]
+            );
+          }
+        }
+
         await pool.query(
           "UPDATE viaje SET ruta=?,fecha_salida=?,hora_salida=?,combi=?,fecha_publicacion=?,precio=?,fecha_llegada=?,hora_llegada=? WHERE id_viaje=?",
           [ruta, fechasalida, horasalida, combi, fechapublicacion, precio, fechallegada, horallegada, id]

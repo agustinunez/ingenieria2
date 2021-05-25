@@ -29,15 +29,16 @@
                     <p id="invalid-destination"></p>
                 </div>
             </div>
-            <div class="departureDate-container">
-                <div class="mb-3">
+            {{!-- <div class="departureDate-container"> --}}
+            <div class="row">
+                <div class="mb-3 col">
                     <label for="departureDate" class="form-label">Fecha de salida</label>
                     <input type="date" class="form-control" id="departureDate" name="departureDate">
                     <div class="invalid-feedback">
                         <p id="invalid-departureDate"></p>
                     </div>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 col">
                     <label for="amount" class="form-label">Cantidad</label>
                     <input type="number" class="form-control" id="amount" name="amount">
                     <div class="invalid-feedback">
@@ -60,6 +61,91 @@
 </p>
 
 <script>
+    $('#origin').focusout(function () {
+        setTimeout(function () {
+            console.log('FOCUSOUT');
+            const originElement = $('#origin');
+            if (originElement.val() == null || originElement.val() == "") {
+                $('#invalid-origin').text('Este campo no puede estar vacio!');
+                originElement.addClass('is-invalid');
+            } else {
+                const lugarValue = originElement.val();
+                originElement.removeClass('is-invalid');
+                originElement.addClass('is-valid');
+                $.ajax('/lugarValidation', {
+                    type: 'POST',
+                    data: { lugarValue },
+                    success: function (res) {
+                        if (res) {
+                            originElement.removeClass('is-invalid');
+                            originElement.addClass('is-valid');
+                        } else {
+                            $('#invalid-origin').text('Lo siento, no existe el origen en el sistema!');
+                            originElement.addClass('is-invalid');
+                        }
+                    }
+                })
+            };
+        }, 100);
+    });
+
+    $('#destination').focusout(function () {
+        setTimeout(function () {
+            const destinationElement = $('#destination');
+            if (destinationElement.val() == null || destinationElement.val() == "") {
+                $('#invalid-destination').text('Este campo no puede estar vacio!');
+                destinationElement.addClass('is-invalid');
+            } else {
+                const lugarValue = destinationElement.val();
+                destinationElement.removeClass('is-invalid');
+                destinationElement.addClass('is-valid');
+                $.ajax('/lugarValidation', {
+                    type: 'POST',
+                    data: { lugarValue },
+                    success: function (res) {
+                        if (res) {
+                            destinationElement.removeClass('is-invalid');
+                            destinationElement.addClass('is-valid');
+                        } else {
+                            $('#invalid-destination').text('Lo siento, no existe el destino en el sistema!');
+                            destinationElement.addClass('is-invalid');
+                        }
+                    }
+                })
+            };
+        }, 100);
+    });
+
+    $('#departureDate').focusout(function () {
+        const departureDateElement = $('#departureDate');
+        if (departureDateElement.val() == null || departureDateElement.val() == "") {
+            $('#invalid-departureDate').text('Este campo no puede estar vacio!');
+            departureDateElement.addClass('is-invalid');
+        } else {
+            departureValue = departureDateElement.val();
+            departureDateElement.removeClass('is-invalid');
+            departureDateElement.addClass('is-valid');
+            if (moment(departureValue).format("l") < moment(new Date()).format("l")) {
+                $('#invalid-departureDate').text('Lo siento, la fecha debe ser mayor o igual a la actual!');
+                departureDateElement.addClass('is-invalid');
+            } else {
+                departureDateElement.removeClass('is-invalid');
+                departureDateElement.addClass('is-valid');
+            }
+        };
+    });
+
+    $('#amount').focusout(function () {
+        const amountElement = $('#amount');
+        if (amountElement.val() == null || amountElement.val() == "") {
+            $('#invalid-amount').text('Este campo no puede estar vacio!');
+            amountElement.addClass('is-invalid');
+        } else {
+            amountElement.removeClass('is-invalid');
+            amountElement.addClass('is-valid');
+        };
+    });
+
     $(document).on('dblclick', 'input[list]', function (event) {
         event.preventDefault();
         var str = $(this).val();
@@ -81,11 +167,14 @@
     })
 
     $(document).on('click', 'div[list] span', function (event) {
+        console.log('CLICK');
         event.preventDefault();
         var list = $(this).parent().attr('list');
         var item = $(this).html();
         $('input[list=' + list + ']').val(item);
         $('div[list=' + list + ']').hide(100);
+        $('input[list=' + list + ']').removeClass('is-invalid');
+        $('input[list=' + list + ']').addClass('is-valid');
     })
 
     $(document).on('keyup', 'input[list]', function (event) {

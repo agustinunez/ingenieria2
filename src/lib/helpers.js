@@ -41,16 +41,16 @@ helpers.combiViajagando = (fechasalida, horasalida, fechallegada, horallegada, c
       }
     } else {
       if (combicomparar.fecha_salida == fechallegada) {
-        if (combicomparar.hora_salida < horallegada) {
-          return true
+        if (horallegada < combicomparar.hora_salida) {
+          return false
         } else {
-           return false 
+          return true 
         }
       } else {
         if (combicomparar.fecha_salida < fechasalida && combicomparar.fecha_llegada > fechallegada) {
-          return false
-        } else {
           return true
+        } else {
+          return false
         }
       }
     }
@@ -64,9 +64,12 @@ helpers.duracion = ( horaSalida, horaLlegada ) => {
   duracion.hh = partLlegada[1] - partSalida[1];
   if (partLlegada[2] < partSalida[2]) {
     duracion.hh = duracion.hh - 1;
-    duracion.mm = partLlegada[2] + (60 - partSalida[2]);
+    duracion.mm = +partLlegada[2] + (60 - partSalida[2]);
   } else {
     duracion.mm = partLlegada[2] - partSalida[2];
+  }
+  if (duracion.hh < 0) {
+    duracion.hh = duracion.hh + 24
   }
   return duracion.hh+':'+duracion.mm;
 }
