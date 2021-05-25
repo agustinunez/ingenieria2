@@ -67,6 +67,7 @@
             const originElement = $('#origin');
             if (originElement.val() == null || originElement.val() == "") {
                 $('#invalid-origin').text('Este campo no puede estar vacio!');
+                originElement.removeClass('is-valid');
                 originElement.addClass('is-invalid');
             } else {
                 const lugarValue = originElement.val();
@@ -81,6 +82,7 @@
                             originElement.addClass('is-valid');
                         } else {
                             $('#invalid-origin').text('Lo siento, no existe el origen en el sistema!');
+                            originElement.removeClass('is-valid');
                             originElement.addClass('is-invalid');
                         }
                     }
@@ -94,6 +96,7 @@
             const destinationElement = $('#destination');
             if (destinationElement.val() == null || destinationElement.val() == "") {
                 $('#invalid-destination').text('Este campo no puede estar vacio!');
+                destinationElement.removeClass('is-valid');
                 destinationElement.addClass('is-invalid');
             } else {
                 const lugarValue = destinationElement.val();
@@ -108,6 +111,7 @@
                             destinationElement.addClass('is-valid');
                         } else {
                             $('#invalid-destination').text('Lo siento, no existe el destino en el sistema!');
+                            destinationElement.removeClass('is-valid');
                             destinationElement.addClass('is-invalid');
                         }
                     }

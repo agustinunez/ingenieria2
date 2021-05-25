@@ -68,13 +68,24 @@ router.post('/lugarValidation', async(req, res) => {
 
 router.post('/viajes', async(req, res) => {
     var { origin, destination, departureDate, amount } = req.body;
-    const actualTime = moment().format("HH:mm:ss");
-    const viajes = await pool.query("SELECT v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
+    let viajes;
+    if (departureDate == moment().format('YYYY-MM-DD')) {
+        const actualTime = moment().format("HH:mm:ss");
+        viajes = await pool.query("SELECT v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
                                                  "INNER JOIN combi c ON(v.combi = c.id_combi)"+
                                                  "INNER JOIN lugar l1 ON(r.origen = l1.id_lugar)"+
                                                  "INNER JOIN lugar l2 ON(r.destino = l2.id_lugar)"+
                                     "WHERE l1.nombre=? AND l2.nombre=? AND v.fecha_salida=? AND v.hora_salida>=? AND v.fecha_publicacion <= curdate() AND v.asientos_disponibles>=?"+
                                     "ORDER BY v.hora_salida", [origin, destination, departureDate, actualTime, amount]);
+    } else {
+        viajes = await pool.query("SELECT v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
+                                                "INNER JOIN combi c ON(v.combi = c.id_combi)"+
+                                                "INNER JOIN lugar l1 ON(r.origen = l1.id_lugar)"+
+                                                "INNER JOIN lugar l2 ON(r.destino = l2.id_lugar)"+
+                                    "WHERE l1.nombre=? AND l2.nombre=? AND v.fecha_salida=? AND v.fecha_publicacion <= curdate() AND v.asientos_disponibles>=?"+
+                                    "ORDER BY v.hora_salida", [origin, destination, departureDate, amount]);
+    }
+
     for (let i = 0; i < viajes.length; i++) {
         viajes[i].hora_salida = viajes[i].hora_salida.slice(0, 5);
         viajes[i].hora_llegada = viajes[i].hora_llegada.slice(0, 5);
