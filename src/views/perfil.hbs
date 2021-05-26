@@ -252,12 +252,12 @@
                             <p id="invalid-confirmpassword"></p>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    {{!-- <div class="mb-3">
                         <small>
                             <input type="checkbox" id="ver" class="ver" onChange="hideOrShowPassword()">
                             <label class="text">Mostrar contraseñas</label>
                         </small>
-                    </div>
+                    </div> --}}
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success" id="guardarPasswordButton">Guardar</button>
@@ -521,28 +521,22 @@ $('#contraseñavieja').focusout(function () {
 
 $('#contraseñanueva').focusout(function () {
         const contraseñanuevaElement = $('#contraseñanueva');
-        const idElement = $('#recipient-id');
         if (contraseñanuevaElement.val() == null || contraseñanuevaElement.val() == "") {
             $('#invalid-newpassword').text('Este campo no puede estar vacio!');
             contraseñanuevaElement.addClass('is-invalid');
         } else {
-            const contraseñanuevaValue = contraseñanuevaElement.val();
-            const idValue = idElement.val();
-            $.ajax('/profile/editarContrasena/contrasenanueva', {
-                type: 'POST',
-                data: { contraseñanuevaValue, idValue },
-                success: function (res) {
-                    if (res) {
-                        contraseñanuevaElement.removeClass('is-invalid');
-                        contraseñanuevaElement.addClass('is-valid');
-                    } else {
-                        $('#invalid-newpassword').text('Lo siento, la Contraseña debe ser mayor a 6 digitos!');
-                        contraseñanuevaElement.addClass('is-invalid');
-                    }
-                }
-            });
+            if (contraseñanuevaElement.val().length < 7) {
+                $('#invalid-newpassword').text('El minimo de caracteres es 7!');
+                contraseñanuevaElement.addClass('is-invalid');
+            }
+            else {
+                contraseñanuevaElement.removeClass('is-invalid');
+                contraseñanuevaElement.addClass('is-valid');
+            }
         };
-    });
+    })
+
+
 $('#confirmarcontraseña').focusout(function () {
         const confirmarcontraseñaElement = $('#confirmarcontraseña');
         const contraseñanuevaElement = $('#contraseñanueva');
@@ -560,7 +554,7 @@ $('#confirmarcontraseña').focusout(function () {
                         confirmarcontraseñaElement.removeClass('is-invalid');
                         confirmarcontraseñaElement.addClass('is-valid');
                     } else {
-                        $('#invalid-confirmpassword').text('Lo siento, la contraseña no coincide con la contraseña nueva ingresad!');
+                        $('#invalid-confirmpassword').text('Lo siento, la Contraseña no coincide con la anterior!');
                         confirmarcontraseñaElement.addClass('is-invalid');
                     }
                 }
@@ -579,6 +573,7 @@ $("#modalFormContraseña").submit(function (e) {
         var form = $(this);
         var url = form.attr('action');
         var array = form.serializeArray();
+        console.log(array);
         var id = array[0].value;
         $.ajax({
             type: "POST",
@@ -692,21 +687,21 @@ $(document).on("click", '#editarcontraseña', function () {
     });
 
 //MOSTRAR CONTRASEÑAS...................................................................................
-        function hideOrShowPassword() {
-        const password1 = document.getElementById("contraseña");
+        //function hideOrShowPassword() {
+        //const password1 = document.getElementById("contraseña");
         //const password2 = document.getElementById("recipient-confirmpassword")
-        const check = document.getElementById("ver");
+        //const check = document.getElementById("ver");
 
-        if (check.checked == true) // Si la checkbox de mostrar contraseña está activada
-        {
-            password1.type = "text";
+        //if (check.checked == true) // Si la checkbox de mostrar contraseña está activada
+        //{
+        //    password1.type = "text";
             //password2.type = "text";
-        } else // Si no está activada 
-        {
-            password1.type = "password";
+        //} else // Si no está activada 
+        //{
+        //   password1.type = "password";
             //password2.type = "password";
-        }
-    }
+        //}
+    //}
 //FUNCTION PARA UPLOAD FILE...................................................................................
 $(document).ready(function() {
     $("#input-b9").fileinput({

@@ -70,18 +70,18 @@ router.post('/editarContrasena/contrasenavieja', hasPermission, async (req,res) 
     }
 });
 
-router.post('/editarContrasena/contrasenanueva', hasPermission, async (req,res) => {
-    const {nuevacontraseñaValue , idValue} = req.body;
-    if (nuevacontraseñaValue.length < 6){
-        res.json(false);
-    }else{
-        res.json(true);
-    }
-});
+// router.post('/editarContrasena/contrasenanueva', hasPermission, async (req,res) => {
+//     const {nuevacontraseñaValue , idValue} = req.body;
+//     if (nuevacontraseñaValue.length( { min: 7}) < 6){
+//         res.json(false);
+//     }else{
+//         res.json(true);
+//     }
+// });
 
 router.post('/editarContrasena/confirmarcontrasena', hasPermission, async (req,res) => {
-    const {confirmarcontraseñaValue, nuevacontraseñaValue} = req.body;
-    if (nuevacontraseñaValue != confirmarcontraseñaValue){
+    const {confirmarcontraseñaValue, contraseñanuevaValue} = req.body;
+    if (contraseñanuevaValue != confirmarcontraseñaValue){
         res.json(false);
     }else{
         res.json(true);
