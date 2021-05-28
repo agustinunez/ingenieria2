@@ -616,16 +616,31 @@
                         }
                     });
                 } else {
-                    Swal.fire(
-                        'Actualizado!',
-                        'Se ha editado el perfil exitosamente!',
-                        'success',
-                    )
-
-                    $("#contraseñavieja").removeClass("is-invalid is-valid");
-                    $("#contraseñanueva").removeClass("is-invalid is-valid");
-                    $("#confirmarcontraseña").removeClass("is-invalid is-valid");
-                    $('#editPasswordModal').modal('toggle');
+                    Swal.fire({
+                        title: 'Seguro que quieres cambiar la contraseña?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si, Cambiar!'
+                    }).then((result) => {
+                        var contraseñanueva = array[2].value;
+                        if (result.isConfirmed) {
+                            $.ajax('/profile/editPassword', {
+                                type: 'PUT',
+                                data: { id, contraseñanueva }
+                            })
+                            Swal.fire(
+                                'Contraseña modificada!',
+                                'La contraseña ha sido modificado exitosamente!',
+                                'success'
+                            )
+                            $("#contraseñavieja").removeClass("is-invalid is-valid");
+                            $("#contraseñanueva").removeClass("is-invalid is-valid");
+                            $("#confirmarcontraseña").removeClass("is-invalid is-valid");
+                            $('#editPasswordModal').modal('toggle');
+                        }
+                    })
 
                     //Aca no debe actualizarse nada dado que no tiene que mostrase la contraseña
                 }
@@ -684,6 +699,9 @@
     $(document).on("click", '#editarcontraseña', function () {
         $('#editPasswordModalLabel').text('Editar contraseña');
 
+        $("#contraseñavieja").val("");
+        $("#contraseñanueva").val("");
+        $("#confirmarcontraseña").val("");
         $("#contraseñavieja").removeClass("is-invalid is-valid");
         $("#contraseñanueva").removeClass("is-invalid is-valid");
         $("#confirmarcontraseña").removeClass("is-invalid is-valid");
@@ -691,7 +709,7 @@
         $('#editPasswordModal').modal('show');
     });
 
-    $(document).on("click", "#guardarPasswordButton", function () {
+    /*$(document).on("click", "#guardarPasswordButton", function () {
         const id = $('#recipient-id').val();
         const contraseñavieja = $("#contraseñavieja").val()
         const contraseñanueva = $("#contraseñanueva").val()
@@ -733,7 +751,7 @@
                 })
             }
         });
-    })
+    })*/
 
     //BOTON DE EDITAR NORMAL...................................................................................
     $(document).on("click", '#button_edit', function () {
