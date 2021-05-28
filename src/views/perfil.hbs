@@ -3,165 +3,171 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <div class="container emp-profile">
-    
-                <div class="row">
-                    
-                    <div class="col-md-4">
-                        
-                        <div class="profile-img">
-                            
-                            <br>
-                            <br>
-                            <img src="/images/perfil.jpg"/>
-                            <br>
-                            <br>
-                            <button id="buttonUpload" type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
-                                Subir archivo
-                            </button>
-                            <br>
-                            <br>                         
-                        </div>
-                        
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="profile-head">
-                                    <h5>
-                                        <strong>{{username}}</strong>      
-                                    </h5>
-                                    
-                                    <h6>
-                                        Combi-19
-                                    </h6>
-                                    <br>
-                                    <hr>
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item">
-                                    <h4 class="nav-link active" id="home-tab" data-toggle="tab" href="#" role="tab" aria-controls="home" aria-selected="true">Acerca de</h4>
-                                </li>
 
-                                {{!-- <li class="nav-item">
-                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#perfil" role="tab" aria-controls="profile" aria-selected="false">Timeline</a>
-                                </li> --}}
-                            </ul>
-                        </div>
-                    </div>
+    <div class="row">
 
+        <div class="col-md-4">
 
+            <div class="profile-img">
 
-                    
-{{!-- ---------------------------------------------------------------------------------------------------BOTON EDITAR------------------------------------------------------------------------------------- --}}
-                    <div class="col-md-2">
-                        <input type="button" class="profile-edit-btn" name="btnAddMore" value="Editar perfil" id="button_edit"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="profile-work">
-                            <h3>LINKS</h3>
-                            <ul>
-                                <li> <img src="/images/home.png"> <a href="/">Inicio</a></li>
-                                <li> <img src="/images/portapapeles.png"> <a href="/user/tickets">Listar pasajes</a></li>
-                                <li> <img src="/images/help.png" /><a href="#">Ayuda</a></li>
-                                <li>
-                                <img src="/images/cerrarsesion.png" /><a href="/logout">Cerrar sesion</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="tab-content profile-tab" id="myTabContent">
-                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <br>
+                <br>
+                <img src="/images/perfil.jpg" />
+                <br>
+                <br>
+                <button id="buttonUpload" type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#uploadModal">
+                    Subir archivo
+                </button>
+                <br>
+                <br>
+            </div>
 
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Nombre de usuario</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p id="username">{{user.username}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Nombre</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p id="name">{{user.name}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Apellido</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p id="lastname">{{user.lastname}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Email</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p id="mail">{{user.email}}</p>
-                                            </div>
-                                        </div>
-                                         <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Fecha de nacimiento</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p id="fechanacimiento">{{user.birthdate}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Plan</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p id="plann">{{user.plan}}</p>
-                                                <a href="#" id="editarplan"><img src="/images/editar.png"/></a>
-                                            </div>
-                                        </div>                     
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Contraseña</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p id="password">*********</p>
-                                                <a href="#" id="editarcontraseña"><img src="/images/editar.png"/></a>
-                                            </div>
-                                        </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>       
         </div>
 
-        <!-- MODAL SUBIR FOTO-->
-<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Elegir foto</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="file-loading">
-          <input id="input-b9" name="input-b9[]" type="file" >
-         </div>
-        <div id="kartik-file-errors"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" title="Your custom upload logic">Guardar</button>
-      </div>
+        <div class="col-md-6">
+            <div class="profile-head">
+                <h5>
+                    <strong>{{username}}</strong>
+                </h5>
+
+                <h6>
+                    Combi-19
+                </h6>
+                <br>
+                <hr>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <h4 class="nav-link active" id="home-tab" data-toggle="tab" href="#" role="tab"
+                            aria-controls="home" aria-selected="true">Acerca de</h4>
+                    </li>
+
+                    {{!-- <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#perfil" role="tab"
+                            aria-controls="profile" aria-selected="false">Timeline</a>
+                    </li> --}}
+                </ul>
+            </div>
+        </div>
+
+
+
+
+        {{!-- ---------------------------------------------------------------------------------------------------BOTON
+        EDITAR------------------------------------------------------------------------------------- --}}
+        <div class="col-md-2">
+            <input type="button" class="profile-edit-btn" name="btnAddMore" value="Editar perfil" id="button_edit" />
+        </div>
     </div>
-  </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="profile-work">
+                <h3>LINKS</h3>
+                <ul>
+                    <li> <img src="/images/home.png"> <a href="/">Inicio</a></li>
+                    <li> <img src="/images/portapapeles.png"> <a href="/user/tickets">Listar pasajes</a></li>
+                    <li> <img src="/images/help.png" /><a href="#">Ayuda</a></li>
+                    <li>
+                        <img src="/images/cerrarsesion.png" /><a href="/logout">Cerrar sesion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="tab-content profile-tab" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Nombre de usuario</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p id="username">{{user.username}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Nombre</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p id="name">{{user.name}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Apellido</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p id="lastname">{{user.lastname}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p id="mail">{{user.email}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Fecha de nacimiento</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p id="fechanacimiento">{{user.birthdate}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Plan</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p id="plann">{{user.plan}}</p>
+                            <a href="#" id="editarplan"><img src="/images/editar.png" /></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Contraseña</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p id="password">*********</p>
+                            <a href="#" id="editarcontraseña"><img src="/images/editar.png" /></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL SUBIR FOTO-->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Elegir foto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="file-loading">
+                    <input id="input-b9" name="input-b9[]" type="file">
+                </div>
+                <div id="kartik-file-errors"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" title="Your custom upload logic">Guardar</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
-        {{!-- MODAL DATOS NORMALES--}}
+{{!-- MODAL DATOS NORMALES--}}
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -175,7 +181,8 @@
                         <input type="number" id="recipient-id" name="id" value={{user.id_usuario}} hidden>
 
                         <label for="nombredeusuario" class="col-form-label">Nombre de Usuario:</label>
-                        <input type="text" class="form-control" id="nombredeusuario" name="nombredeusuario" autocomplete='off'>
+                        <input type="text" class="form-control" id="nombredeusuario" name="nombredeusuario"
+                            autocomplete='off'>
                         <div class="invalid-feedback">
                             <p id="invalid-username"></p>
                         </div>
@@ -203,7 +210,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="fechadenacimiento" class="col-form-label">Fecha de nacimiento:</label>
-                        <input type="date" class="form-control" id="fechadenacimiento" name="fechadenacimiento" autocomplete='off'>
+                        <input type="date" class="form-control" id="fechadenacimiento" name="fechadenacimiento"
+                            autocomplete='off'>
                         <div class="invalid-feedback">
                             <p id="invalid-birthdate"></p>
                         </div>
@@ -221,7 +229,8 @@
 
 {{!-- --------------------------MODAL CONTRASEÑA ----------------------- --}}
 
-<div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+<div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editPasswordModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -233,21 +242,24 @@
                     <div class="mb-3">
                         <input type="number" id="recipient-id" name="id" value={{user.id_usuario}} hidden>
                         <label for="contraseñavieja" class="col-form-label">Contraseña anterior:</label>
-                        <input type="password" class="form-control" id="contraseñavieja" name="contraseñavieja" autocomplete='off'>
+                        <input type="password" class="form-control" id="contraseñavieja" name="contraseñavieja"
+                            autocomplete='off'>
                         <div class="invalid-feedback">
                             <p id="invalid-password"></p>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="contraseñanueva" class="col-form-label">Contraseña nueva:</label>
-                        <input type="password" class="form-control" id="contraseñanueva" name="contraseñanueva" autocomplete='off'>
+                        <input type="password" class="form-control" id="contraseñanueva" name="contraseñanueva"
+                            autocomplete='off'>
                         <div class="invalid-feedback">
                             <p id="invalid-newpassword"></p>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="confirmarcontraseña" class="col-form-label">Confirmar contraseña nueva:</label>
-                        <input type="password" class="form-control" id="confirmarcontraseña" name="confirmarcontraseña" autocomplete='off'>
+                        <input type="password" class="form-control" id="confirmarcontraseña" name="confirmarcontraseña"
+                            autocomplete='off'>
                         <div class="invalid-feedback">
                             <p id="invalid-confirmpassword"></p>
                         </div>
@@ -284,39 +296,45 @@
                             <p id="textoPlan"></p>
                         </div>
                         <div class="mb-3">
-                            <button type="button" class="btn btn-secondary" id="cambiarPlan" name="cambiarPlan">Cambie ahora</button> 
+                            <button type="button" class="btn btn-secondary" id="cambiarPlan" name="cambiarPlan">Cambie
+                                ahora</button>
                         </div>
                         {{!-- <div class="mb-3">
                             <label for="plan" class="form-label">Plan:</label>
                             <select class="form-select" id="plan" name="plan">
-                                <option value="basico" {{selectedIfEqual userInfo.plan 'basico'}}>Basico</option>
-                                <option value="gold" {{selectedIfEqual userInfo.plan 'gold'}}>Gold</option>
+                                <option value="basico" {{selectedIfEqual userInfo.plan 'basico' }}>Basico</option>
+                                <option value="gold" {{selectedIfEqual userInfo.plan 'gold' }}>Gold</option>
                             </select>
                         </div> --}}
 
-                     <div class="container mb-3">
-                     <div class="card" id="card-inputs" hidden>
-                     <h5 class="card-header bg-dark">Datos de la tarjeta</h5>
-                        <div class="card-body bg-secondary">
-                            <label for="owner" class="form-label">Nombre y apellido del titular</label>
-                            <input type="text" class="form-control mb-3" id="owner" name="owner" autocomplete='off'>
+                        <div class="container mb-3">
+                            <div class="card" id="card-inputs" hidden>
+                                <h5 class="card-header bg-dark">Datos de la tarjeta</h5>
+                                <div class="card-body bg-secondary">
+                                    <label for="owner" class="form-label">Nombre y apellido del titular</label>
+                                    <input type="text" class="form-control mb-3" id="owner" name="owner"
+                                        autocomplete='off'>
 
-                            <label for="cardnumber" class="form-label">Numero de tarjeta</label>
-                            <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3" id="cardnumber"
-                            name="cardnumber" autocomplete='off'>
+                                    <label for="cardnumber" class="form-label">Numero de tarjeta</label>
+                                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3"
+                                        id="cardnumber" name="cardnumber" autocomplete='off'>
 
-                            <label for="cvv" class="form-label">Codigo de seguridad</label>
-                            <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv" autocomplete='off'>
+                                    <label for="cvv" class="form-label">Codigo de seguridad</label>
+                                    <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv"
+                                        autocomplete='off'>
 
-                            <label for="expireddate" class="form-label">Fecha de vencimiento</label>
-                            <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate" name="expireddate" autocomplete='off'>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-success" id="guardarButton">Guardar</button>
+                                    <label for="expireddate" class="form-label">Fecha de vencimiento</label>
+                                    <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate"
+                                        name="expireddate" autocomplete='off'>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary"
+                                            data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-success"
+                                            id="guardarButton">Guardar</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                     </div>
-                    </div>
                     </div>
                 </form>
             </div>
@@ -326,8 +344,8 @@
 
 
 <script>
-//FOCUSOUT NORMAL ................................................................................................
-$('#nombredeusuario').focusout(function () {
+    //FOCUSOUT NORMAL ................................................................................................
+    $('#nombredeusuario').focusout(function () {
         const nombreDeUsuarioElement = $('#nombredeusuario');
         const idElement = $('#recipient-id');
         if (nombreDeUsuarioElement.val() == null || nombreDeUsuarioElement.val() == "") {
@@ -350,9 +368,9 @@ $('#nombredeusuario').focusout(function () {
                 }
             });
         };
-});
+    });
 
-$('#apellido').focusout(function () {
+    $('#apellido').focusout(function () {
         const apellidoElement = $('#apellido');
         if (apellidoElement.val() == null || apellidoElement.val() == "") {
             $('#invalid-lastname').text('Este campo no puede estar vacio!');
@@ -362,7 +380,7 @@ $('#apellido').focusout(function () {
             apellidoElement.addClass('is-valid');
         };
     });
-$('#nombre').focusout(function () {
+    $('#nombre').focusout(function () {
         const nombreElement = $('#nombre');
         if (nombreElement.val() == null || nombreElement.val() == "") {
             $('#invalid-name').text('Este campo no puede estar vacio!');
@@ -373,7 +391,7 @@ $('#nombre').focusout(function () {
         };
     });
 
-$('#email').focusout(function () {
+    $('#email').focusout(function () {
         const emailElement = $('#email');
         const idElement = $('#recipient-id');
         if (emailElement.val() == null || emailElement.val() == "") {
@@ -398,7 +416,7 @@ $('#email').focusout(function () {
         };
     });
 
-$('#fechadenacimiento').focusout(function () {
+    $('#fechadenacimiento').focusout(function () {
         const fechadenacimientoElement = $('#fechadenacimiento');
         const idElement = $('#recipient-id');
         if (fechadenacimientoElement.val() == null || fechadenacimientoElement.val() == "") {
@@ -422,10 +440,10 @@ $('#fechadenacimiento').focusout(function () {
             });
         };
     });
-// FIN FOCUSOUT NORMAL...................................................................................
+    // FIN FOCUSOUT NORMAL...................................................................................
 
-// AJAX DE VALIDACION PARA DATOS NORMALES...................................................................................
-$("#modalForm").submit(function (e) {
+    // AJAX DE VALIDACION PARA DATOS NORMALES...................................................................................
+    $("#modalForm").submit(function (e) {
 
         e.preventDefault();
 
@@ -490,11 +508,11 @@ $("#modalForm").submit(function (e) {
             }
         })
     });
-// FIN AJAX VALIDACIONES NORMALES...................................................................................
+    // FIN AJAX VALIDACIONES NORMALES...................................................................................
 
 
-//FOCUSOUT CONTRASEÑA...............................................................................................
-$('#contraseñavieja').focusout(function () {
+    //FOCUSOUT CONTRASEÑA...............................................................................................
+    $('#contraseñavieja').focusout(function () {
         const contraseñaElement = $('#contraseñavieja');
         const idElement = $('#recipient-id');
         if (contraseñaElement.val() == null || contraseñaElement.val() == "") {
@@ -519,7 +537,7 @@ $('#contraseñavieja').focusout(function () {
         };
     });
 
-$('#contraseñanueva').focusout(function () {
+    $('#contraseñanueva').focusout(function () {
         const contraseñanuevaElement = $('#contraseñanueva');
         if (contraseñanuevaElement.val() == null || contraseñanuevaElement.val() == "") {
             $('#invalid-newpassword').text('Este campo no puede estar vacio!');
@@ -537,7 +555,7 @@ $('#contraseñanueva').focusout(function () {
     })
 
 
-$('#confirmarcontraseña').focusout(function () {
+    $('#confirmarcontraseña').focusout(function () {
         const confirmarcontraseñaElement = $('#confirmarcontraseña');
         const contraseñanuevaElement = $('#contraseñanueva');
         if (confirmarcontraseñaElement.val() == null || confirmarcontraseñaElement.val() == "") {
@@ -564,9 +582,9 @@ $('#confirmarcontraseña').focusout(function () {
 
 
 
-//AJAX VALIDACIONES CONTRASEÑA......................................................................................
+    //AJAX VALIDACIONES CONTRASEÑA......................................................................................
 
-$("#modalFormContraseña").submit(function (e) {
+    $("#modalFormContraseña").submit(function (e) {
 
         e.preventDefault();
 
@@ -618,13 +636,13 @@ $("#modalFormContraseña").submit(function (e) {
 
 
 
-//BOTON DE EDITAR PLAN ...................................................................................
-$(document).on("click", '#editarplan', function () {
+    //BOTON DE EDITAR PLAN ...................................................................................
+    $(document).on("click", '#editarplan', function () {
         const aux = $('#plann').text();
-        if (aux == 'basico'){
+        if (aux == 'basico') {
             $('#tituloPlan').text('Tu plan es Basico.');
             $('#textoPlan').text('Cambie a Gold para mas beneficios.');
-        }else{
+        } else {
             $('#tituloPlan').text('Tu plan es Gold.');
             $('#textoPlan').text('Con el obtienes descuentos en tus pasajes.');
 
@@ -633,37 +651,37 @@ $(document).on("click", '#editarplan', function () {
         $('#modalEditarPlan').modal('show');
     });
 
-//BOTON DE CAMBIAR DE PLAN...................................................................................
-$(document).on("click", '#cambiarPlan', function () {
+    //BOTON DE CAMBIAR DE PLAN...................................................................................
+    $(document).on("click", '#cambiarPlan', function () {
         const aux = $('#plann').text();
-        if (aux == 'basico'){
+        if (aux == 'basico') {
             const divinputs = document.getElementById('card-inputs');
-            if (divinputs.hidden == false){
-             divinputs.hidden = true;
-            }else{
+            if (divinputs.hidden == false) {
+                divinputs.hidden = true;
+            } else {
                 divinputs.hidden = false;
             }
-        }else{
+        } else {
             Swal.fire({
-            title: 'Seguro que quieres cambiarte a Plan Basico?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, Cambiar!'
-        })//.then((result) => {
-          //  if (result.isConfirmed) {
-                
-          //  }
+                title: 'Seguro que quieres cambiarte a Plan Basico?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, Cambiar!'
+            })//.then((result) => {
+            //  if (result.isConfirmed) {
+
+            //  }
 
 
-        //}
-        }  
+            //}
+        }
     });
 
 
-//BOTON DE EDITAR CONTRASEÑA...................................................................................
-$(document).on("click", '#editarcontraseña', function () {
+    //BOTON DE EDITAR CONTRASEÑA...................................................................................
+    $(document).on("click", '#editarcontraseña', function () {
         $('#editPasswordModalLabel').text('Editar contraseña');
 
         $("#contraseñavieja").removeClass("is-invalid is-valid");
@@ -673,51 +691,51 @@ $(document).on("click", '#editarcontraseña', function () {
         $('#editPasswordModal').modal('show');
     });
 
-$(document).on("click", "#guardarPasswordButton", function() {
-    const id = $('#recipient-id').val();
-    const contraseñavieja = $("#contraseñavieja").val()
-    const contraseñanueva = $("#contraseñanueva").val()
-    const confirmarcontraseña = $("#confirmarcontraseña").val()
-    $.ajax('/profile/editarContrasena', {
-        type: 'PUT',
-        data: { id,contraseñavieja,contraseñanueva,confirmarcontraseña },
-        success: function (res) {
-            if (res.length == 0) {
-                Swal.fire({
-                    title: 'Seguro que quieres cambiar la contraseña?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Si, Cambiar!'
-                }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax('/profile/editPassword', {
-                        type: 'PUT',
-                        data: { id, contraseñanueva},
-                        success: function (){
-                            Swal.fire(
-                                'Contraseña modificada!',
-                                'La contraseña ha sido modificado exitosamente!',
-                                'success'
-                            )
+    $(document).on("click", "#guardarPasswordButton", function () {
+        const id = $('#recipient-id').val();
+        const contraseñavieja = $("#contraseñavieja").val()
+        const contraseñanueva = $("#contraseñanueva").val()
+        const confirmarcontraseña = $("#confirmarcontraseña").val()
+        $.ajax('/profile/editarContrasena', {
+            type: 'PUT',
+            data: { id, contraseñavieja, contraseñanueva, confirmarcontraseña },
+            success: function (res) {
+                if (res.length == 0) {
+                    Swal.fire({
+                        title: 'Seguro que quieres cambiar la contraseña?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si, Cambiar!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax('/profile/editPassword', {
+                                type: 'PUT',
+                                data: { id, contraseñanueva },
+                                success: function () {
+                                    Swal.fire(
+                                        'Contraseña modificada!',
+                                        'La contraseña ha sido modificado exitosamente!',
+                                        'success'
+                                    )
+                                }
+                            })
                         }
                     })
                 }
-        })
+            },
+            error: function (data) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Algo salio mal!'
+                })
             }
-        },
-        error: function (data) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Algo salio mal!'
-            })
-        }
-    });  
-})
+        });
+    })
 
-//BOTON DE EDITAR NORMAL...................................................................................
+    //BOTON DE EDITAR NORMAL...................................................................................
     $(document).on("click", '#button_edit', function () {
         var nombre = $('#name').text();
         var username = $('#username').text();
@@ -740,34 +758,34 @@ $(document).on("click", "#guardarPasswordButton", function() {
 
         $('#exampleModal').modal('show');
 
-        
+
     });
 
-//MOSTRAR CONTRASEÑAS...................................................................................
-        //function hideOrShowPassword() {
-        //const password1 = document.getElementById("contraseña");
-        //const password2 = document.getElementById("recipient-confirmpassword")
-        //const check = document.getElementById("ver");
+    //MOSTRAR CONTRASEÑAS...................................................................................
+    //function hideOrShowPassword() {
+    //const password1 = document.getElementById("contraseña");
+    //const password2 = document.getElementById("recipient-confirmpassword")
+    //const check = document.getElementById("ver");
 
-        //if (check.checked == true) // Si la checkbox de mostrar contraseña está activada
-        //{
-        //    password1.type = "text";
-            //password2.type = "text";
-        //} else // Si no está activada 
-        //{
-        //   password1.type = "password";
-            //password2.type = "password";
-        //}
+    //if (check.checked == true) // Si la checkbox de mostrar contraseña está activada
+    //{
+    //    password1.type = "text";
+    //password2.type = "text";
+    //} else // Si no está activada 
+    //{
+    //   password1.type = "password";
+    //password2.type = "password";
     //}
-//FUNCTION PARA UPLOAD FILE...................................................................................
-$(document).ready(function() {
-    $("#input-b9").fileinput({
-        showPreview: false,
-        showUpload: false,
-        elErrorContainer: '#kartik-file-errors',
-        allowedFileExtensions: ["jpg", "png", "gif"]
-        //uploadUrl: '/site/file-upload-single'
+    //}
+    //FUNCTION PARA UPLOAD FILE...................................................................................
+    $(document).ready(function () {
+        $("#input-b9").fileinput({
+            showPreview: false,
+            showUpload: false,
+            elErrorContainer: '#kartik-file-errors',
+            allowedFileExtensions: ["jpg", "png", "gif"]
+            //uploadUrl: '/site/file-upload-single'
+        });
     });
-});
 
 </script>
