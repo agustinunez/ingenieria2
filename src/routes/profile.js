@@ -67,6 +67,7 @@ router.post('/editarContrasena/contrasenavieja', hasPermission, async (req,res) 
         res.json(true);
     }else{
         res.json(false);
+
     }
 });
 
@@ -144,7 +145,7 @@ hasPermission, async (req,res) => {
     res.send(errors);
 });
 
-router.post('/editarContraseña',
+router.put('/editarContrasena',
 body("contraseñavieja").notEmpty().withMessage("Este campo no puede estar vacio!"),
 body("contraseñanueva").notEmpty().withMessage("Este campo no puede estar vacio!"),
 body("contraseñanueva").custom(async (value) => {
@@ -158,9 +159,9 @@ hasPermission, async(req,res) => {
     var { id, contraseñavieja, contraseñanueva, confirmarcontraseña } = req.body;
     const result = validationResult(req);
     const errors = result.errors;
-
     const oldPassowrd = await pool.query("SELECT * FROM usuario WHERE id_usuario=?", [id]);
-      if (oldPassowrd[0].password != contraseñavieja) {
+    const contraseña = await helpers.matchPassword(contraseñavieja,oldPassowrd[0].password)
+    if ( !contraseña ){
         errors.push({
           value: '',
           msg: 'Lo siento, la Contraseña no coincide con la anterior!',
@@ -176,12 +177,14 @@ hasPermission, async(req,res) => {
           location: 'body'
         });
     }
-
-    if (errors.length == 0) {
-        await pool.query("UPDATE usuario SET password=? WHERE id_usuario=?", [contraseñanueva, id]);
-    }
     res.send(errors);
 })
+
+router.put('/editPassword', hasPermission, async (req,res) => {
+  var { contraseñanueva, id } = req.body;
+  contraseñanueva = await helpers.encryptPassword(contraseñanueva);
+  await pool.query("UPDATE usuario SET password=? WHERE id_usuario=?", [contraseñanueva, id]);
+});
 
 // Aca exporto el enrutador
 
