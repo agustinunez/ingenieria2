@@ -556,3 +556,54 @@ div.tramo p {
     font-size: 1.7rem;
     align-self: flex-end;
 }
+/* .............CSS de cambio de plan - Perfil............... */
+.tituloPlan h5{
+    font-size: 40px;
+    font-style: italic;
+    text-align: center;
+}
+
+.textoPlan{
+    text-align: center;
+    font-size: 22px;
+}
+
+.textoTarjeta{
+    text-align: center;
+    font-size: 25px;
+    margin-top: 10px;
+}
+
+#botoncito{
+    text-align: center;
+}
+
+#cambiarPlan{
+    background: #3085d6;
+    color: #ffffff;
+}
+.conteinerImg{
+    text-align: center;
+}
+
+.clase{
+    color: #efb810;
+}
+
+.clase2{
+    color: #8a9597;
+}
+
+.aprovechalo{
+    display: inline-block;
+    font-size: 28px;
+    color: #3085d6;
+}
+.aprovechalo:hover {
+    color:white
+}
+.contenedorAprovechalo{
+    text-align: center;
+}
+
+/* .............FIN CSS de cambio de plan - Perfil............... */

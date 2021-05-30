@@ -7,13 +7,22 @@ const { hasPermission } = require("../lib/auth");
 var dateFormat = require("dateformat");
 const pool = require('../database');
 const helpers = require('../lib/helpers');
+const payform = require('payform');
 
 router.get('/',hasPermission, (req, res) => {
     const user = req.user;
     user.birthdate= dateFormat(user.birthdate, "yyyy-mm-dd");
     const username = user.username.toUpperCase();
-    res.render("perfil", {user, username});
+    const plan = req.user.plan.toUpperCase();
+    res.render("perfil", {user, username, plan});
 });
+
+router.post('/getCard', hasPermission, async (req,res) => {
+    const { id } = req.body;
+    var result = await pool.query("SELECT cardnumber FROM usuario WHERE id_usuario=?",[id]);
+    result = result[0].cardnumber.slice(-4);
+    res.send(result);
+})
 
 router.post('/editarPerfil/username', hasPermission, async (req,res) => {
     const { nombreDeUsuarioValue,idValue } = req.body;
@@ -185,6 +194,83 @@ router.put('/editPassword', hasPermission, async (req,res) => {
   contraseñanueva = await helpers.encryptPassword(contraseñanueva);
   await pool.query("UPDATE usuario SET password=? WHERE id_usuario=?", [contraseñanueva, id]);
 });
+
+
+// ............EDITAR PLAN............
+
+router.post('/editarPlan/cardnumber', hasPermission, (req,res) => {
+  const {cardnumberValue} = req.body;
+    if (!payform.validateCardNumber(cardnumberValue)){
+        res.json(false);
+    }else{
+        res.json(true);
+    }
+});
+
+router.post('/editarPlan/cvv', hasPermission, (req,res) => {
+  const {cvvValue} = req.body;
+    if (!payform.validateCardCVC(cvvValue)){
+        res.json(false);
+    }else{
+        res.json(true);
+    }
+});
+
+router.post('/editarPlan/expireddate', hasPermission, (req,res) => {
+  const {expireddateValue} = req.body;
+  const cardDate = payform.parseCardExpiry(expireddateValue);
+  if (!payform.validateCardExpiry(cardDate.month, cardDate.year)) {
+        res.json(false);
+    }else{
+        res.json(true);
+    }
+});
+
+router.post(
+  "/editarPlan",
+  body("owner").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("cardnumber").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("cardnumber").custom( async (value) => {
+    if (!payform.validateCardNumber(value)) {
+      throw new Error("Numero de tarjeta invalido!");
+    }
+  }),
+  body("cvv").notEmpty().withMessage("Este campo no puede estar vacio!"),
+  body("cvv").custom( async (value) => {
+    if (!payform.validateCardCVC(value)) {
+      throw new Error("CVV invalido!");
+    }
+  }),
+  body("expireddate")
+    .notEmpty()
+    .withMessage("Este campo no puede estar vacio!"),
+  body("expireddate").custom( async (value) => {
+    const cardDate = payform.parseCardExpiry(value);
+    if (!payform.validateCardExpiry(cardDate.month, cardDate.year)) {
+      throw new Error("Fecha de expiracion invalido!");
+    }
+  }),
+  hasPermission,
+  (req, res) => {
+
+    const { owner, cardnumber, cvv, expireddate, id } = req.body;
+    const result = validationResult(req);
+    const errors = result.errors;
+
+    res.send(errors);
+  
+  });
+
+router.put('/editPlanToGold', hasPermission, async (req,res) => {
+  var { owner, cardnumber, cvv, expireddate, id } = req.body;
+  await pool.query("UPDATE usuario SET plan=?,owner=?,cardnumber=?,cvv=?,expireddate=? WHERE id_usuario=?", ['gold',owner, cardnumber, cvv, expireddate, id]);
+});
+
+router.put('/editPlanToBasic', hasPermission, async (req,res) => {
+  var { id } = req.body;
+  await pool.query("UPDATE usuario SET plan=?,owner=?,cardnumber=?,cvv=?,expireddate=? WHERE id_usuario=?", ['basico',null, null, null, null, id]);
+});
+
 
 // Aca exporto el enrutador
 
