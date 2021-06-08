@@ -32,8 +32,12 @@
                     <th data-field="estado" data-sortable="true">
                         Estado
                     </th>
-                    <th data-field="id_usuarioviaje" data-formatter="LinkFormatterDevolver"><i class="fas fa-user-times"></i>
-                    {{!--<th data-field="id_viaje" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
+                    <th data-field="id_usuarioviaje" data-formatter="LinkFormatterEdit"><i class="fas fa-comments"></i>
+                    </th>
+                    <th data-field="id_usuarioviaje" data-formatter="LinkFormatterDevolver"><i
+                            class="fas fa-undo-alt"></i>
+                        {{!--
+                    <th data-field="id_viaje" data-formatter="LinkFormatterEdit"><i class="fas fa-user-edit"></i></th>
                     <th data-field="id_viaje" data-formatter="LinkFormatterDelete"><i class="fas fa-user-times"></i>--}}
                     </th>
                 </tr>
@@ -44,6 +48,24 @@
 
 <script>
     $(document).ready(function () {
+        {{#if errorComentario}}
+            const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: 'error',
+            title: 'No puedes ver los comentarios de un viaje no concretado!'
+        })
+        {{/if}}
         $table = $('#table');
         $('#table').bootstrapTable('load', []);
         $.ajax({
@@ -90,7 +112,7 @@
                                 }
                             });
                             Swal.fire(
-                                'Eliminado!',
+                                'Devolucion exitosa!',
                                 res.message,
                                 'success'
                             )
@@ -113,4 +135,8 @@
             }
         })
     };
+    function LinkFormatterEdit(value, row) {
+        return "<a href='/user/detalles/" + value + "' ><button class='btn btn-primary'>Ver comentarios</button></a> ";
+    }
+
 </script>

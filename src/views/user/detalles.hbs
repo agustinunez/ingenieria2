@@ -1,0 +1,262 @@
+<div class="my-2" id="div_route">
+    <div class="tramo px-4">
+        <p>IDA</p>
+    </div>
+    <div>
+        <span>Origen</span>
+        <span class="place"><u>{{origen}}</u></span>
+    </div>
+    <div class="route_icon"><i class="fas fa-arrow-circle-right"></i></div>
+    <div>
+        <span>Destino</span>
+        <span class="place"><u>{{destino}}</u></span>
+    </div>
+</div>
+<div class="todo_comentarios">
+    <div class="container_comentarios">
+        <form id="form-comentarios" action="/user/comentario" method="POST"
+            class="form_comentarios d-flex justify-content-end flex-wrap">
+            <input type="number" id="id_usuario" name="id_usuario" value={{id_usuario}} hidden>
+            <input type="number" id="id_viaje" name="id_viaje" value={{id_viaje}} hidden>
+            <textarea name="comentario" id="comentario" placeholder="Comentarios"></textarea>
+            <button class="btn" type="submit">Comentar</button>
+        </form>
+    </div>
+    <div id="todo_comentarios_id"></div>
+    {{#each comentarios}}
+    <div class="container-comments">
+        <div class="comments">
+            {{!--<div class="photo-perfil">
+                <img id="nav_id_img" src="/profile/images/{{../key}}" width="150px" height="150px">
+            </div>--}}
+            <div class="info-comments">
+                <div class="header">
+                    <h4>{{usuario}}</h4>
+                </div>
+                <p>{{comentario}}</p>
+                {{!--#if (isRole role "ROL_ADMIN")--}}
+                {{#if (isUserId usuario ../usarname_activo)}}
+                <div class="footer">
+                    <input value={{id_comentarios}} id="id_comentario" hidden>
+                    <input value={{comentario}} id="id_comentario" hidden>
+                    <h5 class="request" type="edit" onclick='editar({{id_comentarios}})'>Editar</h5>
+                    <h5 class="request btn-small btn-outline-danger" type="delete" id="button_delete"
+                        onclick='eliminar({{id_comentarios}})'>Eliminar
+                    </h5>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="modalForm">
+                    <div class="mb-3">
+                        <input type="number" id="recipient-id" name="id" hidden>
+                        <label for="cometarioEditar" class="col-form-label">Comentario:</label>
+                        <input type="text" class="form-control" id="cometarioEditar" name="cometarioEditar"
+                            autocomplete='off'>
+                    </div>
+                    <div class="invalid-feedback">
+                        <p id="invalid-comment"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success" id="guardarButton">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#form-comentarios").submit(function (e) {
+
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var id = array[0].value;
+        const id_viaje = $('#id_viaje').val()
+        const id_usuario = $('#id_usuario').val()
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function (data) {
+                if (data.errors.length > 0) {
+                    Swal.fire(
+                        'Error!',
+                        data.errors[0].msg,
+                        'error',
+                    )
+                } else {
+                    Swal.fire(
+                        'Comentario publicado!',
+                        'Se ha publicado el comentario exitosamente!',
+                        'success',
+                    ).then(function () {
+                        location.reload()
+                    })
+                    /*const div = document.getElementById('todo_comentarios_id')
+                    div.innerHTML = `
+                    <div class="container-comments">
+                        <div class="comments">
+                            <div class="info-comments">
+                                <div class="header">
+                                    <h4>${data.nombre}</h4>
+                                </div>
+                                <p>${array[2].value}</p>
+                                <div class="footer">
+                                    <h5 class="request" type="edit" id="button_edit"  >Editar</h5>
+                                    <h5 class="request" type="delete" id="button_delete">Eliminar</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                                                           
+                    ` + div.innerHTML
+                    $('#comentario').val('')
+                    //'<div class="container-comments"><div class="comments"><div class="info-comments"><div class="header"><h4>ola</h4></div><p>lolis</p><div class="footer"><h5 class="request">Editar</h5><h5 class="request">Eliminar</h5></div></div></div></div>';
+                */
+                }
+            }
+        })
+    })
+    function eliminar(id) {
+        console.log("ESTA BIEN ESTE ID?", id)
+        Swal.fire({
+            title: 'Seguro que quieres eliminarlo?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax('/user/eliminar', {
+                    type: 'DELETE',
+                    data: { id },
+                    success: function (res) {
+                        if (res.result) {
+                            Swal.fire(
+                                'Eliminado!',
+                                res.message,
+                                'success'
+                            ).then(function () {
+                                location.reload()
+                            })
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: res.message
+                            })
+                        }
+                    }
+                })
+            }
+        })
+
+    }
+
+
+
+    /*$('#recipient-edit').focusout(function () {
+        const editElement = $('#recipient-edit');
+        const idElement = $('#recipient-id');
+        if (editElement.val() == null || editElement.val() == "") {
+            editElement.addClass('is-invalid');
+            $('#invalid-comment').text('El campo Comentario no puede estar vacio!');
+        } else {
+            editElement.removeClass('is-invalid');
+            editElement.addClass('is-valid');
+        }
+    })/*
+
+    /*$(document).on("click", '#button_edit', function (e) {
+        const comentario = $('#id_comentarios').val()
+        console.log(comentario)
+
+        //var id_comentario = $('#id_comentario').text()
+        //var comentario = $('#comentario').text();
+
+
+        $('#exampleModalLabel').text('Editar comentario');
+        $("#recipient-comment").val(comentario);
+
+
+        $("#recipient-comment").removeClass("is-invalid is-valid");
+        $('#exampleModal').modal('show');
+
+
+    });*/
+
+    function editar(id) {
+        console.log(id)
+
+        $.ajax('/user/agarrar_comentario', {
+            type: 'POST',
+            data: { id },
+            success: function (res) {
+                $('#exampleModalLabel').text('Editar comentario');
+                $("#cometarioEditar").val(res.comentario);
+                $("#recipient-id").val(res.id_comentario);
+
+
+                $("#cometarioEditar").removeClass("is-invalid is-valid");
+                $('#exampleModal').modal('show');
+            }
+        })
+
+
+        /**/
+    }
+
+
+    $("#modalForm").submit(function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var id = array[0].value;
+        const id_usuario = $('#id_usuario').val()
+        console.log("q garcha es esto", form.serialize())
+        $.ajax({
+            type: "POST",
+            url: '/user/confirmar_edicion',
+            data: form.serialize(),
+            success: function (data) {
+                if (data.errors.length > 0) {
+                    Swal.fire(
+                        'Error!',
+                        data.errors[0].msg,
+                        'error',
+                    )
+                } else {
+                    Swal.fire(
+                        'Comentario editado!',
+                        'Se ha editado el comentario exitosamente!',
+                        'success',
+                    ).then(function () {
+                        location.reload()
+                    })
+                }
+            }
+        })
+
+    })
+
+</script>
