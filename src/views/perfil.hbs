@@ -502,69 +502,8 @@
     // FIN FOCUSOUT NORMAL...................................................................................
 
     // AJAX DE VALIDACION PARA DATOS NORMALES...................................................................................
-    $(document).on("click", '#exampleModal', function () {
-        /*var name = $(this).data('nombre');
-        var lastname = $(this).data('apellido');
-        var dni = $(this).data('dni');
-        var username = $(this).data('username');
-        var email = $(this).data('email');
-        var id = $(this).data('id_chofer');*/
-
-
-        $('#exampleModalLabel').text('Editar datos');
-
-        $("#nombredeusuario").removeClass("is-invalid is-valid");
-        $("#apellido").removeClass("is-invalid is-valid");
-        $("#nombre").removeClass("is-invalid is-valid");
-        $("#email").removeClass("is-invalid is-valid");
-        $("#fechadenacimiento").removeClass("is-invalid is-valid");
-        
-        $('#exampleModal').modal('show');
-        $('#guardarButton').text('Guardar');
-
-        const nombre2 = document.getElementById("nombredeusuario").value;
-        const lastname2 = document.getElementById("apellido").value;
-        const dni2 = document.getElementById("nombre").value;
-        const username2 = document.getElementById("email").value;
-        const email2 = document.getElementById("fechadenacimiento").value;
-        const personalButton = document.getElementById("guardarButton");
-
-        const onChangeInputsPersonal = () => {
-            let nombreBoolean = document.getElementById("nombredeusuario").value == nombre2;
-            let lastnameBoolean = document.getElementById("apellido").value == lastname2;
-            let dniBoolean = document.getElementById("nombre").value == dni2;
-            let usernameBoolean = document.getElementById("email").value == username2;
-            let emailBoolean = document.getElementById("fechadenacimiento").value == email2;
-            
-            (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
-
-        }
-
-        document.getElementById("nombredeusuario").addEventListener('input', () => {
-            onChangeInputsPersonal();
-        });
-
-        document.getElementById("apellido").addEventListener('input', () => {
-            onChangeInputsPersonal();
-        });
-
-        document.getElementById("nombre").addEventListener('input', () => {
-            onChangeInputsPersonal();
-        });
-        document.getElementById("email").addEventListener('input', () => {
-            onChangeInputsPersonal();
-        });
-        document.getElementById("fechadenacimiento").addEventListener('input', () => {
-            onChangeInputsPersonal();
-        });
-        
-        onChangeInputsPersonal();
-
-    });
-
-
-
-    $("#modalForm").submit(function (e) {
+    
+     $("#modalForm").submit(function (e) {
 
         e.preventDefault();
 
@@ -1071,6 +1010,48 @@
         $("#nombre").removeClass("is-invalid is-valid");
         $("#email").removeClass("is-invalid is-valid");
         $("#fechadenacimiento").removeClass("is-invalid is-valid");
+    
+        $('#exampleModal').modal('show');
+        $('#guardarButton').text('Guardar');
+
+        const nombre2 = document.getElementById("nombredeusuario").value;
+        const lastname2 = document.getElementById("apellido").value;
+        const dni2 = document.getElementById("nombre").value;
+        const username2 = document.getElementById("email").value;
+        const email2 = document.getElementById("fechadenacimiento").value;
+        const personalButton = document.getElementById("guardarButton");
+
+        const onChangeInputsPersonal = () => {
+            let nombreBoolean = document.getElementById("nombredeusuario").value == nombre2;
+            let lastnameBoolean = document.getElementById("apellido").value == lastname2;
+            let dniBoolean = document.getElementById("nombre").value == dni2;
+            let usernameBoolean = document.getElementById("email").value == username2;
+            let emailBoolean = document.getElementById("fechadenacimiento").value == email2;
+            
+            (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+
+        }
+
+        document.getElementById("nombredeusuario").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("apellido").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("nombre").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("email").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("fechadenacimiento").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        onChangeInputsPersonal();
+
 
         $('#exampleModal').modal('show');
 
