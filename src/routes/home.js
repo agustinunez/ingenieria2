@@ -52,8 +52,12 @@ dateFormat.i18n = {
 }
 
 router.get(['','/', '/home'], async(req, res) => {
+    if (req.user){
+        var key = req.user.img;
+    }
+    
     const lugares = await pool.query("SELECT * FROM lugar ORDER BY nombre");
-    res.render('home', { lugares });
+    res.render('home', { lugares, key });
 });
 
 router.post('/lugarValidation', async(req, res) => {

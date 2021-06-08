@@ -7,7 +7,6 @@ const flash = require('connect-flash');
 const path = require('path');
 const passport = require('passport');
 const pool = require('./database');
-
 //const fileinput = require('bootstrap-fileinput');
 
 //Inicializar
@@ -43,6 +42,7 @@ app.engine('.hbs', exphbs({
     }
 }))
 app.set('view engine', '.hbs');
+//-----------------------------------------------------------
 
 //Midlewares
 app.use(

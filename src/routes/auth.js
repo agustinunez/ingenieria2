@@ -135,12 +135,13 @@ router.post('/signup',
             userInfo.expireddate = expireddate;
         }
 
-
+        
         const result = validationResult(req);
         const errors = result.errors;
         if (!result.isEmpty()) {
             return res.render('auth/signup', { userInfo, errors });
         }
+        userInfo.img = "ba8b5b6ca080b6038085e89fe076c4ed";
         userInfo.password = await helpers.encryptPassword(userInfo.password);
         const row = await pool.query('INSERT INTO usuario SET ?', [userInfo]);
         const autoridad = {

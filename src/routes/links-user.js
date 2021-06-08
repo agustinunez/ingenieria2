@@ -9,7 +9,8 @@ var dateFormat = require("dateformat");
 // ACA VA EL BUSCAR VIAJE DE LUCAS
 
 router.get('/tickets', hasPermission, (req, res) => {
-    res.render('user/tickets');
+    const key = req.user.img;
+    res.render('user/tickets', {key});
 })
 
 

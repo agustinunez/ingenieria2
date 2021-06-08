@@ -144,6 +144,7 @@ body {
     right: 5px;
     visibility: visible;
     opacity: 1;
+    margin-right: 18px
 }
 
 .action .menu::before{
@@ -202,6 +203,29 @@ body {
 .action .menu ul li:hover a{
     color: #ff5d94;
 }
+
+
+@media screen and (max-width: 990px){
+    .action .menu{
+        position:relative;
+        /* top: -350px;
+        left: 200px; */
+    }
+    .action .menu.active{
+        top:10px;
+        margin-top:10px;
+    }
+    .action .menu::before{
+        right:155px;
+    }
+    .action{
+        height: 60px
+    }
+    .action .menu.active .action{
+        height:350px;
+    }
+}
+
 /* FIN DEL BOTON PARA EL PERFIL */
 
 
@@ -221,8 +245,9 @@ body {
 }
 .profile-img img{
     width: 70%;
-    height: 100%;
+    height: 250px;
     border-radius: 50%;
+    object-fit: cover;
     overflow: hidden;
 }
 .profile-img .file {
@@ -361,62 +386,6 @@ body {
     color: #ff5d94;
 }
 
-
-
-
-
-/* @import url('http://fonts.googleapis.com/css2?familty=Poppins:wght@700&display=swap');
-
-.palabras{
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-.conteiner-body{
-    z-index: -1;
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 20vh;
-}
-h2{
-    position:relative;
-    font-size: 10vw;
-    color:#115571;
-    -webkit-text-stroke: 0.3vw #383d52;
-    text-transform: uppercase;
-}
-h2::before{
-    content: attr(data-text);
-    position:absolute;
-    top:0;
-    left:0;
-    width:0;
-    height:100%;
-    color: #01fe87;
-    -webkit-text-stroke: 0vw #383d52;
-    border-right: 2px solid #01fe87;
-    overflow: hidden;
-    animation: animate 6s linear infinite;
-}
-
-@keyframes animate{
-    0%,10%,100%
-    {
-        width: 0;
-    }
-    70%,90%
-    {
-        width: 100%;
-    }
-} */
-
-
-
- /* .nav.nav-tabs{
-    transform: translate(5px, 60px);
-}  */
 
 /* FIN DEL PERFIL */
 /* Styles buscador de viajes */

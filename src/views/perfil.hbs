@@ -2,6 +2,8 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
+{{!-- <img src="/profile/images/7f6e739e59b8b36681ca9de14277b2aa"></img> --}}
+
 <div class="container emp-profile">
 
     <div class="row">
@@ -12,7 +14,7 @@
 
                 <br>
                 <br>
-                <img src="/images/perfil.jpg" />
+                <img class="img-fluid" id="idImg" name="idImg" src="/profile/images/{{key}}" />
                 <br>
                 <br>
                 <button id="buttonUpload" type="button" class="btn btn-primary" data-toggle="modal"
@@ -73,7 +75,7 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-8 ">
             <div class="tab-content profile-tab" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                     <hr>
@@ -147,24 +149,18 @@
 <!-- MODAL SUBIR FOTO-->
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Elegir foto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="file-loading">
-                    <input id="input-b9" name="input-b9[]" type="file">
-                </div>
-                <div id="kartik-file-errors"></div>
-            </div>
+            
+            <input type="number" id="id" name="id" value={{user.id_usuario}} hidden>
+            <form id="formIdUpload" action="/profile/images/upload" method="POST" enctype="multipart/form-data">
+            <input id="file" type="file" name="image">
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" title="Your custom upload logic">Guardar</button>
+                <button type="submit" class="btn btn-primary" id="guardarButtonUpload">Guardar</button>
             </div>
+            </form>
         </div>
     </div>
 </div>
@@ -367,6 +363,46 @@
 
 
 <script>
+
+    $("#formIdUpload").submit(function (e) {
+        
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var formData = new FormData(this);
+           $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              contentType: false,
+              processData: false,
+              success: function(response){
+                 if(response.result){
+                    console.log(response)
+                    $('#idImg').attr('src',response.imagePath);
+                    $('#nav_id_img').attr('src',response.imagePath);
+                    Swal.fire(
+                        'Actualizado!',
+                        response.message,
+                        'success',
+                    )
+                    //$('#uploadModal').modal('toggle');
+                 }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Algo salio mal...',
+                        text: response.message
+                    })
+                 }
+                 $('#file').val('');
+              }
+           });
+               
+    });
+
+
+
     //FOCUSOUT NORMAL ................................................................................................
     $('#nombredeusuario').focusout(function () {
         const nombreDeUsuarioElement = $('#nombredeusuario');
@@ -466,6 +502,68 @@
     // FIN FOCUSOUT NORMAL...................................................................................
 
     // AJAX DE VALIDACION PARA DATOS NORMALES...................................................................................
+    $(document).on("click", '#exampleModal', function () {
+        /*var name = $(this).data('nombre');
+        var lastname = $(this).data('apellido');
+        var dni = $(this).data('dni');
+        var username = $(this).data('username');
+        var email = $(this).data('email');
+        var id = $(this).data('id_chofer');*/
+
+
+        $('#exampleModalLabel').text('Editar datos');
+
+        $("#nombredeusuario").removeClass("is-invalid is-valid");
+        $("#apellido").removeClass("is-invalid is-valid");
+        $("#nombre").removeClass("is-invalid is-valid");
+        $("#email").removeClass("is-invalid is-valid");
+        $("#fechadenacimiento").removeClass("is-invalid is-valid");
+        
+        $('#exampleModal').modal('show');
+        $('#guardarButton').text('Guardar');
+
+        const nombre2 = document.getElementById("nombredeusuario").value;
+        const lastname2 = document.getElementById("apellido").value;
+        const dni2 = document.getElementById("nombre").value;
+        const username2 = document.getElementById("email").value;
+        const email2 = document.getElementById("fechadenacimiento").value;
+        const personalButton = document.getElementById("guardarButton");
+
+        const onChangeInputsPersonal = () => {
+            let nombreBoolean = document.getElementById("nombredeusuario").value == nombre2;
+            let lastnameBoolean = document.getElementById("apellido").value == lastname2;
+            let dniBoolean = document.getElementById("nombre").value == dni2;
+            let usernameBoolean = document.getElementById("email").value == username2;
+            let emailBoolean = document.getElementById("fechadenacimiento").value == email2;
+            
+            (nombreBoolean && lastnameBoolean && dniBoolean && usernameBoolean && emailBoolean) ? personalButton.disabled = true : personalButton.disabled = false;
+
+        }
+
+        document.getElementById("nombredeusuario").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("apellido").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+
+        document.getElementById("nombre").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("email").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        document.getElementById("fechadenacimiento").addEventListener('input', () => {
+            onChangeInputsPersonal();
+        });
+        
+        onChangeInputsPersonal();
+
+    });
+
+
+
     $("#modalForm").submit(function (e) {
 
         e.preventDefault();

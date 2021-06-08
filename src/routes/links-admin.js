@@ -15,7 +15,8 @@ const moment = require('moment');
 //---------------------------------------------------------------------------------------------------CHOFER-------------------------------------------------------------------------------------
 
 router.get("/choferes", isAdmin, async (req, res) => {
-  res.render("admin/choferes");
+  const key = req.user.img;
+  res.render("admin/choferes", {key});
 });
 
 router.get("/choferJSON", isAdmin, async (req, res) => {
@@ -192,7 +193,8 @@ router.delete("/choferes/eliminar", isAdmin, async (req, res) => {
 //---------------------------------------------------------------------------------------------------INSUMOS-------------------------------------------------------------------------------------
 router.get("/insumos", isAdmin, async (req, res) => {
   const row = await pool.query("SELECT * FROM insumo");
-  res.render("admin/insumos", { row });
+  const key = req.user.img;
+  res.render("admin/insumos", { row, key });
 });
 
 router.post("/insumo/nombre", isAdmin, async (req, res) => {
@@ -270,7 +272,8 @@ router.get("/insumosJSON", isAdmin, async (req, res) => {
 
 //---------------------------------------------------------------------------------------------------LUGARES-------------------------------------------------------------------------------------
 router.get("/lugares", isAdmin, async (req, res) => {
-  res.render("admin/lugares");
+  const key = req.user.img;
+  res.render("admin/lugares", {key} );
 });
 
 router.post("/lugares",
@@ -347,8 +350,9 @@ router.post("/combis/patente", async (req, res) => {
 
 router.get("/combis", isAdmin, async (req, res) => {
   // ENVIO LOS CHOFERES PARA LISTARLOS PARA SELECCIONARLOS
+  const key = req.user.img;
   const choferes = await pool.query("SELECT u.name,u.lastname,u.id_usuario FROM usuario u INNER JOIN autoridad a ON(a.id_usuario=u.id_usuario) WHERE (a.rol='ROL_CHOFER')");
-  res.render("admin/combis", { choferes });
+  res.render("admin/combis", { choferes, key });
 });
 
 router.get('/combisJSON', isAdmin, async (req, res) => {
@@ -431,10 +435,11 @@ router.delete("/combis/eliminar", isAdmin, async (req, res) => {
 
 //---------------------------------------------------------------------------------------------------VIAJES-------------------------------------------------------------------------------------
 router.get("/viajes", isAdmin, async (req, res) => {
+  const key = req.user.img;
   const insumos = await pool.query("SELECT nombre,id_insumo FROM insumo");
   const combis = await pool.query("SELECT patente,id_combi FROM combi");
   const rutas = await pool.query("SELECT r.origen AS origenid ,r.destino AS destinoid,r.id_ruta AS id_ruta,l.nombre AS nombreorigen,l2.nombre AS nombredestino FROM ruta r INNER JOIN lugar l ON (r.origen=l.id_lugar) INNER JOIN lugar l2 ON (r.destino=l2.id_lugar) ORDER BY l.nombre, l2.nombre");
-  res.render("admin/viajes", { rutas, combis, insumos });
+  res.render("admin/viajes", { rutas, combis, insumos, key });
 });
 
 router.post("/viajes/fechasalida", isAdmin, async (req, res) => {
@@ -862,8 +867,9 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
 
 //---------------------------------------------------------------------------------------------------RUTAS-------------------------------------------------------------------------------------
 router.get("/rutas", isAdmin, async (req, res) => {
+  const key = req.user.img;
   const lugares = await pool.query("SELECT * FROM lugar");
-  res.render("admin/rutas", { lugares });
+  res.render("admin/rutas", { lugares, key });
 });
 
 router.post("/ruta/lugar", async (req, res) => {

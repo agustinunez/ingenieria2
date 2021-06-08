@@ -9,12 +9,71 @@ const pool = require('../database');
 const helpers = require('../lib/helpers');
 const payform = require('payform');
 
+const app = express()
+// Constantes para el cargar imagenes
+const multer = require('multer');
+const path = require('path');
+const upload = multer({dest: path.join(__dirname, './public/upload')});
+
+const fs = require('fs')
+const util = require('util')
+const unlinkFile = util.promisify(fs.unlink)
+
+const { uploadFile, getFileStream } = require('../s3');
+
+
+router.get('/images/:key', async (req, res) => {
+  
+  const key = req.params.key
+  const readStream = getFileStream(key)
+  const row = await pool.query ("SELECT * FROM usuario WHERE id_usuario=?",[req.user.id_usuario]);
+  await pool.query("UPDATE usuario SET img=? WHERE id_usuario=?",[key,req.user.id_usuario]);
+  
+  readStream.pipe(res)
+})
+
+
+router.post('/images/upload', upload.single('image'), async (req, res) => {
+  const file = req.file;
+  if (file.size < 2000000){
+    const aux = file.mimetype.split('/')[1];
+    if (aux == "png" || aux == "jpg" || aux == "jpeg") {
+      const result = await uploadFile(file);
+      await unlinkFile(file.path)
+      const row = await pool.query ("SELECT * FROM usuario WHERE id_usuario=?",[req.user.id_usuario]);
+      await pool.query("UPDATE usuario SET img=? WHERE id_usuario=?",[result.Key,req.user.id_usuario]);
+      res.json({
+        result: true,
+        imagePath:`/profile/images/${result.Key}`,                      
+        message:
+          "Se ha editado la foto de perfil exitosamente!",
+      });
+    }else{
+      res.json({
+        result: false,                        
+        message:
+          "Admite solo archivos /jpeg|jpg|png!",
+      });
+    }
+  }else{
+    res.json({
+      result: false,                        
+      message:
+        "El archivo excede los 2 MB",
+    });
+  }
+});
+
+// ----------------------------------
+
+
 router.get('/',hasPermission, (req, res) => {
     const user = req.user;
     user.birthdate= dateFormat(user.birthdate, "yyyy-mm-dd");
     const username = user.username.toUpperCase();
     const plan = req.user.plan.toUpperCase();
-    res.render("perfil", {user, username, plan});
+    const key = user.img;
+    res.render("perfil", {user, username, plan, key});
 });
 
 router.post('/getCard', hasPermission, async (req,res) => {
