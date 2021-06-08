@@ -8,6 +8,7 @@ const helpers = require('../lib/helpers');
 const payform = require('payform');
 const { isLoggedIn} = require('../lib/auth');
 const { ROLE } = require('../lib/roles');
+const { encryptPassword } = require('../lib/helpers');
 
 //Aca va, todo lo que yo quiera que pase si en el buscador pongo /algo
 router.get('/login', isLoggedIn, (req, res) => {
@@ -16,6 +17,146 @@ router.get('/login', isLoggedIn, (req, res) => {
 
 router.get('/signup', isLoggedIn, (req, res) => {
     res.render('auth/signup');
+})
+
+router.get('/forgotPassword', isLoggedIn, (req, res) => {
+    res.render('auth/forgotPassword');
+})
+
+router.post('/forgotPassword', isLoggedIn, (req, res) => {
+    const { email } = req.body;
+
+    const randomCode = Math.floor(Math.random() * 89999) + 10000;
+    const mailSubject = "Codigo de verificacion";
+    const content = `
+        <img src="https://i.ibb.co/V3gnkDd/logoTest.png" width="273" height="82.6">
+        <div style="text-align: center;">
+            <img src="https://cdn.icon-icons.com/icons2/1845/PNG/512/yellowlike_116080.png" width="150" height="150">
+            <p style="font-size: 1.1rem">Hola!</p>
+            <p style="font-size: 1.1rem">Aqui esta el codigo de verificacion:</p>
+            <h1 style="margin: .5rem auto; font-size: 3rem; font-weight: 800;">${randomCode}</h1>
+            <p style="font-size: 1.1rem">Todo lo que tienes que hacer es ingresar el codigo en la pagina para continuar con el proceso de reestablecer su contraseña.</p>
+            <div style="text-align: center; background-color: #edf1f6; padding: .8rem 0">
+                <span style="display: block; font-size: .9rem;">¿No fuiste tu? Si no fuiste tu ignora este mensaje.</span>
+                <span style="display: block; margin-top: .3rem; font-size: .9rem;">&copy; Equipo Combi-19. Todos los derechos reservados.</span>
+            </div>
+        </div>
+    `
+    helpers.sendMail(content, mailSubject, email)
+        .then(result => res.status(200).send({randomCode}))
+        .catch(error => console.log(error.message))
+    // const contentHTML = `
+    //     <img src="https://i.ibb.co/V3gnkDd/logoTest.png" width="273" height="82.6">
+    //     <div style="text-align: center;">
+    //         <img src="https://cdn.icon-icons.com/icons2/1845/PNG/512/yellowlike_116080.png" width="150" height="150">
+    //         <p style="font-size: 1.1rem">Hola!</p>
+    //         <p style="font-size: 1.1rem">Aqui esta el codigo de verificacion:</p>
+    //         <h1 style="margin: .5rem auto; font-size: 3rem; font-weight: 800;">${randomCode}</h1>
+    //         <p style="font-size: 1.1rem">Todo lo que tienes que hacer es ingresar el codigo en la pagina para continuar con el proceso de reestablecer su contraseña.</p>
+    //         <div style="text-align: center; background-color: #edf1f6; padding: .8rem 0">
+    //             <span style="display: block; font-size: .9rem;">¿No fuiste tu? Si no fuiste tu ignora este mensaje.</span>
+    //             <span style="display: block; margin-top: .3rem; font-size: .9rem;">&copy; Equipo Combi-19. Todos los derechos reservados.</span>
+    //         </div>
+    //     </div>
+    // `
+
+    // const CLIENT_ID = "125203151603-0ivipfkf95b21id2lv1dgvcvm2qg1feq.apps.googleusercontent.com";
+    // const CLIENT_SECRET = "fzUL8J_BFQG2UqixXDmI15wO";
+    // const REDIRECT_URI = "https://developers.google.com/oauthplayground";
+    // const REFRESH_TOKEN = "1//04o2J6CZNZwQaCgYIARAAGAQSNwF-L9Irq2e0wRCm5X2MEFKMWtUsvXdLnj6LNHe0DWsla58UdxKJxMql8KJQIirrBnU6by6Kn14";
+
+    // const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+    // oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+    // async function sendMail() {
+    //     try {
+    //         const accessToken = await oAuth2Client.getAccessToken();
+    //         const transporter = nodemailer.createTransport({
+    //             service: "gmail",
+    //             auth: {
+    //                 type: "OAuth2",
+    //                 user: "enterprise.combi19@gmail.com",
+    //                 clientId: CLIENT_ID,
+    //                 clientSecret: CLIENT_SECRET,
+    //                 refreshToken: REFRESH_TOKEN,
+    //                 accessToken: accessToken
+    //             }
+    //         });
+    //         const mailOptions = {
+    //             from: "Equipo Combi-19 <enterprise.combi19@gmail.com>",
+    //             to: email,
+    //             subject: "Codigo de verificacion",
+    //             html: contentHTML
+    //         };
+
+    //         const result = await transporter.sendMail(mailOptions)
+    //         return result
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+    // sendMail()
+    //     .then(result => res.status(200).send({randomCode}))
+    //     .catch(error => console.log(error.message))
+});
+
+router.post('/newPasswordMail', isLoggedIn, async (req, res) => {
+    const { email } = req.body;
+    const randomPassword = helpers.getRandomString(8);
+
+    const encryptedPassword = await helpers.encryptPassword(randomPassword);
+    await pool.query("UPDATE usuario SET password=? WHERE email=?", [encryptedPassword, email]);
+
+    const mailSubject = "Reinicio de contraseña";
+    const content = `
+        <img src="https://i.ibb.co/V3gnkDd/logoTest.png" width="273" height="82.6">
+        <div style="text-align: center;">
+            <img src="https://cdn.icon-icons.com/icons2/1732/PNG/512/iconfinder-securityprotectlockshield20-4021466_113124.png" width="150" height="150">
+            <p style="font-size: 1.1rem">Hola!</p>
+            <p style="font-size: 1.1rem">Aqui esta la nueva contraseña:</p>
+            <h1 style="margin: .5rem auto; font-size: 3rem; font-weight: 800;">${randomPassword}</h1>
+            <p style="font-size: 1.1rem">Todo lo que tienes que hacer es iniciar sesion con la nueva contraseña de arriba, y luego podras cambiarla sin problemas en tu perfil.</p>
+            <div style="text-align: center; background-color: #edf1f6; padding: .8rem 0">
+                <span style="display: block; font-size: .9rem;">¿No fuiste tu? Si no fuiste tu ignora este mensaje.</span>
+                <span style="display: block; margin-top: .3rem; font-size: .9rem;">&copy; Equipo Combi-19. Todos los derechos reservados.</span>
+            </div>
+        </div>
+    `
+    helpers.sendMail(content, mailSubject, email)
+        .then(result => res.status(200).send(true))
+        .catch(error => console.log(error.message))
+})
+
+router.post('/codeValidation', isLoggedIn, (req, res) => {
+    const { inputSwal1, inputSwal2, inputSwal3, inputSwal4, inputSwal5, randomCode } = req.body;
+    if (inputSwal1 == '' || inputSwal2 == '' || inputSwal3 == '' || inputSwal4 == '' || inputSwal5 == '') {
+        res.send({ok: false, message: 'Debe completar todos los campos!'});
+        return;
+    }
+    const concatenation = inputSwal1 + inputSwal2 + inputSwal3 + inputSwal4 + inputSwal5;
+    if (concatenation !== randomCode) {
+        res.send({ok: false, message: 'El codigo es incorrecto!'});
+        return;
+    }
+    res.send({ok: true});
+})
+
+router.post('/forgotPasswordValidEmail',     
+    body('email').notEmpty().withMessage("Debes ingresar tu email!"),
+    body('email').custom(async (value) => {
+        if (value != '') {
+            const result = await pool.query("SELECT * FROM usuario WHERE email=?", [value]);
+            if (result.length == 0) {
+                throw new Error("Lo siento, el email no existe en el sistema!");
+            }
+        }
+    }),
+    isLoggedIn, (req, res) => {
+        const result = validationResult(req);
+        const errors = result.errors;
+    
+        res.send(errors);
 })
 
 router.post('/login', function(req,res,next){

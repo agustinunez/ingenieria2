@@ -576,3 +576,162 @@ div.tramo p {
 }
 
 /* .............FIN CSS de cambio de plan - Perfil............... */
+
+/* FORGOT PASSWORD STYLES */
+#forgotPass_image {
+    border-top-left-radius: .2rem; 
+    border-bottom-left-radius: .2rem;
+}
+
+#forgotPass_side2 {
+    max-width: 20rem; 
+    text-align: center; 
+    color: #3e4146 !important; 
+    border-top-right-radius: .2rem; 
+    border-bottom-right-radius: .2rem;
+}
+
+#forgotPass_image,
+#forgotPass_side2 {
+    box-shadow: 5px 5px 5px 1px #060606; 
+}
+
+#forgotPass_side2 h3 {
+    font-weight: 800; 
+    letter-spacing: .05rem;
+}
+
+#forgotPass_side2 h6 {
+    font-size: .9rem;
+}
+
+#button_forgotPass {
+    background-color: #1e62c0;
+    border-color: #1e62c0;
+}
+
+#button_forgotPass:hover {
+    background-color: #1e62c0f0 !important;
+    border-color: #1e62c0f0 !important;
+}
+
+#button_forgotPass:focus {
+    box-shadow: 0 0 0 0.25rem #1e62c0d4;
+}
+
+#form_forgotPass input {
+    border: 2px solid #1e62c0;
+}
+
+#form_forgotPass label {
+    color: #1e62c0;
+}
+
+
+
+/* TEST VERIFICATION CODE */
+
+#form {
+    max-width: 240px;
+    margin: 25px auto 0;
+}
+
+#form input {
+    margin: 0 5px;
+    text-align: center;
+    line-height: 80px;
+    font-size: 50px;
+    border: solid 1px #ccc;
+    box-shadow: 0 0 5px #ccc inset;
+    outline: none;
+    width: 20%;
+    transition: all .2s ease-in-out;
+    border-radius: 3px;
+}
+
+#form input:focus {
+    border-color: #1e62c0;
+    box-shadow: 0 0 5px #1e62c0 inset;
+}
+
+#form input::selection {
+    background: transparent;
+}
+
+#form button {
+    margin:  30px 0 50px;
+    width: 100%;
+    padding: 6px;
+    background-color: #1e62c0;
+    border: none;
+    text-transform: uppercase;
+}
+
+/* OTP TEST */
+.inputs input {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.inputs input:focus {
+    border-color: #2778c4;
+    box-shadow: 0 0 5px #2778c4 inset;
+  }
+  
+.inputs input::selection {
+    background: transparent;
+  }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0
+}
+
+/* SPINNER STYLES */
+.lds-dual-ring.hidden { 
+    display: none;
+}
+
+.lds-dual-ring {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 17rem auto;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,.8);
+    z-index: 999;
+    opacity: 1;
+    transition: all 0.5s;
+}
