@@ -2,6 +2,10 @@ body {
     background-color: #115571 !important;
 }
 
+p {
+    margin-bottom: 0;
+}
+
 .navbar-main {
     margin-top: 1rem;
 }
@@ -734,4 +738,14 @@ input[type=number]::-webkit-outer-spin-button {
     z-index: 999;
     opacity: 1;
     transition: all 0.5s;
+}
+
+#div_subtotal {
+    background-color: hsl(42deg 86% 85%);
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+
+#tr_compra {
+    border-width: 0 !important;
 }

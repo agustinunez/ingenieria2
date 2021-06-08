@@ -614,31 +614,27 @@ async (req, res) => {
   const result = validationResult(req);
   const errors = result.errors;
   const resultInsumo = await pool.query("SELECT * FROM insumo WHERE id_insumo=?", [insumo]);
+  const resultViajeInsumo = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?", [id_insumoViaje, insumo]);
 
   if (cantidad != '' && cantidad > 0) {
-    const aux = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?", [id_insumoViaje, insumo]);
-    if (aux.length > 0) {
+    if (cantidad > resultInsumo[0].cantidad) {
       errors.push({
         value: "",
-        msg: "Lo siento, este Insumo ya existe en el viaje!",
-        param: "personalizado",
+        msg: "Cantidad superior al stock! (Stock = " + resultInsumo[0].cantidad + ')',
+        param: "cantidad",
         location: "body",
       });
-    } else {
-      if (cantidad > resultInsumo[0].cantidad) {
-        errors.push({
-          value: "",
-          msg: "Cantidad superior al stock! (Stock = " + resultInsumo[0].cantidad + ')',
-          param: "cantidad",
-          location: "body",
-        });
-      }
     }
   }
 
   if (errors.length == 0) {
+    if (resultViajeInsumo.length > 0) {
+      const newQuantity = +resultViajeInsumo[0].cantidad + +cantidad;
+      await pool.query('UPDATE viaje_insumos SET cantidad=? WHERE id_viajeinsumos=?', [newQuantity, resultViajeInsumo[0].id_viajeinsumos]);
+    } else {
       await pool.query('INSERT INTO viaje_insumos (viaje, insumo, cantidad) VALUES(?,?,?)', [id_insumoViaje, insumo, cantidad]); 
-      await pool.query('UPDATE insumo SET cantidad=? WHERE id_insumo=?', [(resultInsumo[0].cantidad - cantidad), insumo]);   
+    }
+    await pool.query('UPDATE insumo SET cantidad=? WHERE id_insumo=?', [(resultInsumo[0].cantidad - cantidad), insumo]);   
   }
   res.send(errors);
 });

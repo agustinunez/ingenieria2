@@ -41,10 +41,13 @@
                         <td><span class="duracion">{{duracion}}</span></td>
                         <td><span class="asiento">{{tipo_asiento}}</span></td>
                         <td>
-                            <button class="btn">
-                                <span style="font-size: 1.2rem; ">${{precio}}</span>
-                                <span class="info_fecha">Por persona</span>
-                            </button>
+                            <a onclick='confirmar({{id_viaje}}, {{amount}})'>
+                            {{!-- <a href="/compra?id={{id_viaje}}&quantity={{amount}}"> --}}
+                                <button class="btn">
+                                    <span style="font-size: 1.2rem;">${{precio}}</span>
+                                    <span class="info_fecha">Por persona</span>
+                                </button>
+                            </a>
                         </td>
                     </tr>
                 {{/each}}
@@ -52,3 +55,30 @@
         </table>
     </strong>
 </div>
+
+<script>
+    function confirmar(id_viaje, amount) {
+        $.ajax({
+            url: '/isLoggedIn',
+            method: 'GET',
+            success: function(res) {
+                if (res.user) {
+                    window.location.href = "/compra?id="+id_viaje+"&quantity="+amount;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Necesitas estar logueado para comprar un pasaje!',
+                        text: 'Se te redirigirá a la pantalla de logueo...',
+                        showDenyButton: true,
+                        confirmButtonText: `Ok`,
+                        denyButtonText: `Cancelar`,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "/login";
+                        }
+                    })
+                }
+            }
+        })
+    }
+</script>

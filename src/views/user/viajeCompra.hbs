@@ -1,0 +1,78 @@
+{{#if valid}}
+    {{#with viaje}}
+    <div class="mx-3 container_tablas">
+        <div class="my-2" id="div_route">
+            <div class="tramo px-4">
+                <p>IDA</p>
+            </div>
+            <div>
+                <span>Origen</span>
+                <span class="place"><u>{{origen}}</u></span>
+            </div>
+            <div class="route_icon"><i class="fas fa-arrow-circle-right"></i></div>
+            <div>
+                <span>Destino</span>
+                <span class="place"><u>{{destino}}</u></span>
+            </div>
+        </div>
+        <strong>
+            <table class="" id="table_trips" data-toggle="table"
+                data-show-button-text="true" data-locale="es-AR">
+                <thead>
+                    <tr class="table-dark">
+                        <th data-field="salida">Salida</th>
+                        <th data-field="llegada">Llegada</th>
+                        <th data-field="duracion">Duracion</th>
+                        <th data-field="comodidad">Comodidad</th>
+                        <th data-field="precio">Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="tr_compra">
+                        <td>
+                            <div class="hora">{{hora_salida}}</div>
+                            <span class="info_fecha">{{diaSalida}}</span>
+                            <span class="info_fecha">{{mesSalida}}</span>
+                        </td>
+                        <td>
+                            <div class="hora">{{hora_llegada}}</div>
+                            <span class="info_fecha">{{diaLlegada}}</span>
+                            <span class="info_fecha">{{mesLlegada}}</span>
+                        </td>
+                        <td><span class="duracion">{{duracion}}</span></td>
+                        <td><span class="asiento">{{tipo_asiento}}</span></td>
+                        <td>
+                            <button class="btn" style="cursor: default">
+                                <span style="font-size: 1.2rem; ">${{precio}}</span>
+                                <span class="info_fecha">Por persona</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </strong>
+        <div class="my-2 py-2 px-4 rounded-1 text-end" id="div_subtotal">
+            <p><u>Subtotal</u>: $<strong>{{subtotal}}</p>
+        </div>
+        <div class="modal-footer"></div>
+            <a href="/">
+                <button type="button" class="btn btn-secondary float-start rounded-pill fs-5">
+                    <i class="fas fa-chevron-left"></i> VOLVER A BUSCAR
+                </button>
+            </a>
+            <button onclick="confirmAndCont({{id_viaje}}, {{quantity}}, {{subtotal}})" type="button" class="btn btn-primary float-end rounded-pill fs-5">CONFIRMAR Y CONTINUAR <i class="fas fa-chevron-right"></i></button>
+    </div>
+    {{/with}}
+{{else}}
+<h1>HA OCURRIDO ALGO!</h1>
+{{/if}}
+
+<script>
+    function confirmAndCont(id_viaje, quantity, subtotal) {
+        Swal.fire({
+            icon: 'success',
+            title: 'idViaje: '+id_viaje+', quantity: '+quantity+', subtotal: '+subtotal,
+            text: 'Definitivamente entro bien!'
+        })
+    }
+</script>

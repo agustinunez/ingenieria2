@@ -685,13 +685,6 @@ MODAL---------------------------------------------------------------------------
                             $('#cantidad').addClass('is-invalid');
                             $('#invalid-cantidad').text(value.msg);
                         }
-                        if (value.param == 'personalizado'){
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: value.msg
-                            })
-                        }
                     });
                 } else {
                     Swal.fire(

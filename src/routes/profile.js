@@ -35,6 +35,13 @@ router.get('/images/:key', async (req, res) => {
 
 router.post('/images/upload', upload.single('image'), async (req, res) => {
   const file = req.file;
+  if (!file) {
+    return res.json({
+              result: false,                        
+              message:
+                "Tienes que seleccionar una imagen!",
+            });
+  }
   if (file.size < 2000000){
     const aux = file.mimetype.split('/')[1];
     if (aux == "png" || aux == "jpg" || aux == "jpeg") {

@@ -61,6 +61,27 @@
 </p>
 
 <script>
+    $(document).ready(function () {
+        {{#if errorCompra}}
+            const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: 'error',
+            title: 'No puedes acceder a este link!'
+        })
+        {{/if}}
+    });
+    
     $('#origin').focusout(function () {
         setTimeout(function () {
             console.log('FOCUSOUT');
@@ -129,7 +150,7 @@
             departureValue = departureDateElement.val();
             departureDateElement.removeClass('is-invalid');
             departureDateElement.addClass('is-valid');
-            if (moment(departureValue).format("l") < moment(new Date()).format("l")) {
+            if ( moment(departureValue).isBefore(moment().format('YYYY-MM-DD')) ) {
                 $('#invalid-departureDate').text('Lo siento, la fecha debe ser mayor o igual a la actual!');
                 departureDateElement.addClass('is-invalid');
             } else {

@@ -72,17 +72,22 @@ router.post('/lugarValidation', async(req, res) => {
 
 router.post('/viajes', async(req, res) => {
     var { origin, destination, departureDate, amount } = req.body;
+    origin = origin.toUpperCase();
+    destination = destination.toUpperCase();
     let viajes;
+    const user = req.user;
+    
     if (departureDate == moment().format('YYYY-MM-DD')) {
         const actualTime = moment().format("HH:mm:ss");
-        viajes = await pool.query("SELECT v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
+        //En caso que la fecha de salida sea igual a la actual, se obtienen los viajes que tengan hora de salida >= a la hora actual.
+        viajes = await pool.query("SELECT v.id_viaje, v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
                                                  "INNER JOIN combi c ON(v.combi = c.id_combi)"+
                                                  "INNER JOIN lugar l1 ON(r.origen = l1.id_lugar)"+
                                                  "INNER JOIN lugar l2 ON(r.destino = l2.id_lugar)"+
                                     "WHERE l1.nombre=? AND l2.nombre=? AND v.fecha_salida=? AND v.hora_salida>=? AND v.fecha_publicacion <= curdate() AND v.asientos_disponibles>=?"+
                                     "ORDER BY v.hora_salida", [origin, destination, departureDate, actualTime, amount]);
     } else {
-        viajes = await pool.query("SELECT v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
+        viajes = await pool.query("SELECT v.id_viaje, v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
                                                 "INNER JOIN combi c ON(v.combi = c.id_combi)"+
                                                 "INNER JOIN lugar l1 ON(r.origen = l1.id_lugar)"+
                                                 "INNER JOIN lugar l2 ON(r.destino = l2.id_lugar)"+
@@ -90,18 +95,37 @@ router.post('/viajes', async(req, res) => {
                                     "ORDER BY v.hora_salida", [origin, destination, departureDate, amount]);
     }
 
-    for (let i = 0; i < viajes.length; i++) {
-        viajes[i].hora_salida = viajes[i].hora_salida.slice(0, 5);
-        viajes[i].hora_llegada = viajes[i].hora_llegada.slice(0, 5);
-        viajes[i].duracion = helpers.duracion(viajes[i].hora_salida, viajes[i].hora_llegada);
-
-        viajes[i].diaSalida = dateFormat(viajes[i].fecha_salida, "dddd dd");
-        viajes[i].hora_salida = viajes[i].hora_salida+" HS"
-        viajes[i].mesSalida = dateFormat(viajes[i].fecha_salida, "mmm. yyyy");
-
-        viajes[i].diaLlegada = dateFormat(viajes[i].fecha_llegada, "dddd dd");
-        viajes[i].hora_llegada = viajes[i].hora_llegada+" HS"
-        viajes[i].mesLlegada = dateFormat(viajes[i].salida, "mmm. yyyy");
+    if (user && (user.plan == 'gold')) {
+        for (let i = 0; i < viajes.length; i++) {
+            viajes[i].precio = +viajes[i].precio - (+viajes[i].precio * .10);
+            viajes[i].hora_salida = viajes[i].hora_salida.slice(0, 5);
+            viajes[i].hora_llegada = viajes[i].hora_llegada.slice(0, 5);
+            viajes[i].duracion = helpers.duracion(viajes[i].hora_salida, viajes[i].hora_llegada);
+    
+            viajes[i].diaSalida = dateFormat(viajes[i].fecha_salida, "dddd dd");
+            viajes[i].hora_salida = viajes[i].hora_salida+" HS"
+            viajes[i].mesSalida = dateFormat(viajes[i].fecha_salida, "mmm. yyyy");
+    
+            viajes[i].diaLlegada = dateFormat(viajes[i].fecha_llegada, "dddd dd");
+            viajes[i].hora_llegada = viajes[i].hora_llegada+" HS"
+            viajes[i].mesLlegada = dateFormat(viajes[i].salida, "mmm. yyyy");
+            viajes[i].amount = amount;
+        }
+    } else {
+        for (let i = 0; i < viajes.length; i++) {
+            viajes[i].hora_salida = viajes[i].hora_salida.slice(0, 5);
+            viajes[i].hora_llegada = viajes[i].hora_llegada.slice(0, 5);
+            viajes[i].duracion = helpers.duracion(viajes[i].hora_salida, viajes[i].hora_llegada);
+    
+            viajes[i].diaSalida = dateFormat(viajes[i].fecha_salida, "dddd dd");
+            viajes[i].hora_salida = viajes[i].hora_salida+" HS"
+            viajes[i].mesSalida = dateFormat(viajes[i].fecha_salida, "mmm. yyyy");
+    
+            viajes[i].diaLlegada = dateFormat(viajes[i].fecha_llegada, "dddd dd");
+            viajes[i].hora_llegada = viajes[i].hora_llegada+" HS"
+            viajes[i].mesLlegada = dateFormat(viajes[i].salida, "mmm. yyyy");
+            viajes[i].amount = amount;
+        }
     }
     res.render('user/viajes', { viajes, origin, destination });
 })
@@ -139,6 +163,46 @@ router.post('/viajesValidacion',
     const errors = result.errors;
 
     res.send(errors);
+})
+
+router.get('/compra', async (req, res) => {
+    const { id, quantity } = req.query
+    if (!req.user) {
+        req.flash('errorCompra', ' ')
+        return res.redirect('/home')
+    }
+    var valid = true;
+    if (!id || !quantity) {
+        valid = false;
+    }
+    const user = req.user;
+    const viaje = await pool.query("SELECT v.id_viaje, v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio, l1.nombre AS origen, l2.nombre AS destino FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
+                                                "INNER JOIN combi c ON(v.combi = c.id_combi)"+
+                                                "INNER JOIN lugar l1 ON(r.origen = l1.id_lugar)"+
+                                                "INNER JOIN lugar l2 ON(r.destino = l2.id_lugar)"+
+                                    "WHERE id_viaje=?"+
+                                    "ORDER BY v.hora_salida", [id]);
+    if (user && (user.plan == 'gold')) {
+        viaje[0].precio = +viaje[0].precio - (+viaje[0].precio * .10);
+    }
+    viaje[0].hora_salida = viaje[0].hora_salida.slice(0, 5);
+    viaje[0].hora_llegada = viaje[0].hora_llegada.slice(0, 5);
+    viaje[0].duracion = helpers.duracion(viaje[0].hora_salida, viaje[0].hora_llegada);
+
+    viaje[0].diaSalida = dateFormat(viaje[0].fecha_salida, "dddd dd");
+    viaje[0].hora_salida = viaje[0].hora_salida+" HS"
+    viaje[0].mesSalida = dateFormat(viaje[0].fecha_salida, "mmm. yyyy");
+
+    viaje[0].diaLlegada = dateFormat(viaje[0].fecha_llegada, "dddd dd");
+    viaje[0].hora_llegada = viaje[0].hora_llegada+" HS"
+    viaje[0].mesLlegada = dateFormat(viaje[0].salida, "mmm. yyyy");
+    viaje[0].quantity = quantity;
+    viaje[0].subtotal = (+viaje[0].precio * +quantity).toFixed(2);
+    res.render('user/viajeCompra', { viaje: viaje[0], valid });
+})
+
+router.get('/isLoggedIn', (req, res) => {
+    res.send({user: req.user});
 })
 
 // Aca exporto el enrutador
