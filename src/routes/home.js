@@ -76,6 +76,8 @@ router.post('/viajes', async(req, res) => {
     destination = destination.toUpperCase();
     let viajes;
     const user = req.user;
+    const key = (req.user) ? req.user.img : '';
+    
     
     if (departureDate == moment().format('YYYY-MM-DD')) {
         const actualTime = moment().format("HH:mm:ss");
@@ -127,7 +129,7 @@ router.post('/viajes', async(req, res) => {
             viajes[i].amount = amount;
         }
     }
-    res.render('user/viajes', { viajes, origin, destination });
+    res.render('user/viajes', { viajes, origin, destination, key });
 })
 
 router.post('/viajesValidacion',
@@ -198,7 +200,7 @@ router.get('/compra', async (req, res) => {
     viaje[0].mesLlegada = dateFormat(viaje[0].salida, "mmm. yyyy");
     viaje[0].quantity = quantity;
     viaje[0].subtotal = (+viaje[0].precio * +quantity).toFixed(2);
-    res.render('user/viajeCompra', { viaje: viaje[0], valid });
+    res.render('user/viajeCompra', { viaje: viaje[0], valid, key: req.user.img });
 })
 
 router.get('/isLoggedIn', (req, res) => {

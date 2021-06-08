@@ -248,8 +248,8 @@ p {
     text-align: center;
 }
 .profile-img img{
-    width: 70%;
-    height: 250px;
+    width: 210px;
+    height: 210px;
     border-radius: 50%;
     object-fit: cover;
     overflow: hidden;
@@ -311,7 +311,6 @@ p {
 }
 .profile-work{
     padding: 14%;
-    margin-top: -15%;
 }
 .profile-work h3{
     font-size: 18px;
@@ -748,4 +747,8 @@ input[type=number]::-webkit-outer-spin-button {
 
 #tr_compra {
     border-width: 0 !important;
+}
+
+#button_edit {
+    min-width: 7rem;
 }
