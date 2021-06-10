@@ -837,6 +837,16 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
   const { id } = req.body;
   const result = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
   if (result.length > 0) {
+    const viajes_vendidos = await pool.query("SELECT * FROM usuario_viaje WHERE viaje=?", [id]);
+    let viaje_concretado=false
+    for (let i = 0; i < viajes_vendidos.length; i++) {   //este for recorre todos los pasajes preguntado si esta concretado ya q puede q algunos esten cancelados 
+      if(viajes_vendidos[0].estado == "concretado"){
+        viaje_concretado=true
+        break
+      }
+    }
+    console.log(viaje_concretado)
+    if (viaje_concretado || viajes_vendidos.length == 0) {
     const resultInsumos = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=?", [id]);
     for (let index = 0; index < resultInsumos.length; index++) {
       var insumo = await pool.query("SELECT * FROM insumo WHERE id_insumo=?", [resultInsumos[index].insumo]);
@@ -845,11 +855,19 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
     if (resultInsumos.length > 0) {
       await pool.query("DELETE FROM viaje_insumos WHERE viaje=?", [id]);
     }
+    await pool.query("DELETE FROM comentarios WHERE viaje=?", [id]);
+    await pool.query("DELETE FROM usuario_viaje WHERE viaje=?", [id]);
     await pool.query("DELETE FROM viaje WHERE id_viaje=?", [id]);
     res.json({
       result: true,
       message: "Se ha eliminado el viaje exitosamente!",
-    });
+    });}
+    else{
+      res.json({
+        result: false,
+        message: "No se puede eliminar este viaje dado que ya tiene pasajes vendidos!",
+      });
+    }
   } else {
     res.json({
       result: false,

@@ -39,10 +39,15 @@ app.engine('.hbs', exphbs({
             }
         },
         isUserId: function (val1, val2) {
-            if (val1 == val2) {
+            if (val2 == "admin") { 
                 return true
-            } else {
-                return false
+             }
+            else {
+                if (val1 == val2) {
+                    return true
+                } else {
+                    return false
+                }
             }
         },
     }
