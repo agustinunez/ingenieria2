@@ -207,7 +207,7 @@ router.get('/compra', async (req, res) => {
 router.post('/confirmPrecio', async(req, res) => {
     const { id_viaje, quantity, subtotal } = req.body;
     const insumos = await pool.query('SELECT i.id_insumo, i.nombre, vi.cantidad, i.precio FROM viaje_insumos vi INNER JOIN insumo i ON (vi.insumo = i.id_insumo) WHERE vi.viaje=?', [id_viaje]);
-    res.render('user/viajeInsumos', { id_viaje, quantity, subtotal, insumos, "insumosTest": jsonUtils.encodeJSON(insumos) });
+    res.render('user/viajeInsumos', { key: req.user.img, id_viaje, quantity, subtotal, insumos, "insumosTest": jsonUtils.encodeJSON(insumos) });
 })
 
 router.post('/confirmInsumos', async (req, res) => {
@@ -231,7 +231,7 @@ router.post('/confirmInsumos', async (req, res) => {
     for (let i = 0; i < insumosListar.length; i++) {
         insumosListar[i].indice = i+ +1;
     }
-    res.render('user/viajeResumen', { id_viaje, quantity, subtotal, insumos, insumosListar, viaje: viaje[0] })
+    res.render('user/viajeResumen', { key: req.user.img, id_viaje, quantity, subtotal, insumos, insumosListar, viaje: viaje[0] })
 })
 
 router.post('/efectuarPago', async(req, res) => {

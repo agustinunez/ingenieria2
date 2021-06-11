@@ -48,6 +48,14 @@ router.delete("/tickets/devolver/", hasPermission, async (req, res) => {
     const { id } = req.body;
     const result = await pool.query("SELECT * FROM usuario_viaje WHERE id_usuarioviaje=?", [id]);
     if (result[0].estado.toUpperCase() == "PENDIENTE") {
+        const resultInsumosAgregados = await pool.query('SELECT * FROM usuario_viaje_insumo WHERE usuario_viaje=?', [id]);
+        resultInsumosAgregados.forEach( async(insumo) => {
+            let resultViajeInsumos = await pool.query('SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?', [result[0].viaje, insumo.insumo]);
+            let cantidad = +resultViajeInsumos[0].cantidad + +insumo.cantidad;
+            await pool.query('UPDATE viaje_insumos SET cantidad=? WHERE id_viajeinsumos=?', [cantidad, resultViajeInsumos[0].id_viajeinsumos]);
+            await pool.query("DELETE FROM usuario_viaje_insumo WHERE idusuario_viaje_insumo=?", [insumo.idusuario_viaje_insumo]);
+        });
+
         const viaje = result[0].viaje
         let asientosDispoiblesAnterior = await pool.query("SELECT asientos_disponibles FROM viaje WHERE id_viaje=?", [viaje]);
         asientosDispoiblesAnterior = result[0].cantidad + asientosDispoiblesAnterior[0].asientos_disponibles
