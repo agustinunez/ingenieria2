@@ -22,25 +22,30 @@
             <button class="btn" type="submit">Comentar</button>
         </form>
     </div>
+    
     <div id="todo_comentarios_id"></div>
+    
     {{#each comentarios}}
-    <div class="container-comments">
+        
+    <div class="container-comments">  
         <div class="comments">
             {{!--<div class="photo-perfil">
                 <img id="nav_id_img" src="/profile/images/{{../key}}" width="150px" height="150px">
             </div>--}}
+            
             <div class="info-comments">
                 <div class="header">
                     <h4>{{usuario}}</h4>
                 </div>
                 <p>{{comentario}}</p>
                 {{!--#if (isRole role "ROL_ADMIN")--}}
+                <hr>
                 {{#if (isUserId usuario ../usarname_activo)}}
                 <div class="footer">
                     <input value={{id_comentarios}} id="id_comentario" hidden>
                     <input value={{comentario}} id="id_comentario" hidden>
-                    <h5 class="request" type="edit" onclick='editar({{id_comentarios}})'>Editar</h5>
-                    <h5 class="request btn-small btn-outline-danger" type="delete" id="button_delete"
+                    <h5 id="idEditarComentario" class="request btn-lg" type="edit" onclick='editar({{id_comentarios}})'>Editar</h5>                  
+                    <h5 id="idEliminarComentario" class="request btn-lg btn-outline-danger" type="delete" id="button_delete"
                         onclick='eliminar({{id_comentarios}})'>Eliminar
                     </h5>
                 </div>

@@ -120,7 +120,7 @@ router.get('/detalles/:id', hasPermission, async (req, res) => {
     const origen = rutasViaje[0].nombreorigen
     const destino = rutasViaje[0].nombredestino;
     const id_usuario = aux[0].usuario
-    const comentarios = await pool.query("SELECT * FROM comentarios WHERE viaje=? ORDER BY id_comentarios DESC", [id_viaje]);
+    var comentarios = await pool.query("SELECT * FROM comentarios WHERE viaje=? ORDER BY id_comentarios DESC", [id_viaje]);
     //console.log(origen,destino)
     for (let index = 0; index < comentarios.length; index++) {
         nombre = await pool.query("SELECT username FROM usuario WHERE id_usuario=?", comentarios[index].usuario);
