@@ -32,6 +32,10 @@
                     <th data-field="estado" data-sortable="true">
                         Estado
                     </th>
+                    <th data-field="precio" data-sortable="true">
+                        Precio
+                    </th>
+                    <th data-field="id_usuarioviaje" data-formatter="LinkFormatterInsumos"><i class="fas fa-comments"></i>
                     <th data-field="id_usuarioviaje" data-formatter="LinkFormatterEdit"><i class="fas fa-comments"></i>
                     </th>
                     <th data-field="id_usuarioviaje" data-formatter="LinkFormatterDevolver"><i
@@ -137,6 +141,10 @@
     };
     function LinkFormatterEdit(value, row) {
         return "<a href='/user/detalles/" + value + "' ><button class='btn btn-primary'>Ver comentarios</button></a> ";
+    }
+
+    function LinkFormatterInsumos(value, row) {
+        return "<a href='/user/detalles/" + value + "' ><button class='btn btn-warning'>Ver insumos</button></a> ";
     }
 
 </script>
