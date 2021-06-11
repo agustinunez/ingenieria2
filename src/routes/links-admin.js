@@ -840,12 +840,11 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
     const viajes_vendidos = await pool.query("SELECT * FROM usuario_viaje WHERE viaje=?", [id]);
     let viaje_concretado=false
     for (let i = 0; i < viajes_vendidos.length; i++) {   //este for recorre todos los pasajes preguntado si esta concretado ya q puede q algunos esten cancelados 
-      if(viajes_vendidos[0].estado == "concretado"){
+      if(viajes_vendidos[0].estado == "CONCRETADO"){
         viaje_concretado=true
         break
       }
     }
-    console.log(viaje_concretado)
     if (viaje_concretado || viajes_vendidos.length == 0) {
     const resultInsumos = await pool.query("SELECT * FROM viaje_insumos WHERE viaje=?", [id]);
     for (let index = 0; index < resultInsumos.length; index++) {

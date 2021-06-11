@@ -6,12 +6,13 @@ const { hasPermission } = require('../lib/auth');
 const pool = require('../database');
 var dateFormat = require("dateformat");
 const { body, validationResult } = require('express-validator');
+const moment = require('moment');
 
 // ACA VA EL BUSCAR VIAJE DE LUCAS
 
 router.get('/tickets', hasPermission, (req, res) => {
     const key = req.user.img;
-    res.render('user/tickets', {key});
+    res.render('user/tickets', { key });
 })
 
 
@@ -46,17 +47,48 @@ router.get("/ticketsJSON", hasPermission, async (req, res) => {
 router.delete("/tickets/devolver/", hasPermission, async (req, res) => {
     const { id } = req.body;
     const result = await pool.query("SELECT * FROM usuario_viaje WHERE id_usuarioviaje=?", [id]);
-    if (result[0].estado == "pendiente") {
+    if (result[0].estado.toUpperCase() == "PENDIENTE") {
         const viaje = result[0].viaje
         let asientosDispoiblesAnterior = await pool.query("SELECT asientos_disponibles FROM viaje WHERE id_viaje=?", [viaje]);
         asientosDispoiblesAnterior = result[0].cantidad + asientosDispoiblesAnterior[0].asientos_disponibles
-        const devolverCantidadViaje = await pool.query("UPDATE viaje SET asientos_disponibles=? WHERE id_viaje=?", [asientosDispoiblesAnterior, viaje]);   //DESPUES DE ESTO TMB HAY Q UPDATEAR LOS INSUMOS Y DEOLVER EL DINERO PERO NO PUEDO HHACER NADA 
-        await pool.query("DELETE FROM usuario_viaje WHERE id_usuarioviaje=?", [id]);
-        res.json({
-            value: result[0].viaje,
-            result: true,
-            message: "Se ha devuelto el pasaje exitosamente!"
-        });
+        //const devolverCantidadViaje = await pool.query("UPDATE viaje SET asientos_disponibles=? WHERE id_viaje=?", [asientosDispoiblesAnterior, viaje]);   //DESPUES DE ESTO TMB HAY Q UPDATEAR LOS INSUMOS Y DEOLVER EL DINERO PERO NO PUEDO HHACER NADA 
+        var fechas_de_salida = await pool.query("SELECT fecha_salida,hora_salida FROM viaje WHERE id_viaje=?", [result[0].viaje]);
+        var now = dateFormat(moment(), "yyyy-mm-dd");
+        var a = moment(fechas_de_salida[0].fecha_salida)
+        var b = moment(now)
+        const diferencia = a.diff(b, 'days')
+        //await pool.query("DELETE FROM usuario_viaje WHERE id_usuarioviaje=?", [id]);
+        if (diferencia <= 2) {
+            if (diferencia == 2) {
+                hora_actual = moment().format('HH:mm:ss');
+                hora_salida = fechas_de_salida[0].hora_salida
+                if (hora_actual > hora_salida) {
+                    res.json({
+                        value: result[0].viaje,
+                        result: true,
+                        message: "Se ha devuelto el 50% del valor del pasaje exitosamente!"
+                    });
+                }else{
+                    res.json({
+                        value: result[0].viaje,
+                        result: true,
+                        message: "Se ha devuelto el 100% del valor del pasaje exitosamente!"
+                    });
+                }
+            } else {
+                res.json({
+                    value: result[0].viaje,
+                    result: true,
+                    message: "Se ha devuelto el 50% del valor del pasaje exitosamente!"
+                });
+            }
+        } else {
+            res.json({
+                value: result[0].viaje,
+                result: true,
+                message: "Se ha devuelto el 100% del valor del pasaje exitosamente!"
+            })
+        };
     } else {
         res.json({
             result: false,
@@ -68,7 +100,7 @@ router.delete("/tickets/devolver/", hasPermission, async (req, res) => {
 router.get('/detalles/:id', hasPermission, async (req, res) => {
     var { id } = req.params;
     const aux = await pool.query("SELECT * FROM usuario_viaje WHERE id_usuarioviaje=?", [id]);
-    if ((aux[0].estado).toUpperCase() != "CONCRETADO"){
+    if ((aux[0].estado).toUpperCase() != "CONCRETADO") {
         req.flash("errorComentario", ' ')
         return res.redirect('/user/tickets')
     }
@@ -86,7 +118,7 @@ router.get('/detalles/:id', hasPermission, async (req, res) => {
         nombre = await pool.query("SELECT username FROM usuario WHERE id_usuario=?", comentarios[index].usuario);
         comentarios[index].usuario = nombre[0].username
     }
-    res.render('user/detalles', { origen, destino, comentarios, id_viaje, id_usuario, usarname_activo , key: usuario.img });
+    res.render('user/detalles', { origen, destino, comentarios, id_viaje, id_usuario, usarname_activo, key: usuario.img });
 })
 
 
