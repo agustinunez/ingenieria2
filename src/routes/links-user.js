@@ -144,6 +144,10 @@ router.get('/insumos/:id', hasPermission, async(req, res) => {
         req.flash("errorVerInsumos", " ");
         return res.redirect('/user/tickets');
     }
+    var concretado = false;
+    if (resultUsuarioViaje[0].estado == 'CONCRETADO') {
+        concretado = true;
+    }
 
     const insumos = await pool.query('SELECT i.id_insumo, i.nombre, vi.cantidad, i.precio FROM viaje_insumos vi INNER JOIN insumo i ON (vi.insumo = i.id_insumo) WHERE vi.viaje=?', [resultUsuarioViaje[0].viaje]);
     const subtotal = 0;
@@ -151,7 +155,7 @@ router.get('/insumos/:id', hasPermission, async(req, res) => {
     for (let i = 0; i < insumosListar.length; i++) {
         insumosListar[i].indice = i + +1;
     }
-    res.render('user/viajeInsumos', { idUsuarioViaje: id, insumosListar, key: req.user.img, editar: true, subtotal, insumos, "insumosTest": jsonUtils.encodeJSON(insumos) });
+    res.render('user/viajeInsumos', { concretado, idUsuarioViaje: id, insumosListar, key: req.user.img, editar: true, subtotal, insumos, "insumosTest": jsonUtils.encodeJSON(insumos) });
 })
 
 router.post('/agregarInsumos', async(req, res) => {
