@@ -76,6 +76,7 @@ app.use(async (req, res, next) => {
     app.locals.success = req.flash("success");
     app.locals.errorCompra = req.flash("errorCompra");
     app.locals.errorComentario = req.flash("errorComentario");
+    app.locals.errorVerInsumos = req.flash("errorVerInsumos");
     app.locals.user = req.user;
     app.locals.role = req.isAuthenticated()
         ? (await pool.query("SELECT * FROM autoridad WHERE id_usuario = ?", [req.user.id_usuario]))[0].rol

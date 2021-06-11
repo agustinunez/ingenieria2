@@ -7,6 +7,7 @@ const pool = require('../database');
 var dateFormat = require("dateformat");
 const { body, validationResult } = require('express-validator');
 const moment = require('moment');
+const jsonUtils = require('../lib/json_utils')
 
 // ACA VA EL BUSCAR VIAJE DE LUCAS
 
@@ -50,7 +51,7 @@ router.delete("/tickets/devolver/", hasPermission, async (req, res) => {
         const viaje = result[0].viaje
         let asientosDispoiblesAnterior = await pool.query("SELECT asientos_disponibles FROM viaje WHERE id_viaje=?", [viaje]);
         asientosDispoiblesAnterior = result[0].cantidad + asientosDispoiblesAnterior[0].asientos_disponibles
-        //const devolverCantidadViaje = await pool.query("UPDATE viaje SET asientos_disponibles=? WHERE id_viaje=?", [asientosDispoiblesAnterior, viaje]);   //DESPUES DE ESTO TMB HAY Q UPDATEAR LOS INSUMOS Y DEOLVER EL DINERO PERO NO PUEDO HHACER NADA 
+        const devolverCantidadViaje = await pool.query("UPDATE viaje SET asientos_disponibles=? WHERE id_viaje=?", [asientosDispoiblesAnterior, viaje]); 
         var fechas_de_salida = await pool.query("SELECT fecha_salida,hora_salida FROM viaje WHERE id_viaje=?", [result[0].viaje]);
         var now = dateFormat(moment(), "yyyy-mm-dd");
         var a = moment(fechas_de_salida[0].fecha_salida)
@@ -90,10 +91,17 @@ router.delete("/tickets/devolver/", hasPermission, async (req, res) => {
             })
         };
     } else {
-        res.json({
-            result: false,
-            message: "No se puede eliminar ya que el viaje ya finalizo!",
-        });
+        if (result[0].estado.toUpperCase() == "CONCRETADO") {
+            res.json({
+                result: false,
+                message: "El viaje se encuentra finalizado!",
+            });
+        } else {
+            res.json({
+                result: false,
+                message: "El viaje ya encuentra cancelado!",
+            });
+        }
     }
 });
 
@@ -119,6 +127,52 @@ router.get('/detalles/:id', hasPermission, async (req, res) => {
         comentarios[index].usuario = nombre[0].username
     }
     res.render('user/detalles', { origen, destino, comentarios, id_viaje, id_usuario, usarname_activo, key: usuario.img });
+})
+
+router.get('/insumos/:id', hasPermission, async(req, res) => {
+    var { id } = req.params;
+    const resultUsuarioViaje = await pool.query('SELECT * FROM usuario_viaje WHERE id_usuarioviaje=?', [id]);
+    if (resultUsuarioViaje[0].estado == 'CANCELADO') {
+        req.flash("errorVerInsumos", " ");
+        return res.redirect('/user/tickets');
+    }
+
+    const insumos = await pool.query('SELECT i.id_insumo, i.nombre, vi.cantidad, i.precio FROM viaje_insumos vi INNER JOIN insumo i ON (vi.insumo = i.id_insumo) WHERE vi.viaje=?', [resultUsuarioViaje[0].viaje]);
+    const subtotal = 0;
+    var insumosListar = await pool.query('SELECT i.nombre, uvi.total FROM usuario_viaje_insumo uvi INNER JOIN insumo i ON (uvi.insumo = i.id_insumo) WHERE usuario_viaje=?', [id]);
+    for (let i = 0; i < insumosListar.length; i++) {
+        insumosListar[i].indice = i + +1;
+    }
+    res.render('user/viajeInsumos', { idUsuarioViaje: id, insumosListar, key: req.user.img, editar: true, subtotal, insumos, "insumosTest": jsonUtils.encodeJSON(insumos) });
+})
+
+router.post('/agregarInsumos', async(req, res) => {
+    var { idGlobal, subtotal, insumos } = req.body;
+    insumos = JSON.parse(decodeURI(insumos));
+    const resultUsuarioViaje = await pool.query('SELECT * FROM usuario_viaje WHERE id_usuarioviaje=?', [idGlobal]);
+    subtotal = +subtotal + +resultUsuarioViaje[0].precio;
+    await pool.query('UPDATE usuario_viaje SET precio=? wHERE id_usuarioviaje=?', [subtotal, idGlobal]);
+
+    insumos.forEach( async(insumo) => {
+        let result = await pool.query('SELECT * FROM usuario_viaje_insumo WHERE usuario_viaje=? AND insumo=?', [idGlobal, insumo.id_insumo]);
+        if (result.length > 0) {
+            let cantidad = +result[0].cantidad + +insumo.cantidad;
+            let total = +result[0].total + +insumo.total;
+            await pool.query('UPDATE usuario_viaje_insumo SET cantidad=?, total=? WHERE idusuario_viaje_insumo=?', [cantidad, total, result[0].idusuario_viaje_insumo]);
+        } else {
+            let insumoViaje = {
+                usuario_viaje: idGlobal,
+                insumo: insumo.id_insumo,
+                cantidad: insumo.cantidad,
+                total: insumo.total 
+            }
+            await pool.query('INSERT INTO usuario_viaje_insumo SET ?', [insumoViaje]);
+        }
+
+        var viajeInsumos = await pool.query('SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?', [resultUsuarioViaje[0].viaje, insumo.id_insumo]);
+        cantidad = +viajeInsumos[0].cantidad - +insumo.cantidad;
+        await pool.query('UPDATE viaje_insumos SET cantidad=? WHERE id_viajeinsumos=?', [cantidad, viajeInsumos[0].id_viajeinsumos]);
+    });
 })
 
 

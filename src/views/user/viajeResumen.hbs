@@ -1,0 +1,344 @@
+<div class="m-3 container_tablas" id="containerResumen">
+    <div class="row">
+        <div class="col-md-6 order-md-2 mb-4 py-2">
+            <h4 class="mb-3 text-light">Insumos comprados</h4>
+            <ul class="list-group mb-3">
+                {{#each insumosListar}}
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <div>
+                        <h6 class="my-0">Producto {{indice}}</h6>
+                        <small class="text-muted">{{nombre}}</small>
+                    </div>
+                    <span class="text-muted">${{total}}</span>
+                </li>
+                {{else}}
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <small class="text-muted">No hay insumos agregados</small>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        <div class="col-md-6 order-md-1 mb-4 py-2">
+            <h4 class="mb-3 text-light">Datos de la compra</h4>
+            <ul class="list-group mb-3">
+                {{#with viaje}}
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <h6 class="my-0">Origen</h6>
+                    <small>{{origen}}</small>
+                </li>
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <h6 class="my-0">Destino</h6>
+                    <small>{{destino}}</small>
+                </li>
+                <li class="list-group-item d-flex justify-content-between lh-condensed align-items-center">
+                    <h6 class="my-0">Salida</h6>
+                    <div style="text-align: right;">
+                        <div class="hora">{{hora_salida}}</div>
+                        <span class="info_fecha">{{diaSalida}}</span>
+                        <span class="info_fecha">{{mesSalida}}</span>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between lh-condensed align-items-center">
+                    <h6 class="my-0">Llegada</h6>
+                    <div style="text-align: right;">
+                        <div class="hora">{{hora_llegada}}</div>
+                        <span class="info_fecha">{{diaLlegada}}</span>
+                        <span class="info_fecha">{{mesLlegada}}</span>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <h6 class="my-0">Comodidad</h6>
+                    <small>{{tipo_asiento}}</small>
+                </li>
+                {{/with}}
+            </ul>
+        </div>
+    </div>
+
+    <div class="my-2 py-2 px-4 rounded-1 text-end" id="div_subtotal">
+        <p><u>Subtotal</u>: $<strong>{{subtotal}}</strong></p>
+    </div>
+    <div class="modal-footer"></div>
+    <div class="d-flex justify-content-between flex-wrap">
+        <a onclick="back()">
+            <button type="button" class="btn btn-secondary rounded-pill fs-5">
+                <i class="fas fa-chevron-left"></i> VOLVER ATRÁS
+            </button>
+        </a>
+        <button onclick="confirmAndPay({{id_viaje}}, {{quantity}}, {{subtotal}})" type="button"
+            class="btn btn-primary rounded-pill fs-5">
+            CONFIRMAR Y PAGAR <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPayment" tabindex="-1" aria-labelledby="modalPaymentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">PAGO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="modalFormPayment" action="/profile/editarPlan" method="POST">
+                    <div class="mb-3">
+                        <div class="container mb-3">
+                            <div class="card" id="card-inputs">
+                                <h5 class="card-header bg-dark">Datos de la tarjeta</h5>
+                                <div class="card-body" style="background-color: #3f4447!important;">
+
+                                    <div class="mb-3">
+                                        <label for="owner" class="form-label">Nombre y apellido del titular</label>
+                                        <input type="text" class="form-control mb-3" id="owner" name="owner"
+                                            autocomplete='off'>
+                                        <div class="invalid-feedback">
+                                            <p id="invalid-owner"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="cardnumber" class="form-label">Numero de tarjeta</label>
+                                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="form-control mb-3"
+                                        id="cardnumber" name="cardnumber" autocomplete='off'>
+                                        <div class="invalid-feedback">
+                                            <p id="invalid-cardnumber"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="cvv" class="form-label">Codigo de seguridad</label>
+                                        <input type="text" placeholder="xxx" class="form-control mb-3" id="cvv" name="cvv"
+                                        autocomplete='off'>
+                                        <div class="invalid-feedback">
+                                            <p id="invalid-cvv"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="expireddate" class="form-label">Fecha de vencimiento</label>
+                                        <input type="text" placeholder="--/--" class="form-control mb-3" id="expireddate"
+                                            name="expireddate" autocomplete='off'>
+                                        <div class="invalid-feedback">
+                                            <p id="invalid-expireddate"></p>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary"
+                                            data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-success"
+                                            id="guardarButton">Guardar</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function tryParseJSON (jsonString){
+        try {
+            var o = JSON.parse(jsonString);
+
+            if (o && typeof o === "object") {
+                return o;
+            }
+        }
+        catch (e) { }
+        return null;
+    }
+
+    function decodeJSON(obj) {
+        obj = decodeURI(obj);
+        return tryParseJSON(obj);
+    };
+    
+    var idViajeGlobal, quantityGlobal, subtotalGlobal, insumosGlobal;
+
+    $(document).ready(function () {
+        insumosGlobal = decodeJSON("{{insumos}}");
+    });
+
+    $('#cardnumber').focusout(function () {
+        const cardnumberElement = $('#cardnumber');
+        if (cardnumberElement.val() == null || cardnumberElement.val() == "") {
+            $('#invalid-cardnumber').text('Este campo no puede estar vacio!');
+            cardnumberElement.addClass('is-invalid');
+        } else {
+            const cardnumberValue = cardnumberElement.val();
+            $.ajax('/profile/editarPlan/cardnumber', {
+                type: 'POST',
+                data: { cardnumberValue },
+                success: function (res) {
+                    if (res) {
+                        cardnumberElement.removeClass('is-invalid');
+                        cardnumberElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-cardnumber').text('Lo siento, Numero de tarjeta invalido!');
+                        cardnumberElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
+    $('#cvv').focusout(function () {
+        const cvvElement = $('#cvv');
+        if (cvvElement.val() == null || cvvElement.val() == "") {
+            $('#invalid-cvv').text('Este campo no puede estar vacio!');
+            cvvElement.addClass('is-invalid');
+        } else {
+            const cvvValue = cvvElement.val();
+            $.ajax('/profile/editarPlan/cvv', {
+                type: 'POST',
+                data: { cvvValue },
+                success: function (res) {
+                    if (res) {
+                        cvvElement.removeClass('is-invalid');
+                        cvvElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-cvv').text('Lo siento, CVV invalido!');
+                        cvvElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
+    $('#expireddate').focusout(function () {
+        const expireddateElement = $('#expireddate');
+        if (expireddateElement.val() == null || expireddateElement.val() == "") {
+            $('#invalid-expireddate').text('Este campo no puede estar vacio!');
+            expireddateElement.addClass('is-invalid');
+        } else {
+            const expireddateValue = expireddateElement.val();
+            $.ajax('/profile/editarPlan/expireddate', {
+                type: 'POST',
+                data: { expireddateValue },
+                success: function (res) {
+                    if (res) {
+                        expireddateElement.removeClass('is-invalid');
+                        expireddateElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-expireddate').text('Lo siento, Fecha de expiracion invalida!');
+                        expireddateElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    });
+
+    $('#owner').focusout(function () {
+        const ownerElement = $('#owner');
+        if (ownerElement.val() == null || ownerElement.val() == "") {
+            $('#invalid-owner').text('Este campo no puede estar vacio!');
+            ownerElement.addClass('is-invalid');
+        } else {
+            ownerElement.removeClass('is-invalid');
+            ownerElement.addClass('is-valid');
+        };
+    });
+
+    $("#modalFormPayment").submit(function (e) {
+
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+        var id = array[0].value;
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function (data) {
+                if (data.length > 0) {
+
+
+                    $('#owner').removeClass('is-invalid');
+                    $('#cvv').removeClass('is-invalid');
+                    $('#expireddate').removeClass('is-invalid');
+                    $('#cardnumber').removeClass('is-invalid');
+
+                    $('#owner').addClass('is-valid');
+                    $('#cvv').addClass('is-valid');
+                    $('#expireddate').addClass('is-valid');
+                    $('#cardnumber').addClass('is-valid');
+
+                    $.each(data, function (index, value) {
+                        if (value.param == 'owner') {
+                            $('#owner').addClass('is-invalid');
+                            $('#invalid-owner').text(value.msg);
+                        }
+                        if (value.param == 'cvv') {
+                            $('#cvv').addClass('is-invalid');
+                            $('#invalid-cvv').text(value.msg);
+                        }
+                        if (value.param == 'expireddate') {
+                            $('#expireddate').addClass('is-invalid');
+                            $('#invalid-expireddate').text(value.msg);
+                        }
+                        if (value.param == 'cardnumber') {
+                            $('#cardnumber').addClass('is-invalid');
+                            $('#invalid-cardnumber').text(value.msg);
+                        }                     
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Seguro que quieres completar el pago?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si, pagar!',
+                    }).then((result) => {
+
+                        if (result.isConfirmed) {
+                            console.log('INSUMOS; ', insumosGlobal)
+                            $.ajax('/efectuarPago', {
+                                type: 'POST',
+                                data: { idViajeGlobal, quantityGlobal, subtotalGlobal, insumos: encodeURI(JSON.stringify(insumosGlobal)) }
+                            })
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pago realizado exitosamente!',
+                                html: 'Sera redirigido automaticamente a sus viajes realizados.',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading()
+                                },
+                                willClose: () => {
+                                    window.location.replace('/user/tickets')
+                                }
+                            })
+                            $("#owner").removeClass("is-invalid is-valid");
+                            $("#cardnumber").removeClass("is-invalid is-valid");
+                            $("#cvv").removeClass("is-invalid is-valid");
+                            $("#expireddate").removeClass("is-invalid is-valid");
+
+                            $('#modalEditarPlan').modal('toggle');
+                        }
+                    })
+                }
+            }
+        })
+    });
+
+    function back() {
+        window.history.back();
+    }
+
+    function confirmAndPay(id_viaje, quantity, subtotal, insumos) {
+        idViajeGlobal = id_viaje; 
+        quantityGlobal = quantity; 
+        subtotalGlobal = subtotal;   
+        $('#modalPayment').modal('show');
+    }
+</script>

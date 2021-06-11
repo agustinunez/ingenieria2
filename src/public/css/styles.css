@@ -99,6 +99,9 @@ p {
     border-color: #212529;
 }
 
+#containerResumen {
+    margin: 1rem !important;
+}
 
 /* ACA VA EL EDITAR PERFIL */
 
@@ -333,7 +336,6 @@ p {
 .profile-tab p{
     font-weight: 600;
     color: #0062cc;
-    display:inline-block;
 }
 .profile-tab img {
     max-width: 20px;
@@ -387,6 +389,13 @@ p {
 
 .profile-work ul li:hover a{
     color: #ff5d94;
+}
+
+#mail,
+#username,
+#user_title {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -475,19 +484,19 @@ input[list] + div[list] span:hover {
     color: #efe9e9;
 }
 
-#table_trips div.hora,
-#table_trips span.duracion,
-#table_trips span.asiento {
+div.hora,
+span.duracion,
+span.asiento {
     font-size: 1.19rem;
     font-weight: 500;
 }
 
-#table_trips span.info_fecha {
+span.info_fecha {
     font-size: .9rem;
 }
 
 #table_trips .btn span,
-#table_trips span.info_fecha,
+span.info_fecha,
 #div_route div span {
     display: block;
     font-weight: 400;
@@ -1033,4 +1042,37 @@ main h1{
 
 .comentario_usuario{
     background: black;
+}
+
+/* STYLES VIAJE INSUMOS */
+.th_viajeInsumos1,
+.th_viajeInsumos2 {
+    color: #212529;
+    font-size: 1.5rem !important;
+    text-decoration: underline;
+    border-style: none;
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+}
+
+.th_viajeInsumos1 {
+    background-color: #F4CC70 !important;
+}
+
+.th_viajeInsumos2 {
+    background-color: #3dc773 !important
+}
+
+#link_viajeInsumos {
+    color: #46e885;
+}
+
+#link_viajeInsumos,
+.linkEliminar {
+    cursor: pointer;
+    font-size: 1.3rem;
+}
+
+#link_viajeInsumos:hover {
+    color: #2fb965;
 }

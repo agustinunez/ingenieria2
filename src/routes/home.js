@@ -5,6 +5,7 @@ const { body, validationResult } = require('express-validator');
 var dateFormat = require("dateformat");
 const moment = require('moment');
 const helpers = require('../lib/helpers');
+const jsonUtils = require('../lib/json_utils')
 
 dateFormat.i18n = {
     dayNames: [
@@ -201,6 +202,69 @@ router.get('/compra', async (req, res) => {
     viaje[0].quantity = quantity;
     viaje[0].subtotal = (+viaje[0].precio * +quantity).toFixed(2);
     res.render('user/viajeCompra', { viaje: viaje[0], valid, key: req.user.img });
+})
+
+router.post('/confirmPrecio', async(req, res) => {
+    const { id_viaje, quantity, subtotal } = req.body;
+    const insumos = await pool.query('SELECT i.id_insumo, i.nombre, vi.cantidad, i.precio FROM viaje_insumos vi INNER JOIN insumo i ON (vi.insumo = i.id_insumo) WHERE vi.viaje=?', [id_viaje]);
+    res.render('user/viajeInsumos', { id_viaje, quantity, subtotal, insumos, "insumosTest": jsonUtils.encodeJSON(insumos) });
+})
+
+router.post('/confirmInsumos', async (req, res) => {
+    var { id_viaje, quantity, subtotal, insumos } = req.body;
+    var insumosListar = JSON.parse(decodeURI(insumos))
+    var viaje = await pool.query("SELECT v.id_viaje, v.fecha_salida, v.hora_salida, v.fecha_llegada, v.hora_llegada, c.tipo_asiento, v.precio, l1.nombre AS origen, l2.nombre AS destino FROM viaje v INNER JOIN ruta r ON(v.ruta = r.id_ruta)"+
+                                            "INNER JOIN combi c ON(v.combi = c.id_combi)"+
+                                            "INNER JOIN lugar l1 ON(r.origen = l1.id_lugar)"+
+                                            "INNER JOIN lugar l2 ON(r.destino = l2.id_lugar)"+
+                                        "WHERE id_viaje=?", [id_viaje]);
+    viaje[0].hora_salida = viaje[0].hora_salida.slice(0, 5);
+    viaje[0].hora_llegada = viaje[0].hora_llegada.slice(0, 5);
+
+    viaje[0].diaSalida = dateFormat(viaje[0].fecha_salida, "dddd dd");
+    viaje[0].hora_salida = viaje[0].hora_salida+" HS"
+    viaje[0].mesSalida = dateFormat(viaje[0].fecha_salida, "mmm. yyyy");
+
+    viaje[0].diaLlegada = dateFormat(viaje[0].fecha_llegada, "dddd dd");
+    viaje[0].hora_llegada = viaje[0].hora_llegada+" HS"
+    viaje[0].mesLlegada = dateFormat(viaje[0].salida, "mmm. yyyy");
+    for (let i = 0; i < insumosListar.length; i++) {
+        insumosListar[i].indice = i+ +1;
+    }
+    res.render('user/viajeResumen', { id_viaje, quantity, subtotal, insumos, insumosListar, viaje: viaje[0] })
+})
+
+router.post('/efectuarPago', async(req, res) => {
+    var { idViajeGlobal, quantityGlobal, subtotalGlobal, insumos } = req.body;
+    insumos = JSON.parse(decodeURI(insumos));
+    const viaje = {
+        usuario: req.user.id_usuario,
+        viaje: idViajeGlobal,
+        estado: 'PENDIENTE',
+        cantidad: quantityGlobal,
+        precio: subtotalGlobal
+    }
+    
+    const resultUsuarioViaje = await pool.query('INSERT INTO usuario_viaje SET ?', [viaje]);
+    console.log('RESULT: ', resultUsuarioViaje);
+    insumos.forEach( async(insumo) => {
+        let insumoViaje = {
+            usuario_viaje: resultUsuarioViaje.insertId,
+            insumo: insumo.id_insumo,
+            cantidad: insumo.cantidad,
+            total: insumo.total
+        }
+        await pool.query('INSERT INTO usuario_viaje_insumo SET ?', [insumoViaje]);
+
+        var viajeInsumos = await pool.query('SELECT * FROM viaje_insumos WHERE viaje=? AND insumo=?', [idViajeGlobal, insumo.id_insumo]);
+        let cantidad = +viajeInsumos[0].cantidad - +insumo.cantidad;
+        await pool.query('UPDATE viaje_insumos SET cantidad=? WHERE id_viajeinsumos=?', [cantidad, viajeInsumos[0].id_viajeinsumos]);
+    });
+
+    var resultViaje = await pool.query('SELECT * FROM viaje WHERE id_viaje=?', [idViajeGlobal]);
+    resultViaje[0].asientos_disponibles -= +quantityGlobal;
+    await pool.query('UPDATE viaje SET asientos_disponibles=? WHERE id_viaje=?', [resultViaje[0].asientos_disponibles, idViajeGlobal]);
+    res.send(true);
 })
 
 router.get('/isLoggedIn', (req, res) => {

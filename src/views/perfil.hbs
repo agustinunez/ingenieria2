@@ -29,8 +29,8 @@
 
         <div class="col-md-5">
             <div class="profile-head">
-                <h5>
-                    <strong>{{username}}</strong>
+                <h5 id="user_title">
+                    {{username}}
                 </h5>
 
                 <h6>
@@ -564,6 +564,7 @@
                     $("#name").text(array[3].value);
                     $("#mail").text(array[4].value);
                     $("#fechanacimiento").text(array[5].value);
+                    $('#user_title').text((array[1].value).toUpperCase())
                 }
             }
         })
