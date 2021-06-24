@@ -56,6 +56,12 @@
             <a class="nav-link" href="/admin/insumos">Insumos</a>
           </li>
         {{/if}}
+        {{#if (isRole role "ROL_CHOFER")}}
+          <li>
+            <a class="nav-link" href="/chofer/statistics">Estadisticas</a>
+          </li>
+        {{/if}}
+
       </ul>
       <ul class="navbar-nav mb-2 mb-lg-0">
         {{#if user}}
