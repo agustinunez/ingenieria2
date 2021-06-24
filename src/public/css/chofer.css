@@ -1,6 +1,19 @@
 .statistics{
     background: rgba(0, 0, 0, 0.8);
-    /* padding: 30px; */
+    margin: 10px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+}
+.divContainer h3{
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    transition: ease-in-out 0.3s;
+    font-family: "Poppins", sans-serif;
+    font-size: 36px;
+    margin: 10px;
+}
+.GeneralContainer{
+    background: hsl(42deg 3% 13%);
     margin: 10px;
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.12);

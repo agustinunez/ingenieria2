@@ -6,13 +6,6 @@ const { hasPermission, isChofer } = require("../lib/auth");
 
 const app = express()
 
-router.get('/statistics', hasPermission, (req, res) => {
-    const key = req.user.img;
-    res.render("chofer/statistics", {key});
-});
-
-
-
 router.get('/arealizar', hasPermission, (req, res) => {
     const key = req.user.img;
     res.render('chofer/arealizar', { key });

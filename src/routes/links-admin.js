@@ -11,6 +11,22 @@ const { body, validationResult } = require('express-validator');
 const moment = require('moment');
 
 //ROUTER GET Y POST
+// ============================================== Chofer View =================================================
+
+
+router.get('/statistics', isAdmin, (req, res) => {
+  const key = req.user.img;
+  res.render("admin/statistics", {key});
+});
+
+
+
+
+
+
+
+
+
 
 //---------------------------------------------------------------------------------------------------CHOFER-------------------------------------------------------------------------------------
 
