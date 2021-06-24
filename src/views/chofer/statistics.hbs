@@ -1,15 +1,18 @@
-<div id="myfirstchart" style="height: 250px;"></div>
-<script>new Morris.Line({
+<div class="divContainer">
+    <h3>Estadisticas de pasajeros por COVID-19</h3>
+</div>
+<div class="statistics" id="myfirstchart" style="height: 250px;"></div>
+
+
+<script>new Morris.Bar({
   // ID of the element in which to draw the chart.
   element: 'myfirstchart',
   // Chart data records -- each entry in this array corresponds to a point on
   // the chart.
   data: [
-    { year: '2008', value: 20 },
-    { year: '2009', value: 10 },
-    { year: '2010', value: 5 },
-    { year: '2011', value: 5 },
-    { year: '2012', value: 20 }
+    { year: 'No Contagiados', value: 180 },
+    { year: 'Contagiados', value: 40 },
+    { year: 'Total pasajeros', value: 220 }
   ],
   // The name of the data record attribute that contains x-values.
   xkey: 'year',
@@ -19,3 +22,18 @@
   // chart.
   labels: ['Value']
 });</script>
+
+
+
+
+
+
+{{!-- <script>new Morris.Donut({
+  element: 'myfirstchart',
+  data: [
+    {label: "Download Sales", value: 12},
+    {label: "In-Store Sales", value: 30},
+    {label: "Mail-Order Sales", value: 20}
+  ]
+});
+</script> --}}
