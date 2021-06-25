@@ -10,16 +10,34 @@ const helpers = require('../lib/helpers');
 const { body, validationResult } = require('express-validator');
 const moment = require('moment');
 
+
+const jsonUtils = require('../lib/json_utils')
 //ROUTER GET Y POST
-// ============================================== Chofer View =================================================
 
 
-router.get('/statistics', isAdmin, (req, res) => {
+// ============================================== Estadisticas =================================================
+router.get('/statisticsCovid', isAdmin, async(req, res) => {
   const key = req.user.img;
-  res.render("admin/statistics", {key});
+  // ==== Queda hacer la DB de contagios de COVID-19
+
+  res.render("admin/statisticsCovid", {key});
 });
 
 
+router.get('/pasajesDevueltos', isAdmin, async(req, res) => {
+  const key = req.user.img;
+  const total = await pool.query('SELECT MONTH(v.fecha_devolucion) AS mes, cantidad FROM usuario_viaje v WHERE YEAR(v.fecha_devolucion)=? AND estado="CANCELADO" GROUP BY month(v.fecha_devolucion);',['2021']);
+  console.log('Total:',total);
+  res.render("admin/pasajesDevueltos", {key, "total": jsonUtils.encodeJSON(total)});
+});
+
+router.get('/pasajesComprados', isAdmin, async(req, res) => {
+  const key = req.user.img;
+  const total = await pool.query('SELECT MONTH(v.fecha_salida) AS mes, (SUM(v.asientos_asignados) - SUM(v.asientos_disponibles)) AS vendidos FROM viaje v WHERE YEAR(v.fecha_salida)=? GROUP BY month(v.fecha_salida);',['2021']);
+  res.render("admin/pasajesComprados", {key, "total": jsonUtils.encodeJSON(total)});
+});
+
+// ============================================== Fin de Estadisticas =================================================
 
 
 

@@ -55,16 +55,27 @@
           <li>
             <a class="nav-link" href="/admin/insumos">Insumos</a>
           </li>
-          <li>
+          {{!-- <li>
             <a class="nav-link" href="/admin/statistics">Estadisticas</a>
-          </li> 
+          </li>  --}}
         {{/if}}
         {{#if (isRole role "ROL_CHOFER")}}
           <li>
             <a class="nav-link" href="chofer/arealizar">A realizar</a>
           </li>
         {{/if}}
-
+        {{#if (isRole role "ROL_ADMIN")}}
+          <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Estadisticas
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/admin/statisticsCovid">COVID-19</a></li>
+              <li><a class="dropdown-item" href="/admin/pasajesDevueltos">Pasajes devueltos</a></li>
+              <li><a class="dropdown-item" href="/admin/pasajesComprados">Pasajes vendidos</a></li>
+            </ul>
+          </div>
+        {{/if}}
       </ul>
       <ul class="navbar-nav mb-2 mb-lg-0">
         {{#if user}}

@@ -66,7 +66,8 @@ router.delete("/tickets/devolver/", hasPermission, async (req, res) => {
         var b = moment(now)
         const diferencia = a.diff(b, 'days')
         const estado = "CANCELADO"
-        await pool.query("UPDATE usuario_viaje set estado=? WHERE id_usuarioviaje=?", [estado,id]);
+        const fecha = dateFormat(moment(), "yyyy-mm-dd");
+        await pool.query("UPDATE usuario_viaje set estado=?,fecha_devolucion=? WHERE id_usuarioviaje=?", [estado,fecha,id]);
         if (diferencia <= 2) {
             if (diferencia == 2) {
                 hora_actual = moment().format('HH:mm:ss');

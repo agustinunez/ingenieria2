@@ -1,0 +1,74 @@
+<div class="GeneralContainer">
+  <div class="divContainer">
+      <h3>Estadistica de pasajes vendidos</h3>
+  </div>
+  <canvas class="statistics" id="myChart" width="400" height="100"></canvas>
+</div>
+
+
+<script>
+    function tryParseJSON (jsonString){
+        try {
+            var o = JSON.parse(jsonString);
+
+            if (o && typeof o === "object") {
+                return o;
+            }
+        }
+        catch (e) { }
+        return null;
+    }
+
+     function decodeJSON(obj) {
+        obj = decodeURI(obj);
+        return tryParseJSON(obj);
+    };
+    var totalViajes;
+
+    $(document).ready(function () {
+        totalViajes = decodeJSON("{{total}}");
+    });
+
+    $(document).ready(function() {
+        var array = [0,0,0,0,0,0,0,0,0,0,0,0];
+        var indice;
+        for (let i = 0; i < totalViajes.length; i++) {
+            indice = (+totalViajes[i].mes - 1);
+            array[indice]= totalViajes[i].vendidos
+        }
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, { 
+        type: 'line',
+        data: {
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            datasets: [{
+                label: 'Vendidos',
+                data: array,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    })
+});</script>
