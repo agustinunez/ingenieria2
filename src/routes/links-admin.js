@@ -213,6 +213,7 @@ router.delete("/choferes/eliminar", isAdmin, async (req, res) => {
         "No es posible eliminar el chofer, ya que el mismo tiene combis asignadas!",
     });
   } else {
+    await pool.query("DELETE FROM chofer_viaje WHERE chofer=?", [id]);
     await pool.query("DELETE FROM autoridad WHERE id_usuario=?", [id]);
     await pool.query("DELETE FROM usuario WHERE id_usuario=?", [id]);
     res.json({
@@ -815,10 +816,15 @@ router.post("/viajes",
 
     if (errors.length == 0) {
       if (id == "") {
-        await pool.query(
+        viaje_completo = await pool.query(
           "INSERT INTO viaje (ruta, fecha_salida, hora_salida, fecha_llegada, hora_llegada, asientos_asignados, asientos_disponibles, combi, fecha_publicacion, precio) VALUES (?,?,?,?,?,?,?,?,?,?)",
           [ruta, fechasalida, horasalida, fechallegada, horallegada, asientosAsignados, asientosAsignados, combi, fechapublicacion, precio]
         );
+        combi_de_viaje = await pool.query("SELECT combi FROM viaje WHERE id_viaje=?", [viaje_completo.insertId]);
+        //console.log(combi_de_viaje[0].combi)
+        chofer = await pool.query("SELECT chofer FROM combi WHERE id_combi=?", [combi_de_viaje[0].combi]);
+        const estado= "Pendiente"
+        await pool.query("INSERT INTO chofer_viaje (chofer,viaje,estado) VALUES (?,?,?)",[chofer[0].chofer,viaje_completo.insertId,estado]);
       } else {
         const viajeActual = await pool.query("SELECT * FROM viaje WHERE id_viaje=?", [id]);
         if (asientosAsignados == viajeActual[0].asientos_asignados) {
@@ -889,6 +895,7 @@ router.delete("/viajes/eliminar", isAdmin, async (req, res) => {
       await pool.query("DELETE FROM viaje_insumos WHERE viaje=?", [id]);
     }
     await pool.query("DELETE FROM comentarios WHERE viaje=?", [id]);
+    await pool.query("DELETE FROM chofer_viaje WHERE viaje=?", [id]);
     await pool.query("DELETE FROM usuario_viaje WHERE viaje=?", [id]);
     await pool.query("DELETE FROM viaje WHERE id_viaje=?", [id]);
     res.json({
