@@ -23,7 +23,7 @@
                     <th data-field="estado" data-sortable="true">
                         Estado
                     </th>
-                    <th data-field="id_viajechofer" data-formatter="LinkFormatterInsumos"><i class="fas fa-cart-plus"></i></i>
+                    <th data-field="id_viajechofer" data-formatter="LinkFormatterVenderPasaje"><i class="fas fa-cart-plus"></i></i>
                     <th data-field="id_viajechofer" data-formatter="LinkFormatterComenzar"></i>
                     </th>
                     <th data-field="id_usuarioviaje" data-formatter="LinkFormatterFinalizar"></i>
@@ -62,8 +62,8 @@
         return "<a href='/user/detalles/" + value + "' ><button class='btn btn-primary'>Finalizar</button></a> ";//se tiene q cambiar la ruta para finalizar viajes
     }
 
-    function LinkFormatterInsumos(value, row) {
-        return "<a href='/user/insumos/" + value + "' ><button class='btn btn-warning'>Insumos</button></a> ";//se tiene q cambiar la ruta para vender insumos
+    function LinkFormatterVenderPasaje(value, row) {
+        return "<a  ><button class='btn btn-warning'>Vender pasaje</button></a> ";//se tiene q cambiar la ruta para vender pasajes
     }
 
     function LinkFormatterCancelar(value, row) {

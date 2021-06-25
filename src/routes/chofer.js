@@ -17,9 +17,10 @@ router.get('/arealizar', hasPermission, (req, res) => {
 router.get("/arealizarJSON", hasPermission, isChofer, async (req, res) => {
     const usuario = req.user
     id_usuario = usuario.id_usuario
-    finalizado="Finalizado"
+    en_curso="En curso"
+    pendiente="Pendiente"
     const aux = await pool.query(
-        "SELECT * FROM chofer_viaje WHERE chofer=? AND estado!=?", [id_usuario,finalizado]
+        "SELECT * FROM chofer_viaje WHERE chofer=? AND estado=? or estado=?", [id_usuario,en_curso,pendiente]
     );
     for (let i = 0; i < aux.length; i++) {
         viaje = await pool.query("SELECT ruta,fecha_salida,fecha_llegada,hora_salida,hora_llegada FROM viaje WHERE id_viaje=?", [aux[i].viaje]);
