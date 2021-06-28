@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { hasPermission } = require('../lib/auth');
+const { hasPermission, isChofer } = require('../lib/auth');
 const pool = require('../database');
 var dateFormat = require("dateformat");
 const { body, validationResult } = require('express-validator');
@@ -13,7 +13,7 @@ router.get('/tickets', hasPermission, (req, res) => {
 })
 
 
-router.get("/aRealizarJSON", hasPermission, isChofer, async (req, res) => {
+router.get("/aealizarJSON", hasPermission, isChofer, async (req, res) => {
     const usuario = req.user
     id_usuario = usuario.id_usuario
     const aux = await pool.query(
@@ -37,3 +37,5 @@ router.get("/aRealizarJSON", hasPermission, isChofer, async (req, res) => {
 
     res.send(aux);
 });
+
+module.exports = router;
