@@ -18,15 +18,14 @@ const jsonUtils = require('../lib/json_utils')
 // ============================================== Estadisticas =================================================
 router.get('/statisticsCovid', isAdmin, async(req, res) => {
   const key = req.user.img;
-  // ==== Queda hacer la DB de contagios de COVID-19
-
-  res.render("admin/statisticsCovid", {key});
+  const total = await pool.query('SELECT MONTH(v.fecha) AS mes, COUNT(estado) AS cantidad FROM formulario_covid v WHERE YEAR(v.fecha)=? AND estado="POSITIVO" GROUP BY month(v.fecha);',['2021']);
+  res.render("admin/statisticsCovid", {key, "total": jsonUtils.encodeJSON(total)});
 });
 
 
 router.get('/pasajesDevueltos', isAdmin, async(req, res) => {
   const key = req.user.img;
-  const total = await pool.query('SELECT MONTH(v.fecha_devolucion) AS mes, cantidad FROM usuario_viaje v WHERE YEAR(v.fecha_devolucion)=? AND estado="CANCELADO" GROUP BY month(v.fecha_devolucion);',['2021']);
+  const total = await pool.query('SELECT MONTH(v.fecha_devolucion) AS mes, SUM(cantidad) AS cantidad FROM usuario_viaje v WHERE YEAR(v.fecha_devolucion)=? AND estado="CANCELADO" GROUP BY month(v.fecha_devolucion);',['2021']);
   console.log('Total:',total);
   res.render("admin/pasajesDevueltos", {key, "total": jsonUtils.encodeJSON(total)});
 });
@@ -38,11 +37,6 @@ router.get('/pasajesComprados', isAdmin, async(req, res) => {
 });
 
 // ============================================== Fin de Estadisticas =================================================
-
-
-
-
-
 
 
 

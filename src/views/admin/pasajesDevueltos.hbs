@@ -25,11 +25,18 @@
     };
     var totalDevueltos;
 
-    $(totalDevueltos).ready(function () {
+    $(document).ready(function () {
         totalDevueltos = decodeJSON("{{total}}");
     });
 
     $(document).ready(function() {
+        if(totalDevueltos == 0){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No hay informacion suficiente para cargar ésta estadistica'
+            })
+        }
         var array = [0,0,0,0,0,0,0,0,0,0,0,0];
         var indice;
         for (let i = 0; i < totalDevueltos.length; i++) {
