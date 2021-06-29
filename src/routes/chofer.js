@@ -54,7 +54,7 @@ router.get("/yaRealizadosJSON", hasPermission, isChofer, async (req, res) => {
     const usuario = req.user
     id_usuario = usuario.id_usuario
     cancelado = "Cancelado"
-    finalizado = "Finalizado"
+    finalizado = "Concretado"
     const aux = await pool.query(
         "SELECT * FROM chofer_viaje WHERE chofer=? AND estado=? or estado=?", [id_usuario, cancelado, finalizado]
     );
@@ -217,7 +217,7 @@ router.post("/finalizar/", hasPermission, isChofer, async (req, res) => {
     const { id } = req.body;
     viaje = await pool.query("SELECT viaje,estado FROM chofer_viaje WHERE id_viajechofer=?", [id])
     if (viaje[0].estado == "En curso") {
-        estado_finalizado = "Finalizado"
+        estado_finalizado = "Concretado"
         await pool.query("UPDATE chofer_viaje SET estado=? WHERE id_viajechofer=?", [estado_finalizado, id])
         usuarios_con_viaje = await pool.query("SELECT * FROM usuario_viaje  WHERE viaje=?", [viaje[0].viaje])
         for (var i = 0; i < usuarios_con_viaje.length; i++) {
@@ -231,13 +231,12 @@ router.post("/finalizar/", hasPermission, isChofer, async (req, res) => {
             message: "Se ha finalizado el viaje exitosamente!"
         });
     } else {
-        if (viaje[0].estado == "En curso") {
             res.json({
                 value: viaje,
                 result: false,
                 message: "No se puede finalizar el viaje ya que esta en estado pendiente!"
             });
-        }
+        
     }
 })
 
