@@ -1,0 +1,558 @@
+<div class="container-fluid my-3">
+    <div id="smartwizard" class="bg-light rounded">
+        <ul class="nav">
+            <li id="li-1">
+                <a class="nav-link" href="#step-1">
+                    <strong>Paso 1</strong>
+                    <br>
+                    Carga de email
+                </a>
+            </li>
+            <li id="li-2">
+                <a class="nav-link" href="#step-2">
+                    <strong>Paso 2</strong>
+                    <br>
+                    Datos personales
+                </a>
+            </li id="li-3">
+            <li>
+                <a class="nav-link" href="#step-3">
+                    <strong>Paso 3</strong>
+                    <br>
+                    Formulario COVID-19
+                </a>
+            </li id="li-4">
+            <li>
+                <a class="nav-link" href="#step-4">
+                    <strong>Paso 4</strong>
+                    <br>
+                    Insumos
+                </a>
+            </li>
+            <li>
+                <a class="nav-link" href="#step-5">
+                    <strong>Paso 5</strong>
+                    <br>
+                    Resumen
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="step-1" class="tab-pane text-center" role="tabpanel">
+                <div class="row justify-content-center">
+                    <div class="col-sm-5">
+                        <div class="input-group">
+                            <label for="email" class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></label for="email">
+                            <input type="text" class="form-control" placeholder="Email *" name="email" id="email">
+                            <div class="invalid-feedback">
+                                <h6 id="invalid-email"></h6>
+                            </div>
+                        </div>
+                        <button id="button-email" type="button" class="btn btn-primary mt-3">Continuar</button>
+                    </div>
+                </div>
+            </div>
+            <div id="step-2" class="tab-pane text-center" role="tabpanel">
+                <div class="row justify-content-center">
+                    <div class="col-sm-5">
+                        <div id="info-group" class="p-2">
+                            <h4 id="info-title" class="text-primary"></h4>
+                            <form id="form-passenger" action="/chofer/venta/passenger" method="POST">
+                            </form>
+                        </div>
+                        <button id="" type="button" class="btn btn-danger mt-3 button-prev">Volver</button>
+                        <button id="button-passenger" type="button" class="btn btn-primary mt-3">Continuar</button>
+                    </div>
+                </div>
+            </div>
+            <div id="step-3" class="tab-pane" role="tabpanel">
+                <div class="row justify-content-center">
+                    <div class="col-sm-5">
+                        <form id="form-formulario" action="/chofer/venta/formulario" method="POST">
+                            <div id="info-group" class="p-2">
+                                <h4 class="text-primary text-center">Formulario</h4>
+                                <div class="container-fluid mt-4">
+                                    <div class="mb-3 text-start">
+                                        <label for="temperatura" class="form-label fs-6 text-center w-100 mb-0">
+                                            <h5 class="text-secondary">Temperatura</h5>
+                                        </label>
+                                        <input type="number" class="form-control m-auto" id="temperatura" name="temperatura" style="width: 5rem;"/>
+                                        <div class="invalid-feedback text-center">
+                                            <h6 id="invalid-temperatura"></h6>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-secondary text-center">¿Fiebre ultima semana?</h5>
+                                        <div class="d-flex justify-content-evenly">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="fiebre" id="fiebre1" value="Si">
+                                                <label class="form-check-label" for="fiebre1">
+                                                    Si
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="fiebre" id="fiebre2" value="No">
+                                                <label class="form-check-label" for="fiebre2">
+                                                    No
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <input class="form-control" id="fiebreAux" name="fiebreAux" hidden/>
+                                        <div class="invalid-feedback text-center">
+                                            <h6 id="invalid-fiebreAux"></h6>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h5 class="text-secondary text-center">¿Perdida de gusto u olfato?</h5>
+                                        <div class="d-flex justify-content-evenly">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gusto" id="gusto1" value="Si">
+                                                <label class="form-check-label" for="gusto1">
+                                                    Si
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gusto" id="gusto2" value="No">
+                                                <label class="form-check-label" for="gusto2">
+                                                    No
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <input class="form-control" id="gustoAux" name="gustoAux" hidden/>
+                                        <div class="invalid-feedback text-center">
+                                            <h6 id="invalid-gustoAux"></h6>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h5 class="text-secondary text-center">¿Dolor de garganta?</h5>
+                                        <div class="d-flex justify-content-evenly">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="garganta" id="garganta1" value="Si">
+                                                <label class="form-check-label" for="garganta1">
+                                                    Si
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="garganta" id="garganta2" value="No">
+                                                <label class="form-check-label" for="garganta2">
+                                                    No
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <input class="form-control" id="gargantaAux" name="gargantaAux" hidden/>
+                                        <div class="invalid-feedback text-center">
+                                            <h6 id="invalid-gargantaAux"></h6>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h5 class="text-secondary text-center">¿Dificultad respiratoria?</h5>
+                                        <div class="d-flex justify-content-evenly">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="respiracion" id="respiracion1" value="Si">
+                                                <label class="form-check-label" for="respiracion1">
+                                                    Si
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="respiracion" id="respiracion2" value="No">
+                                                <label class="form-check-label" for="respiracion2">
+                                                    No
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <input class="form-control" id="respiracionAux" name="respiracionAux" hidden/>
+                                        <div class="invalid-feedback text-center">
+                                            <h6 id="invalid-respiracionAux"></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-danger mt-3 button-prev">Volver</button>
+                                <button type="submit" class="btn btn-primary mt-3">Continuar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="step-4" class="tab-pane text-center" role="tabpanel">
+                <input type="text" class="form-control" placeholder="Username" name="username" id="username">
+                <button id="button-username" type="button" class="btn btn-primary mt-3">Send username</button>
+            </div>
+            <div id="step-5" class="tab-pane text-center" role="tabpanel">
+                <input type="text" class="form-control" placeholder="Resume" name="resume" id="resume">
+                <button id="button-username" type="button" class="btn btn-primary mt-3">Send resume</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const emailElement = $('#email');
+    var finalEmail;
+    var isRegistered;
+    var finalName;
+    var finalLastname;
+    var finalUsername;
+    var finalBirthdate;
+    var finalTemperatura;
+    var finalFiebre;
+    var finalGusto;
+    var finalGarganta;
+    var finalRespiracion;
+
+    //<------------------------------------ METHODS ------------------------------------>
+    function showInfo() {
+        $('#form-passenger').html(`
+        <div>
+            <u><h5 class="mb-0">Nombre</h5></u>
+            <p id="nameText">${finalName}</p>
+        </div>
+        <div class="mt-3">
+            <u><h5 class="mb-0">Apellido</h5></u>
+            <p id="lastnameText">${finalLastname}</p>
+        </div>
+        <div class="mt-3">
+            <u><h5 class="mb-0">Fecha de nacimiento</h5></u>
+            <p id="birthdateText">${moment(finalBirthdate).format('DD-MM-YYYY')}</p>
+        </div>
+        `)
+    }
+
+    function showInputs() {
+        $('#form-passenger').html(`
+        <div class="mb-3 text-start">
+            <label for="name" class="form-label fs-6">Nombre</label>
+            <input type="text" class="form-control" id="name" name="name">
+            <div class="invalid-feedback">
+                <h6 id="invalid-name"></h6>
+            </div>
+        </div>
+        <div class="mb-3 text-start">
+            <label for="lastname" class="form-label fs-6">Apellido</label>
+            <input type="text" class="form-control" id="lastname" name="lastname">
+            <div class="invalid-feedback">
+                <h6 id="invalid-lastname"></h6>
+            </div>
+        </div>
+        <div class="mb-3 text-start">
+            <label for="username" class="form-label fs-6">Nombre de usuario</label>
+            <input type="text" class="form-control" id="username" name="username">
+            <div class="invalid-feedback">
+                <h6 id="invalid-username"></h6>
+            </div>
+        </div>
+        <div class="mb-3 text-start">
+            <label for="birthdate" class="form-label fs-6">Fecha de nacimiento</label>
+            <input type="date" class="form-control" id="birthdate" name="birthdate">
+            <div class="invalid-feedback">
+                <h6 id="invalid-birthdate"></h6>
+            </div>
+        </div>
+        `);
+
+        $('#name').focusout(function () {
+            const nameElement = $('#name');
+            if (nameElement.val() == null || nameElement.val() == "") {
+                $('#invalid-name').text('Este campo no puede estar vacio!');
+                nameElement.addClass('is-invalid');
+            } else {
+                nameElement.removeClass('is-invalid');
+                nameElement.addClass('is-valid');
+            };
+        });
+
+        $('#lastname').focusout(function () {
+            const lastnameElement = $('#lastname');
+            if (lastnameElement.val() == null || lastnameElement.val() == "") {
+                $('#invalid-lastname').text('Este campo no puede estar vacio!');
+                lastnameElement.addClass('is-invalid');
+            } else {
+                lastnameElement.removeClass('is-invalid');
+                lastnameElement.addClass('is-valid');
+            };
+        });
+
+        $('#username').focusout(function () {
+            const usernameElement = $('#username');
+            if (usernameElement.val() == null || usernameElement.val() == "") {
+                $('#invalid-username').text('Este campo no puede estar vacio!');
+                usernameElement.addClass('is-invalid');
+            } else {
+                usernameElement.removeClass('is-invalid');
+                usernameElement.addClass('is-valid');
+                const usernameValue = usernameElement.val();
+                $.ajax('/chofer/venta/username', {
+                    type: 'POST',
+                    data: { usernameValue },
+                    success: function (res) {
+                        if (res) {
+                            usernameElement.removeClass('is-invalid');
+                            usernameElement.addClass('is-valid');
+                        } else {
+                            $('#invalid-username').text('El nombre de usuario ya se encuentra en uso!');
+                            usernameElement.addClass('is-invalid');
+                        }
+                    }
+                });
+            };
+        });
+
+        $('#birthdate').focusout(function () {
+            const birthdateElement = $('#birthdate');
+            if (birthdateElement.val() == null || birthdateElement.val() == "") {
+                $('#invalid-birthdate').text('Este campo no puede estar vacio!');
+                birthdateElement.addClass('is-invalid');
+            } else {
+                birthdateElement.removeClass('is-invalid');
+                birthdateElement.addClass('is-valid');
+                const birthdateValue = birthdateElement.val();
+                $.ajax('/chofer/venta/birthdate', {
+                    type: 'POST',
+                    data: { birthdateValue },
+                    success: function (res) {
+                        if (res) {
+                            birthdateElement.removeClass('is-invalid');
+                            birthdateElement.addClass('is-valid');
+                        } else {
+                            $('#invalid-birthdate').text('Debe ser mayor de 18 años!');
+                            birthdateElement.addClass('is-invalid');
+                        }
+                    }
+                });
+            };
+        });
+    }
+    //<---------------------------------- END METHODS ---------------------------------->
+    //<--------------------------------------------------------------------------------->
+
+
+    //<------------------------------------ FOCUS OUT ------------------------------------>
+    $('#email').focusout(function () {
+        if (emailElement.val() == null || emailElement.val() == "") {
+            $('#invalid-email').text('Este campo no puede estar vacio!');
+            emailElement.addClass('is-invalid');
+        } else {
+            const emailValue = emailElement.val();
+            $.ajax('/chofer/venta/email', {
+                type: 'POST',
+                data: { emailValue },
+                success: function (res) {
+                    if (res.errors.length == 0) {
+                        emailElement.removeClass('is-invalid');
+                        emailElement.addClass('is-valid');
+                    } else {
+                        $('#invalid-email').text(res.errors[0].msg);
+                        emailElement.addClass('is-invalid');
+                    }
+                }
+            });
+        };
+    })
+
+    $('#temperatura').focusout(function () {
+        const temperaturaElement = $('#temperatura');
+        if (temperaturaElement.val() == null || temperaturaElement.val() == "") {
+            $('#invalid-temperatura').text('Este campo no puede estar vacio!');
+            temperaturaElement.addClass('is-invalid');
+        } else {
+            temperaturaElement.removeClass('is-invalid');
+            temperaturaElement.addClass('is-valid');
+        }
+    })
+    //<---------------------------------- END FOCUS OUT ---------------------------------->
+    //<----------------------------------------------------------------------------------->
+
+    $(document).ready(function(){
+
+        $('.button-prev').on('click', () => {
+            $('#li-2 a:first-of-type').removeClass('danger');
+            $('#li-3 a:first-of-type').removeClass('danger');
+            $('#li-4 a:first-of-type').removeClass('danger');
+            $('#smartwizard').smartWizard("prev");
+        }) 
+
+        $("#button-email").on('click', () => {
+            if (emailElement.val() == null || emailElement.val() == "") {
+                $('#invalid-email').text('Este campo no puede estar vacio!');
+                emailElement.addClass('is-invalid');
+                $('#li-1 a:first-of-type').addClass('danger');
+            } else {
+                const emailValue = emailElement.val();
+                $.ajax('/chofer/venta/email', {
+                    type: 'POST',
+                    data: { emailValue },
+                    success: function (res) {
+                        if (res.errors.length == 0) {
+                            finalEmail = emailValue;
+                            isRegistered = res.isRegistered;
+                            if (isRegistered) {
+                                finalName = res.resultAccount[0].name;
+                                finalLastname = res.resultAccount[0].lastname;
+                                finalBirthdate = res.resultAccount[0].birthdate;
+                                $('#info-title').text('Datos de la cuenta');
+                                showInfo();
+                            } else {
+                                $('#info-title').text('Datos del pasajero');
+                                showInputs();
+                            }
+                            emailElement.removeClass('is-invalid');
+                            emailElement.addClass('is-valid');
+                            $('#li-1 a:first-of-type').removeClass('danger');
+                            $('#smartwizard').smartWizard("next");
+                        } else {
+                            $('#invalid-email').text(res.errors[0].msg);
+                            emailElement.addClass('is-invalid');
+                            $('#li-1 a:first-of-type').addClass('danger');
+                        }
+
+                        $('#smartwizard').smartWizard("loader", "hide");
+                    }
+                });
+            };
+        });
+
+        $('#button-passenger').on('click', () => {
+            if (isRegistered) {
+                $('#smartwizard').smartWizard("next");
+            } else {
+                $('#form-passenger').submit();
+            }
+        })
+ 
+        // SmartWizard initialize
+        $('#smartwizard').smartWizard({
+            selected: 0,
+            theme: 'progress', //"default" BY DEFAULT
+            justified: true, //"true" BY DEFAULT
+            darkMode: false, //"false" BY DEFAULT
+            enableURLhash: true,
+            transition: {
+                animation: 'fade', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+                speed: '100', // Transion animation speed
+                easing:'' // Transition animation easing. Not supported without a jQuery easing plugin
+            },
+            anchorSettings: {
+                anchorClickable: true, // Enable/Disable anchor navigation
+                markAllPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
+                removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+            },
+            toolbarSettings: {
+                showNextButton: false, // show/hide a Next button
+                showPreviousButton: false, // show/hide a Previous button
+            },
+            keyboardSettings: {
+                keyNavigation: false
+            }
+        });
+    
+    });
+
+    $('#form-passenger').submit(function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements. 
+            success: function (result) {
+                if (result.length > 0) {
+                    $('#name').removeClass('is-invalid');
+                    $('#name').addClass('is-valid');
+                    $('#lastname').removeClass('is-invalid');
+                    $('#lastname').addClass('is-valid');
+                    $('#username').removeClass('is-invalid');
+                    $('#username').addClass('is-valid');
+                    $('#birthdate').removeClass('is-invalid');
+                    $('#birthdate').addClass('is-valid');
+                    $.each(result, function (index, value) {
+                        if (value.param == 'name') {
+                            $('#name').addClass('is-invalid');
+                            $('#invalid-name').text(value.msg);
+                        }
+                        if (value.param == 'lastname') {
+                            $('#lastname').addClass('is-invalid');
+                            $('#invalid-lastname').text(value.msg);
+                        }
+                        if (value.param == 'username') {
+                            $('#username').addClass('is-invalid');
+                            $('#invalid-username').text(value.msg);
+                        }
+                        if (value.param == 'birthdate') {
+                            $('#birthdate').addClass('is-invalid');
+                            $('#invalid-birthdate').text(value.msg);
+                        }
+                    })
+                } else {
+                    finalName = array[0];
+                    finalLastname = array[1];
+                    finalUsername = array[2];
+                    finalBirthdate = array[3];
+                    $('#smartwizard').smartWizard("next");
+                }
+            }
+        });
+    });
+
+    $('#form-formulario').submit(function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        var array = form.serializeArray();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements. 
+            success: function (result) {
+                if (result.length > 0) {   
+                    $('#temperatura').removeClass('is-invalid');
+                    $('#temperatura').addClass('is-valid');
+                    $('#fiebreAux').removeClass('is-invalid');
+                    $('#fiebreAux').addClass('is-valid');
+                    $('#gustoAux').removeClass('is-invalid');
+                    $('#gustoAux').addClass('is-valid');
+                    $('#gargantaAux').removeClass('is-invalid');
+                    $('#gargantaAux').addClass('is-valid');
+                    $('#respiracionAux').removeClass('is-invalid');
+                    $('#respiracionAux').addClass('is-valid');
+                    $.each(result, function (index, value) {
+                        if (value.param == 'temperatura') {
+                            $('#temperatura').addClass('is-invalid');
+                            $('#invalid-temperatura').text(value.msg);
+                        }
+                        if (value.param == 'fiebre') {
+                            $('#fiebreAux').addClass('is-invalid');
+                            $('#invalid-fiebreAux').text(value.msg);
+                        }
+                        if (value.param == 'gusto') {
+                            $('#gustoAux').addClass('is-invalid');
+                            $('#invalid-gustoAux').text(value.msg);
+                        }
+                        if (value.param == 'garganta') {
+                            $('#gargantaAux').addClass('is-invalid');
+                            $('#invalid-gargantaAux').text(value.msg);
+                        }
+                        if (value.param == 'respiracion') {
+                            $('#respiracionAux').addClass('is-invalid');
+                            $('#invalid-respiracionAux').text(value.msg);
+                        }
+                    })
+                } else {
+                    finalTemperatura = array[0];
+                    finalFiebre = array[1];
+                    finalGusto = array[2];
+                    finalGarganta = array[3];
+                    finalRespiracion = array[4];
+                    $('#smartwizard').smartWizard("next");
+                }
+            }
+        });
+    })
+</script>
