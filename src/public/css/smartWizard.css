@@ -19,3 +19,7 @@
     box-shadow: 2px 2px 7px 1px rgb(0 0 0 / 50%);
     border-radius: .5rem;
 }
+
+.tr-venta:hover {
+    color: #232020 !important;
+}
