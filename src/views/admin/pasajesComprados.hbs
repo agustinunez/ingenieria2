@@ -30,6 +30,14 @@
     });
 
     $(document).ready(function() {
+        console.log('asd',totalViajes[0].vendidos)
+        if(totalViajes[0].vendidos == 0){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No hay informacion suficiente para cargar ésta estadistica'
+            })
+        }
         var array = [0,0,0,0,0,0,0,0,0,0,0,0];
         var indice;
         for (let i = 0; i < totalViajes.length; i++) {
